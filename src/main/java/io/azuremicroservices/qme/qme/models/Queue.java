@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -27,6 +28,9 @@ public class Queue {
     private Integer notificationPosition;
 
     private Double notificationDelay;
+
+    @OneToMany(mappedBy = "queue")
+    private List<QueuePosition> queuePositions;
 
     enum State {
         OPEN,

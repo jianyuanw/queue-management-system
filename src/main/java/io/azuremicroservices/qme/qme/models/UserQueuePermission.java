@@ -11,12 +11,12 @@ import java.io.Serializable;
 @Entity
 @NoArgsConstructor
 @Data
-public class UserVendorPermission implements Serializable {
+public class UserQueuePermission implements Serializable {
     @Id
     @ManyToOne
     private User user;
 
     @Id
     @ManyToOne
-    private Vendor vendor;
+    private Queue queue;
 }

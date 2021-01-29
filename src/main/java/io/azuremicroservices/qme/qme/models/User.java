@@ -37,7 +37,13 @@ public class User {
     private Role role;
 
     @OneToMany(mappedBy = "user")
-    private List<SupportTicket> supportTicketList;
+    private List<SupportTicket> supportTickets;
+
+    @OneToMany(mappedBy = "user")
+    private List<UserBranchPermission> userBranchPermissions;
+
+    @OneToMany(mappedBy = "user")
+    private List<UserQueuePermission> userQueuePermissions;
 
     enum Role {
         CLIENT,

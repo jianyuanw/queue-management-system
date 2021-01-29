@@ -5,10 +5,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("controllerdemo")
+@RequestMapping
 public class NavbarDemoController {
 
-    @GetMapping
+    @GetMapping("controllerdemo")
     public String controllerDemo() {
         return "controllerdemo";
     }

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <!-- Filler title, should not show up -->
+    <title>Navigation bars</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <div th:fragment="navbar" class="sticky-top">
+        <nav class="mb-1 navbar navbar-expand-lg navbar-dark light-blue sticky-top">
+            <a class="navbar-brand" th:href="@{/}">Home</a>
+        </nav>
+    </div>
+
+    <div class="bg-light text-center" th:fragment="footer">
+        <small class="align-items-center" th:text="'2021 qMe++ Queue Management Platform | Time: ' + ${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm')}"></small>
+    </div>
+</body>
+</html>

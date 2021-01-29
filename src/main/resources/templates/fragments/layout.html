@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en"
       xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <!-- Filler title, should not show up -->
@@ -10,14 +10,71 @@
     <meta charset="UTF-8">
 </head>
 <body>
-    <div th:fragment="navbar" class="sticky-top">
-        <nav class="mb-1 navbar navbar-expand-lg navbar-dark light-blue sticky-top">
-            <a class="navbar-brand" th:href="@{/}">Home</a>
+    <div th:fragment="navbar">
+        <!--Navbar -->
+        <nav class="mb-1 navbar navbar-expand-lg navbar-dark default-color">
+            <a class="navbar-brand" href="#">Navbar</a>
+            <button aria-controls="navbarSupportedContent-333" aria-expanded="false" aria-label="Toggle navigation"
+                    class="navbar-toggler"
+                    data-target="#navbarSupportedContent-333" data-toggle="collapse" type="button">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent-333">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">Home
+                            <span class="sr-only">(current)</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Pricing</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle"
+                           data-toggle="dropdown" id="navbarDropdownMenuLink-333">Dropdown
+                        </a>
+                        <div aria-labelledby="navbarDropdownMenuLink-333" class="dropdown-menu dropdown-default">
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ml-auto nav-flex-icons">
+                    <li class="nav-item">
+                        <a class="nav-link waves-effect waves-light">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link waves-effect waves-light">
+                            <i class="fab fa-google-plus-g"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle"
+                           data-toggle="dropdown" id="navbarDropdownMenuLink-333">
+                            <i class="fas fa-user"></i>
+                        </a>
+                        <div aria-labelledby="navbarDropdownMenuLink-333"
+                             class="dropdown-menu dropdown-menu-right dropdown-default">
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </nav>
+        <!--/.Navbar -->
     </div>
 
-    <div class="bg-light text-center" th:fragment="footer">
-        <small class="align-items-center" th:text="'2021 qMe++ Queue Management Platform | Time: ' + ${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm')}"></small>
-    </div>
+<div class="bg-light text-center" th:fragment="footer">
+    <small class="align-items-center"
+           th:text="'2021 qMe++ Queue Management Platform | Time: ' + ${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm')}"></small>
+</div>
 </body>
 </html>

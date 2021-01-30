@@ -1,8 +1,5 @@
 package io.azuremicroservices.qme.qme.models;
-
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -29,6 +26,9 @@ public class QueuePosition {
     private LocalDateTime queueEndTime;
 
     private LocalDateTime stateChangeTime;
+    //this is for estimated waiting time prototype
+    public QueuePosition(LocalDateTime startTime, LocalDateTime endTime) {
+    }
 
     enum State {
         QUEUE,

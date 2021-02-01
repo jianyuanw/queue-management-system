@@ -30,6 +30,8 @@
         </tbody>
     </table>
     <script>
+    	
+    
         const eventSource = new EventSource("http://localhost:8080/test/sse");
         eventSource.onmessage = function (ev) {
             if (ev.data === "refresh") {
@@ -39,6 +41,9 @@
                 console.log(ev.data);
             }
         }
+        window.addEventListener('beforeunload', function (event) {
+        	eventSource.close();
+        });
     </script>
 </body>
 </html>

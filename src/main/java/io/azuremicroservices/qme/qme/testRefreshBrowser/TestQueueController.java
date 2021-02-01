@@ -1,22 +1,27 @@
 package io.azuremicroservices.qme.qme.testRefreshBrowser;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
 @Controller
 public class TestQueueController {
 
     private final List<SseEmitter> emitters = new ArrayList<>();
+    
+    private final AsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
 
     @Autowired
     private TestQueuePositionRepository repo;
@@ -33,13 +38,35 @@ public class TestQueueController {
         return "testRefreshBrowser/addQueuePosition";
     }
 
+    @GetMapping("/test/listemitters")
+    @ResponseBody
+    public String listEmitters() {
+    	StringBuilder sb = new StringBuilder();
+    	int count = 0;
+    	
+    	if (emitters.size() > 0) {
+	    	for (SseEmitter emitter : emitters) {
+	    		count++;
+	    		sb.append("Emitter " + count + " - " + emitter.toString() + "<br>");
+	    	}
+    	}
+    	
+    	return sb.toString();
+    }
+    
     @PostMapping("/test/addQueuePosition")
     public String addRandomQueuePosition() {
         List<TestQueuePosition> queuePositions = (List<TestQueuePosition>) repo.findAll();
-        int lastPosition = queuePositions.stream()
-                .mapToInt(x -> x.getPosition())
-                .max()
-                .getAsInt();
+        int lastPosition;
+        if (queuePositions.size() != 0) {
+	        lastPosition = queuePositions.stream()
+	                .mapToInt(x -> x.getPosition())
+	                .max()
+	                .getAsInt();
+        } else {
+        	lastPosition = 0;
+        }
+        
         Random rnd = new Random();
         char randomAlphabet = (char) ('A' + rnd.nextInt(26));
         String queueNumber = String.valueOf(randomAlphabet) + rnd.nextInt(100);
@@ -64,13 +91,18 @@ public class TestQueueController {
 
     public void refreshBrowsers() {
         synchronized (emitters) {
-            emitters.forEach(emitter -> {
-                try {
-                    emitter.send("refresh");
-                } catch (Exception e) {
-                    emitter.completeWithError(e);
-                }
-            });
+        	for (SseEmitter emitter : emitters) {
+        		executor.execute(() -> {
+        			try {
+    					emitter.send("refresh");
+        				emitter.complete();
+        			}
+        			catch (IOException e) {
+        				emitter.completeWithError(e);
+        			}
+        		}, AsyncTaskExecutor.TIMEOUT_IMMEDIATE);        		
+        	}
+        
         }
     }
 }

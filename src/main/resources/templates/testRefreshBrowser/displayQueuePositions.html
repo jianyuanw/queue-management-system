@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>General Queue</title>
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <!-- MDB -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.2.0/mdb.min.css" rel="stylesheet" />
+    <!-- MDB -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.2.0/mdb.min.js"></script>
+</head>
+<body class="p-4">
+    <h1>People in General Queue</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Queue Number</th>
+                <th>Position</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="queuePosition : ${queuePositions}">
+                <td th:text="${queuePosition.queueNumber}" />
+                <td th:text="${queuePosition.position}" />
+            </tr>
+        </tbody>
+    </table>
+    <script>
+        const eventSource = new EventSource("http://localhost:8080/test/sse");
+        eventSource.onmessage = function (ev) {
+            if (ev.data === "refresh") {
+                eventSource.close();
+                location.reload();
+            } else {
+                console.log(ev.data);
+            }
+        }
+    </script>
+</body>
+</html>

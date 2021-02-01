@@ -69,7 +69,6 @@ public class TestQueueController {
                     emitter.send("refresh");
                 } catch (Exception e) {
                     emitter.completeWithError(e);
-                    emitters.remove(emitter);
                 }
             });
         }

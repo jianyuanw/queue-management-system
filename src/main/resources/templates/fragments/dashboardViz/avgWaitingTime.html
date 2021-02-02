@@ -11,64 +11,73 @@
 </head>
 <body>
 <div th:fragment="avgWaitingTime">
+	<div class="col-md-12">
 	<div class="tabbable">
 		<ul class="nav nav-tabs" data-tabs="tabs">
 			<li class="nav-item">
-				<a class="nav-link active" href="#Three" data-toggle="tab">Three</a>
+				<a class="nav-link active" href="#Four" data-toggle="tab">Monthly</a>
 			</li>
 			<li>
-				<a class="nav-link" href="#Four" data-toggle="tab">Four</a>
+				<a class="nav-link" href="#Five" data-toggle="tab">Daily</a>
+			</li>
+			<li>
+				<a class="nav-link" href="#Six" data-toggle="tab">Hourly</a>
 			</li>
 		</ul>
 		<div class="tab-content" style="padding: 15px;">
-			<div class="tab-pane active" id="Three">
+			<div class="tab-pane active" id="Four">
 				<div class="tabbable">
 					<ul class="nav nav-tabs" data-tabs="tabs">
 						<li class="nav-item">
-							<a class="nav-link active" href="#ThreeA" data-toggle="tab">ThreeA</a>
+							<a class="nav-link active" href="#FourA" data-toggle="tab">Actual</a>
 						</li>
 						<li>
-							<a class="nav-link" href="#ThreeB" data-toggle="tab">ThreeB</a>
-						</li>
-						<li>
-							<a class="nav-link" href="#ThreeC" data-toggle="tab">ThreeC</a>
-						</li>
-					</ul>
-					<div class="tab-content" style="padding: 15px;">
-						<div class="tab-pane active" id="ThreeA">
-						ThreeA
-						</div>
-						<div class="tab-pane" id="ThreeB">
-							<div id="piechart"></div>
-						</div>
-						<div class="tab-pane" id="ThreeC">
-							ThreeC content
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="tab-pane" id="Four">
-				<div class="tabbable">
-					<ul class="nav nav-tabs" data-tabs="tabs">
-						<li class="nav-item">
-							<a class="nav-link active" href="#FourA" data-toggle="tab">FourA</a>
-						</li>
-						<li>
-							<a class="nav-link" href="#FourB" data-toggle="tab">FourB</a>
-						</li>
-						<li>
-							<a class="nav-link" href="#FourC" data-toggle="tab">FourC</a>
+							<a class="nav-link" href="#FourB" data-toggle="tab">Forecast</a>
 						</li>
 					</ul>
 					<div class="tab-content" style="padding: 15px;">
 						<div class="tab-pane active" id="FourA">
-							FourA content
-						</div>
+							<div id="monthly_actual1_div"></div>
+				     	</div>
 						<div class="tab-pane" id="FourB">
-							FourB content
 						</div>
-						<div class="tab-pane" id="FourC">
-							FourC content
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane" id="Five">
+				<div class="tabbable">
+					<ul class="nav nav-tabs" data-tabs="tabs">
+						<li class="nav-item">
+							<a class="nav-link active" href="#FiveA" data-toggle="tab">Actual</a>
+						</li>
+						<li>
+							<a class="nav-link" href="#FiveB" data-toggle="tab">Forecast</a>
+						</li>
+					</ul>
+					<div class="tab-content" style="padding: 15px;">
+						<div class="tab-pane active" id="FiveA">
+						</div>
+						<div class="tab-pane" id="FiveB">
+							FiveB content
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane" id="Six">
+				<div class="tabbable">
+					<ul class="nav nav-tabs" data-tabs="tabs">
+						<li class="nav-item">
+							<a class="nav-link active" href="#SixA" data-toggle="tab">Actual</a>
+						</li>
+						<li>
+							<a class="nav-link" href="#SixB" data-toggle="tab">Forecast</a>
+						</li>
+					</ul>
+					<div class="tab-content" style="padding: 15px;">
+						<div class="tab-pane active" id="SixA">
+						</div>
+						<div class="tab-pane" id="SixB">
+							SixB content
 						</div>
 					</div>
 				</div>
@@ -83,48 +92,107 @@
             google.charts.load('current', {
                 packages : [ 'corechart', 'bar' ]
             });
-            google.charts.setOnLoadCallback(drawColumnChart);
-            google.charts.setOnLoadCallback(drawPieChart);
+            google.charts.setOnLoadCallback(drawActual1MonthlyChart);
+            google.charts.setOnLoadCallback(drawActualDailyChart);
+            google.charts.setOnLoadCallback(drawActualHourlyChart);
         });
 
-        function drawColumnChart() {
+        function drawActual1MonthlyChart() {
             var data = new google.visualization.DataTable();
-            data.addColumn('string', 'Month');
+         
+            data.addColumn('datetime', 'Date');
             data.addColumn('number', 'Queues');
             Object.keys(real_data).forEach(function(key) {
-                data.addRow([ key, real_data[key] ]);
+                data.addRow([ new Date(key), real_data[key] ]);
             });
+            
+            var grouped_data = google.visualization.data.group(
+            		  data,
+            		  [{'column': 0, 'modifier': google.visualization.data.month, 'type': 'number'}],
+            		  [{'column': 1, 'aggregation': google.visualization.data.sum, 'type': 'number'}]
+            	 );
+            
             var options = {
                 title : 'Queue Stats',
                 hAxis : {
                     title : 'Month',
+
                 },
                 vAxis : {
                     title : 'Queue Count'
                 },
                 chartArea: {  width: "50%", height: "70%" }
             };
-            var chart = new google.visualization.ColumnChart(document
-                .getElementById('chart_div'));
-            chart.draw(data, options);
+            var chart = new google.visualization.LineChart(document
+                .getElementById('monthly_actual1_div'));
+            chart.draw(grouped_data, options);
         }
 
-        function drawPieChart() {
+        function drawActualDailyChart() {
             var data = new google.visualization.DataTable();
-            data.addColumn('string', 'Month');
+         
+            data.addColumn('datetime', 'Date');
             data.addColumn('number', 'Queues');
             Object.keys(real_data).forEach(function(key) {
-                data.addRow([ key, real_data[key] ]);
+                data.addRow([ new Date(key), real_data[key] ]);
             });
+            
+            var grouped_data = google.visualization.data.group(
+            		  data,
+            		  [{'column': 0, 'modifier': function(val){return val.getDate();}, 'type': 'number'}],
+            		  [{'column': 1, 'aggregation': google.visualization.data.sum, 'type': 'number'}]
+            	 );
+            
             var options = {
-                title : 'Queue stats',
+                title : 'Queue Stats',
+                hAxis : {
+                    title : 'Day',
+
+                },
+                vAxis : {
+                    title : 'Queue Count'
+                },
                 chartArea: {  width: "50%", height: "70%" }
             };
-            var chart = new google.visualization.PieChart(document
-                .getElementById('piechart'));
-            chart.draw(data, options);
+            var chart = new google.visualization.LineChart(document
+                .getElementById('daily_actual_div'));
+            chart.draw(grouped_data, options);
+        }
+        
+        
+        function drawActualHourlyChart() {
+            var data = new google.visualization.DataTable();
+         
+            data.addColumn('datetime', 'Date');
+            data.addColumn('number', 'Queues');
+            Object.keys(real_data).forEach(function(key) {
+                data.addRow([ new Date(key), real_data[key] ]);
+            });
+            
+            var grouped_data = google.visualization.data.group(
+            		  data,
+            		  [{'column': 0, 'modifier': function(val){return val.getHours();}, 'type': 'number'}],
+            		  [{'column': 1, 'aggregation': google.visualization.data.sum, 'type': 'number'}]
+            	 );
+            
+            var options = {
+                title : 'Queue Stats',
+                hAxis : {
+                    title : 'Hour',
+
+                },
+                vAxis : {
+                    title : 'Queue Count'
+                },
+                chartArea: {  width: "50%", height: "70%" }
+            };
+            var chart = new google.visualization.LineChart(document
+                .getElementById('hourly_actual_div'));
+            chart.draw(grouped_data, options);
         }
     </script>
+
+</div>
 
 </body>
 </html>

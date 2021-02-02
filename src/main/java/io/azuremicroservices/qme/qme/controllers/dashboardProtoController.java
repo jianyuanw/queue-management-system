@@ -1,12 +1,14 @@
 package io.azuremicroservices.qme.qme.controllers;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,37 +24,36 @@ public class dashboardProtoController {
         Random r = new Random();
 
         List<QueuePosition> qps = new ArrayList<>();
-
-        for (int i = 1; i <= 12; i++) {
-            String month = i >= 10 ? Integer.toString(i) : "0" + i;
-            for (int j = 0; j < r.nextInt(15); j++) {
-                LocalDateTime ldt = LocalDateTime.parse("01-" + month + "-2020 10:10", DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
-                var qp = new QueuePosition();
-                qp.setQueueStartTime(ldt);
-                qps.add(qp);
-            }
+        long minDay = LocalDateTime.of(2018, 1, 1, 0, 0).toInstant(ZoneOffset.UTC).getEpochSecond();
+        long maxDay = LocalDateTime.of(2019, 12, 31, 23, 59).toInstant(ZoneOffset.UTC).getEpochSecond();
+        
+        for(int i = 0; i < 500; i++) {
+        	 long randomDay = ThreadLocalRandom.current().nextLong(minDay, maxDay);
+        	 LocalDateTime rStartDate = LocalDateTime.ofEpochSecond(randomDay, 0, ZoneOffset.UTC);
+        	 LocalDateTime rEndDate = rStartDate.plusMinutes(r.nextInt(59));
+        	 var qp = new QueuePosition();
+        	 qp.setQueueStartTime(rStartDate);
+        	 qp.setQueueEndTime(rEndDate);
+        	 qps.add(qp);
         }
         return qps;
 	}
 	
 	 @GetMapping("/dashboard")
-	    public String getPieChart(Model model) {
+	    public String dashboard(Model model, String yearSelect) {
 	        var qps = pretendChartData();
-
-	        Map<String, Integer> graphData = new TreeMap<>();
+	        
+	        Map<String, Integer> data = new TreeMap<>();
 
 	        for (QueuePosition qp : qps) {
-	            String month = Integer.toString(qp.getQueueStartTime().getMonthValue());
-	            if (graphData.containsKey(month)) {
-	                graphData.put(month, graphData.get(month) + 1);
+	            if (data.containsKey(qp.getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'")))) {
+	                data.put(qp.getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'")), data.get(qp.getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'"))) + 1);
 	            } else {
-	                graphData.put(month, 1);
+	                data.put(qp.getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'")), 1);
 	            }
 	        }
-
-	        model.addAttribute("chartData", graphData);
+	        
+	        model.addAttribute("chartData", data);
 	        return "dashboardProto";
 	    }
-	
-
 }

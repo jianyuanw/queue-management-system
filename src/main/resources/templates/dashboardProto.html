@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Prototype</title>
+    <!--Load the AJAX API-->
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+    <th:block th:replace="fragments/sourcebundle.html :: google-charts" />
+
+</head>
+<body>
+
+<div th:replace="fragments/layout.html :: navbar"></div>
+<div class = "container">
+	<div class = "row">
+		<div class = "col-sm">
+		<div th:replace = "fragments/dashboardViz/noCustomers.html :: noCustomers"></div>
+		</div>
+		<div class = "col-sm">
+		<div th:replace = "fragments/dashboardViz/avgWaitingTime.html :: avgWaitingTime"></div>
+		</div>
+	</div>
+</div>
+
+<div th:replace="fragments/layout.html :: footer"></div>
+
+</body>
+</html>

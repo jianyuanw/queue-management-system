@@ -36,17 +36,22 @@ public class GoogleChartsController {
         var qps = pretendChartData();
 
         Map<String, Integer> graphData = new TreeMap<>();
-
+        Map<String, String> graphData2 = new TreeMap<>();
+        
         for (QueuePosition qp : qps) {
             String month = Integer.toString(qp.getQueueStartTime().getMonthValue());
             if (graphData.containsKey(month)) {
                 graphData.put(month, graphData.get(month) + 1);
             } else {
                 graphData.put(month, 1);
+                graphData2.put(month, qp.getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'")));
             }
         }
+        
+        
 
         model.addAttribute("chartData", graphData);
+        model.addAttribute("chartData2", graphData2);
         return "google-charts";
     }
 }

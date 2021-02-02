@@ -22,6 +22,11 @@
 
     <script th:inline="javascript">
         var real_data = /*[[${chartData}]]*/'noValue';
+        var real_data_two = /*[[${chartData2}]]*/'noValue';
+        
+        Object.keys(real_data_two).forEach(function(key) {
+            console.log(new Date(real_data_two[key]));
+        });
 
         $(document).ready(function() {
             google.charts.load('current', {

@@ -37,6 +37,10 @@
 					</ul>
 					<div class="tab-content" style="padding: 15px;">
 						<div class="tab-pane active" id="OneA">
+							<select onchange="updateYear(this)">
+								<option value="2019">2019</option>
+								<option value="2018">2018</option>
+							</select>
 							<div id="monthly_actual_div"></div>
 				     	</div>
 						<div class="tab-pane" id="OneB">
@@ -94,12 +98,21 @@
             google.charts.load('current', {
                 packages : [ 'corechart', 'bar' ]
             });
-            google.charts.setOnLoadCallback(drawActualMonthlyChart);
+            google.charts.setOnLoadCallback(function() {
+            	drawActualMonthlyChart(2019);
+            });
             google.charts.setOnLoadCallback(drawActualDailyChart);
             google.charts.setOnLoadCallback(drawActualHourlyChart);
+
         });
 
-        function drawActualMonthlyChart() {
+		function updateYear(element) {
+			if (document.readyState === 'complete') {
+				drawActualMonthlyChart(element.value);
+			}
+		}
+        
+        function drawActualMonthlyChart(year) {
             var data = new google.visualization.DataTable();
          
             data.addColumn('datetime', 'Date');
@@ -108,8 +121,19 @@
                 data.addRow([ new Date(key), real_data[key] ]);
             });
             
+            var view = new google.visualization.DataView(data)
+            
+            view.setRows(data.getFilteredRows([{
+            	column: 0,
+            	test: function(value) {
+            		return (value.getFullYear() == year);
+            	}
+            }]));            
+            
+            
+            
             var grouped_data = google.visualization.data.group(
-            		  data,
+            		  view,
             		  [{'column': 0, 'modifier': google.visualization.data.month, 'type': 'number'}],
             		  [{'column': 1, 'aggregation': google.visualization.data.sum, 'type': 'number'}]
             	 );

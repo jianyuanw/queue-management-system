@@ -44,6 +44,7 @@ public class dashboardProtoController {
 	        var qps = pretendChartData();
 	        
 	        Map<String, Integer> data = new TreeMap<>();
+	        Map<Integer, Map<Integer, Integer>> testdata = new TreeMap<>(); 
 
 	        for (QueuePosition qp : qps) {
 	            if (data.containsKey(qp.getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'")))) {
@@ -51,6 +52,28 @@ public class dashboardProtoController {
 	            } else {
 	                data.put(qp.getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'")), 1);
 	            }
+	            int year = qp.getQueueStartTime().getYear();
+	            int month = qp.getQueueStartTime().getMonthValue();
+	            
+	            // Please remember to remove this quick debug feature
+	            if (testdata.containsKey(year)) {
+	            	var monthmap = testdata.get(year);
+	            	if (monthmap.containsKey(month)) {
+	            		monthmap.put(month, monthmap.get(month) + 1);
+	            	} else {
+	            		monthmap.put(month, 1);
+	            	}
+	            } else {
+	            	var treemap = new TreeMap<Integer, Integer>();
+	            	treemap.put(month, 1);
+	            	testdata.put(year, treemap);
+	            }
+	        }
+	        
+	        for (Integer year : testdata.keySet()) {
+	        	for (Integer month : testdata.get(year).keySet()) {
+	        		System.out.println((year + " " + month + " - " + testdata.get(year).get(month)));
+	        	}
 	        }
 	        
 	        model.addAttribute("chartData", data);

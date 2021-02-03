@@ -1,7 +1,16 @@
 package io.azuremicroservices.qme.qme.models;
-import lombok.*;
-import javax.persistence.*;
 import java.time.LocalDateTime;
+
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
@@ -19,6 +28,7 @@ public class QueuePosition {
 
     private String queueNumber;
 
+    @Enumerated
     private State state;
 
     private LocalDateTime queueStartTime;
@@ -32,9 +42,10 @@ public class QueuePosition {
 
     enum State {
         QUEUE,
+        REQUEUE,
         PROCESSED_PRESENT,
-        PROCESSED_ABSENT,
-        REJOIN_QUEUE;
+        PROCESSED_ABSENT,        
+        PROCESSED_LEFT;        
 
         private final String displayValue;
 

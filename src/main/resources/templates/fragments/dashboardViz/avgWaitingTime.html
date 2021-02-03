@@ -37,7 +37,11 @@
 					</ul>
 					<div class="tab-content" style="padding: 15px;">
 						<div class="tab-pane active" id="FourA">
-							<div id="monthly_actual1_div"></div>
+						<select onchange="updateEstTimeYear(this)">
+								<option value="2020">2020</option>
+								<option value ="2019">2019</option>
+							</select>
+							<div id="estTime_monthly_actual_div"></div>
 				     	</div>
 						<div class="tab-pane" id="FourB">
 						</div>
@@ -56,6 +60,11 @@
 					</ul>
 					<div class="tab-content" style="padding: 15px;">
 						<div class="tab-pane active" id="FiveA">
+						<select onchange="updateEstTimeMonth(this)">
+								<option value="11">This Month</option>
+								<option value ="10">Last Month</option>
+							</select>
+							<div id="estTime_daily_actual_div"></div>
 						</div>
 						<div class="tab-pane" id="FiveB">
 							FiveB content
@@ -75,6 +84,11 @@
 					</ul>
 					<div class="tab-content" style="padding: 15px;">
 						<div class="tab-pane active" id="SixA">
+						<select onchange="updateEstTimeDate(this)">
+								<option value="31">Today</option>
+								<option value ="30">Yesterday</option>
+							</select>
+							<div id="estTime_hourly_actual_div"></div>
 						</div>
 						<div class="tab-pane" id="SixB">
 							SixB content
@@ -86,108 +100,161 @@
 	</div>
 </div>
 <script th:inline="javascript">
-        var real_data = /*[[${chartData}]]*/'noValue';
+        var est_data = /*[[${estWaitingTimeData}]]*/'noValue';
 
         $(document).ready(function() {
             google.charts.load('current', {
                 packages : [ 'corechart', 'bar' ]
             });
-            google.charts.setOnLoadCallback(drawActual1MonthlyChart);
-            google.charts.setOnLoadCallback(drawActualDailyChart1);
-            google.charts.setOnLoadCallback(drawActualHourlyChart1);
+            google.charts.setOnLoadCallback(function() {
+            	drawEstTimeActualMonthlyChart(new Date().getFullYear()-1);
+            });
+            google.charts.setOnLoadCallback(function() {
+            	drawEstTimeActualDailyChart(11);
+            });
+            google.charts.setOnLoadCallback(function() {
+            	drawEstTimeActualHourlyChart(31);
+            });
         });
+        
+        
+        function updateEstTimeYear(element) {
+			if (document.readyState === 'complete') {
+				drawEstTimeActualMonthlyChart(element.value);
+			}
+		}
+        
+        function updateEstTimeMonth(element) {
+			if (document.readyState === 'complete') {
+				drawEstTimeActualDailyChart(element.value);
+			}
+		}
+        
+        function updateEstTimeDate(element) {
+			if (document.readyState === 'complete') {
+				drawEstTimeActualHourlyChart(element.value);
+			}
+		}
 
-        function drawActual1MonthlyChart() {
+        function drawEstTimeActualMonthlyChart(year) {
             var data = new google.visualization.DataTable();
          
             data.addColumn('datetime', 'Date');
             data.addColumn('number', 'Queues');
-            Object.keys(real_data).forEach(function(key) {
-                data.addRow([ new Date(key), real_data[key] ]);
+            Object.keys(est_data).forEach(function(key) {
+                data.addRow([ new Date(key), est_data[key] ]);
             });
             
+			var view = new google.visualization.DataView(data)
+            
+            view.setRows(data.getFilteredRows([{
+            	column: 0,
+            	test: function(value) {
+            		return (value.getFullYear() == year);
+            	}
+            }])); 
+            
             var grouped_data = google.visualization.data.group(
-            		  data,
+            		  view,
             		  [{'column': 0, 'modifier': google.visualization.data.month, 'type': 'number'}],
-            		  [{'column': 1, 'aggregation': google.visualization.data.sum, 'type': 'number'}]
+            		  [{'column': 1, 'aggregation': google.visualization.data.avg, 'type': 'number'}]
             	 );
             
             var options = {
-                title : 'Queue Stats',
+                title : 'Estimated Wait Time',
                 hAxis : {
                     title : 'Month',
 
                 },
                 vAxis : {
-                    title : 'Queue Count'
+                    title : 'Avg Est Time'
                 },
                 chartArea: {  width: "50%", height: "70%" }
             };
-            var chart = new google.visualization.LineChart(document
-                .getElementById('monthly_actual1_div'));
+            var chart = new google.visualization.ColumnChart(document
+                .getElementById('estTime_monthly_actual_div'));
             chart.draw(grouped_data, options);
         }
 
-        function drawActualDailyChart1() {
+        function drawEstTimeActualDailyChart(month) {
             var data = new google.visualization.DataTable();
          
             data.addColumn('datetime', 'Date');
             data.addColumn('number', 'Queues');
-            Object.keys(real_data).forEach(function(key) {
-                data.addRow([ new Date(key), real_data[key] ]);
+            Object.keys(est_data).forEach(function(key) {
+                data.addRow([ new Date(key), est_data[key] ]);
             });
             
+			var view = new google.visualization.DataView(data)
+            
+            view.setRows(data.getFilteredRows([{
+            	column: 0,
+            	test: function(value) {
+            		return (value.getFullYear() == 2020 && value.getMonth() == month);
+            	}
+            }])); 
+            
             var grouped_data = google.visualization.data.group(
-            		  data,
-            		  [{'column': 0, 'modifier': function(val){return val.getDate();}, 'type': 'number'}],
-            		  [{'column': 1, 'aggregation': google.visualization.data.sum, 'type': 'number'}]
+            		  view,
+            		  [{'column': 0, 'modifier': function(val){return new Date(val.getFullYear(), val.getMonth(),val.getDate())}, 'type': 'date'}],
+            		  [{'column': 1, 'aggregation': google.visualization.data.avg, 'type': 'number'}]
             	 );
             
             var options = {
-                title : 'Queue Stats',
+                title : 'Estimated Wait Time',
                 hAxis : {
                     title : 'Day',
 
                 },
                 vAxis : {
-                    title : 'Queue Count'
+                    title : 'Avg Est Time'
                 },
                 chartArea: {  width: "50%", height: "70%" }
             };
-            var chart = new google.visualization.LineChart(document
-                .getElementById('daily_actual1_div'));
+            var chart = new google.visualization.ColumnChart(document
+                .getElementById('estTime_daily_actual_div'));
             chart.draw(grouped_data, options);
         }
         
         
-        function drawActualHourlyChart1() {
+        function drawEstTimeActualHourlyChart(date) {
             var data = new google.visualization.DataTable();
          
             data.addColumn('datetime', 'Date');
             data.addColumn('number', 'Queues');
-            Object.keys(real_data).forEach(function(key) {
-                data.addRow([ new Date(key), real_data[key] ]);
+            Object.keys(est_data).forEach(function(key) {
+                data.addRow([ new Date(key), est_data[key] ]);
             });
             
+            
+			var view = new google.visualization.DataView(data)
+            
+            view.setRows(data.getFilteredRows([{
+            	column: 0,
+            	test: function(value) {
+            		return (value.getFullYear() == 2020 && value.getMonth() == 11 && value.getDate() == date);
+            	}
+            }]));
+            
             var grouped_data = google.visualization.data.group(
-            		  data,
-            		  [{'column': 0, 'modifier': function(val){return val.getHours();}, 'type': 'number'}],
-            		  [{'column': 1, 'aggregation': google.visualization.data.sum, 'type': 'number'}]
+            		  view,
+            		  [{'column': 0, 'modifier': function(val){return new Date(val.getFullYear(), val.getMonth(), val.getDate(), val.getHours());}, 'type': 'datetime'}],
+            		  [{'column': 1, 'aggregation': google.visualization.data.avg, 'type': 'number'}]
             	 );
             
             var options = {
-                title : 'Queue Stats',
+                title : 'Estimated Waiting Time',
                 hAxis : {
                     title : 'Hour',
 
                 },
                 vAxis : {
-                    title : 'Queue Count'
+                    title : 'Avg Est Time'
                 },
                 chartArea: {  width: "50%", height: "70%" }
             };
-            var chart = new google.visualization.LineChart(document
-                .getElementById('hourly_actual1_div'));
+            var chart = new google.visualization.ColumnChart(document
+                .getElementById('estTime_hourly_actual_div'));
             chart.draw(grouped_data, options);
         }
     </script>

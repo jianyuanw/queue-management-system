@@ -1,6 +1,7 @@
 package io.azuremicroservices.qme.qme.controllers;
 
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -24,19 +25,28 @@ public class dashboardProtoController {
 	    public String dashboard(Model model) {
 	        List<QueuePosition> qps = qpRepo.findAll();
 	        
-	        Map<String, Integer> data = new TreeMap<>();
+	        Map<String, Integer> queueCountData = new TreeMap<>();
+	        Map<String, Long> estWaitingTimeData = new TreeMap<>();
 
 	        for (QueuePosition qp : qps) {
 	        	if(qp.getQueueStartTime() != null) {
-	        		if (data.containsKey(qp.getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'")))) {
-	        			data.put(qp.getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'")), data.get(qp.getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'"))) + 1);
+	        		if (queueCountData.containsKey(qp.getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'")))) {
+	        			queueCountData.put(qp.getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'")), queueCountData.get(qp.getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'"))) + 1);
 	        		} else {
-	        			data.put(qp.getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'")), 1);
+	        			queueCountData.put(qp.getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'")), 1);
 	        		}
 	        	}
 	        }
+	        
+	        for(QueuePosition qp: qps) {
+	        	if(qp.getQueueStartTime() != null && qp.getQueueEndTime() != null) {
+	        		long diff = ChronoUnit.MINUTES.between(qp.getQueueStartTime(),qp.getQueueEndTime());
+	        		estWaitingTimeData.put(qp.getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'")), diff);
+	        	}
+	        } 
 
-	        model.addAttribute("chartData", data);
+	        model.addAttribute("queueCountData", queueCountData);
+	        model.addAttribute("estWaitingTimeData", estWaitingTimeData);
 	        return "dashboardProto";
 	    }
 }

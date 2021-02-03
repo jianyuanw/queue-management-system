@@ -79,7 +79,7 @@ VALUES
 
 INSERT INTO queue (description, name, notification_delay, notification_position, state, time_per_client, branch_id)
 VALUES
-    ( "SELLS COMPUTERS",  "TROY'S COMPUTERS BRANCH 1 QUEUE 1", "0", "1", "1", "30", "1"),
+    ( "SELLS COMPUTERS",  "TROY'S COMPUTERS BRANCH 1 QUEUE 1", "0", "1", "0", "30", "1"),
     ( "SELLS COMPUTERS",  "TROY'S COMPUTERS BRANCH 1 QUEUE 2", "0", "1", "0", "30", "1"),
     ( "SELLS COMPUTERS",  "TROY'S COMPUTERS BRANCH 1 QUEUE 3", "0", "1", "0", "30", "1"),
     ( "SELLS COMPUTERS",  "TROY'S COMPUTERS BRANCH 2 QUEUE 1", "0", "1", "0", "30", "2"),

@@ -37,16 +37,24 @@ public class QueuePosition {
     private LocalDateTime queueEndTime;
 
     private LocalDateTime stateChangeTime;
+
+    public QueuePosition(Queue queue, String queueNumber, State state, LocalDateTime queueStartTime) {
+        this.queue = queue;
+        this.queueNumber = queueNumber;
+        this.state = state;
+        this.queueStartTime = queueStartTime;
+    }
+
     //this is for estimated waiting time prototype
     public QueuePosition(LocalDateTime startTime, LocalDateTime endTime) {
     }
 
-    enum State {
-    	ACTIVE_QUEUE,
-    	ACTIVE_REQUEUE,
-    	INACTIVE_COMPLETE,
-    	INACTIVE_NO_SHOW,
-    	INACTIVE_LEFT;   
+    public enum State {
+        ACTIVE_QUEUE,
+        ACTIVE_REQUEUE,
+        INACTIVE_COMPLETE,
+        INACTIVE_NO_SHOW,
+        INACTIVE_LEFT;
 
         private final String displayValue;
 

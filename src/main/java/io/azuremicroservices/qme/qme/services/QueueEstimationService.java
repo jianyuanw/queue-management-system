@@ -1,6 +1,6 @@
 package io.azuremicroservices.qme.qme.services;
 import io.azuremicroservices.qme.qme.models.QueuePosition;
-import io.azuremicroservices.qme.qme.repositories.QueuePositionRepository;
+import io.azuremicroservices.qme.qme.repositories.QueuePositionRepository1;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,10 +13,10 @@ public class QueueEstimationService {
     //1 window = max 10 people queues or less
     public static final int MOVING_AVERAGE_WINDOW = 10;
 
-    private QueuePositionRepository queuePositionRepository;
+    private QueuePositionRepository1 queuePositionRepository;
 
     @Autowired
-    public QueueEstimationService(QueuePositionRepository queuePositionRepository) {
+    public QueueEstimationService(QueuePositionRepository1 queuePositionRepository) {
         this.queuePositionRepository = queuePositionRepository;
     }
 

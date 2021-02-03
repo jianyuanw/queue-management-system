@@ -1,5 +1,6 @@
 package io.azuremicroservices.qme.qme.controllers;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -47,6 +48,22 @@ public class dashboardProtoController {
 
 	        model.addAttribute("queueCountData", queueCountData);
 	        model.addAttribute("estWaitingTimeData", estWaitingTimeData);
+	       
+	        //Gangster way (to be reviewed)
+	        model.addAttribute("today", LocalDateTime.now());
+	        model.addAttribute("todayValue", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'")));
+	        model.addAttribute("yesterday",LocalDateTime.now().minusDays(1));
+	        model.addAttribute("yesterdayValue",LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'")));
+	        model.addAttribute("previousDay",LocalDateTime.now().minusDays(2));
+	        model.addAttribute("previousDayValue",LocalDateTime.now().minusDays(2).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'")));
+	        model.addAttribute("lastMonth",LocalDateTime.now().minusMonths(1));
+	        model.addAttribute("lastMonthValue",LocalDateTime.now().minusMonths(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'")));
+	        model.addAttribute("previousMonth", LocalDateTime.now().minusMonths(2));
+	        model.addAttribute("previousMonthValue", LocalDateTime.now().minusMonths(2).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'")));
+	        model.addAttribute("lastYear", LocalDateTime.now().minusYears(1));
+	        model.addAttribute("lastYearValue", LocalDateTime.now().minusYears(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'")));
+	        model.addAttribute("previousYear", LocalDateTime.now().minusYears(2));
+	        model.addAttribute("previousYearValue", LocalDateTime.now().minusYears(2).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'")));
 	        return "dashboardProto";
 	    }
 }

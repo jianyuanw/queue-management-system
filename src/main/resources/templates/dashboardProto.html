@@ -17,16 +17,512 @@
 <div th:replace="fragments/layout.html :: navbar"></div>
 <div class = "container">
 	<div class = "row">
+		
+		<!-- Queue Count Chart here -->
+		
 		<div class = "col-sm">
-		<div th:replace = "fragments/dashboardViz/noCustomers.html :: noCustomers"></div>
+		<div class="col-md-12">
+	<div class="tabbable">
+		<ul class="nav nav-tabs" data-tabs="tabs">
+			<li class="nav-item">
+				<a class="nav-link active" href="#One" data-toggle="tab">Monthly</a>
+			</li>
+			<li>
+				<a class="nav-link" href="#Two" data-toggle="tab">Daily</a>
+			</li>
+			<li>
+				<a class="nav-link" href="#Three" data-toggle="tab">Hourly</a>
+			</li>
+		</ul>
+		<div class="tab-content" style="padding: 15px;">
+			<div class="tab-pane active" id="One">
+				<div class="tabbable">
+					<ul class="nav nav-tabs" data-tabs="tabs">
+						<li class="nav-item">
+							<a class="nav-link active" href="#OneA" data-toggle="tab">Actual</a>
+						</li>
+						<li>
+							<a class="nav-link" href="#OneB" data-toggle="tab">Forecast</a>
+						</li>
+					</ul>
+					<div class="tab-content" style="padding: 15px;">
+						<div class="tab-pane active" id="OneA">
+							<select onchange="updateQueueCountYear(this)">
+								<option th:value="${todayValue}" th:text="${#temporals.format(today, 'yyyy')}"></option>
+								<option th:value="${lastYearValue}" th:text="${#temporals.format(lastYear, 'yyyy')}"></option>
+								<option th:value="${previousYearValue}" th:text="${#temporals.format(previousYear, 'yyyy')}"></option>
+							</select>
+							<div id="monthly_actual_div"></div>
+				     	</div>
+						<div class="tab-pane" id="OneB">
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane" id="Two">
+				<div class="tabbable">
+					<ul class="nav nav-tabs" data-tabs="tabs">
+						<li class="nav-item">
+							<a class="nav-link active" href="#TwoA" data-toggle="tab">Actual</a>
+						</li>
+						<li>
+							<a class="nav-link" href="#TwoB" data-toggle="tab">Forecast</a>
+						</li>
+					</ul>
+					<div class="tab-content" style="padding: 15px;">
+						<div class="tab-pane active" id="TwoA">
+							<select onchange="updateMonth(this)">
+								<option th:value="${todayValue}" th:text="${#temporals.format(today, 'MMM yyyy')}">This Month</option>
+								<option th:value="${lastMonthValue}" th:text="${#temporals.format(lastMonth, 'MMM yyyy')}">Last Month</option>
+								<option th:value="${previousMonthValue}" th:text="${#temporals.format(previousMonth, 'MMM yyyy')}">Previous Month</option>
+							</select>
+							<div id="daily_actual_div"></div>
+						</div>
+						<div class="tab-pane" id="TwoB">
+							TwoB content
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane" id="Three">
+				<div class="tabbable">
+					<ul class="nav nav-tabs" data-tabs="tabs">
+						<li class="nav-item">
+							<a class="nav-link active" href="#ThreeA" data-toggle="tab">Actual</a>
+						</li>
+						<li>
+							<a class="nav-link" href="#ThreeB" data-toggle="tab">Forecast</a>
+						</li>
+					</ul>
+					<div class="tab-content" style="padding: 15px;">
+						<div class="tab-pane active" id="ThreeA">
+						<select onchange="updateDate(this)">
+								<option th:value="${todayValue}" th:text="${#temporals.format(today, 'dd MMM yyyy')}"></option>
+								<option th:value="${yesterdayValue}" th:text="${#temporals.format(yesterday, 'dd MMM yyyy')}"></option>
+								<option th:value="${previousDayValue}" th:text="${#temporals.format(previousDay, 'dd MMM yyyy')}"></option>
+							</select>
+							<div id="hourly_actual_div"></div>
+						</div>
+						<div class="tab-pane" id="ThreeB">
+							ThreeB content
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
+	</div>
+</div>
+		</div>
+		
+		
+		
+		<!-- Estimated Waiting Time Chart here -->
+		
 		<div class = "col-sm">
-		<div th:replace = "fragments/dashboardViz/avgWaitingTime.html :: avgWaitingTime"></div>
+		<div class="col-md-12">
+	<div class="tabbable">
+		<ul class="nav nav-tabs" data-tabs="tabs">
+			<li class="nav-item">
+				<a class="nav-link active" href="#Four" data-toggle="tab">Monthly</a>
+			</li>
+			<li>
+				<a class="nav-link" href="#Five" data-toggle="tab">Daily</a>
+			</li>
+			<li>
+				<a class="nav-link" href="#Six" data-toggle="tab">Hourly</a>
+			</li>
+		</ul>
+		<div class="tab-content" style="padding: 15px;">
+			<div class="tab-pane active" id="Four">
+				<div class="tabbable">
+					<ul class="nav nav-tabs" data-tabs="tabs">
+						<li class="nav-item">
+							<a class="nav-link active" href="#FourA" data-toggle="tab">Actual</a>
+						</li>
+						<li>
+							<a class="nav-link" href="#FourB" data-toggle="tab">Forecast</a>
+						</li>
+					</ul>
+					<div class="tab-content" style="padding: 15px;">
+						<div class="tab-pane active" id="FourA">
+						<select onchange="updateEstTimeYear(this)">
+								<option th:value="${todayValue}" th:text="${#temporals.format(today, 'yyyy')}"></option>
+								<option th:value="${lastYearValue}" th:text="${#temporals.format(lastYear, 'yyyy')}"></option>
+								<option th:value="${previousYearValue}" th:text="${#temporals.format(previousYear, 'yyyy')}"></option>
+							</select>
+							<div id="estTime_monthly_actual_div"></div>
+				     	</div>
+						<div class="tab-pane" id="FourB">
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane" id="Five">
+				<div class="tabbable">
+					<ul class="nav nav-tabs" data-tabs="tabs">
+						<li class="nav-item">
+							<a class="nav-link active" href="#FiveA" data-toggle="tab">Actual</a>
+						</li>
+						<li>
+							<a class="nav-link" href="#FiveB" data-toggle="tab">Forecast</a>
+						</li>
+					</ul>
+					<div class="tab-content" style="padding: 15px;">
+						<div class="tab-pane active" id="FiveA">
+						<select onchange="updateEstTimeMonth(this)">
+								<option th:value="${todayValue}" th:text="${#temporals.format(today, 'MMM yyyy')}">This Month</option>
+								<option th:value="${lastMonthValue}" th:text="${#temporals.format(lastMonth, 'MMM yyyy')}">Last Month</option>
+								<option th:value="${previousMonthValue}" th:text="${#temporals.format(previousMonth, 'MMM yyyy')}">Previous Month</option>
+							</select>
+							<div id="estTime_daily_actual_div"></div>
+						</div>
+						<div class="tab-pane" id="FiveB">
+							FiveB content
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane" id="Six">
+				<div class="tabbable">
+					<ul class="nav nav-tabs" data-tabs="tabs">
+						<li class="nav-item">
+							<a class="nav-link active" href="#SixA" data-toggle="tab">Actual</a>
+						</li>
+						<li>
+							<a class="nav-link" href="#SixB" data-toggle="tab">Forecast</a>
+						</li>
+					</ul>
+					<div class="tab-content" style="padding: 15px;">
+						<div class="tab-pane active" id="SixA">
+						<select onchange="updateEstTimeDate(this)">
+								<option th:value="${todayValue}" th:text="${#temporals.format(today, 'dd MMM yyyy')}"></option>
+								<option th:value="${yesterdayValue}" th:text="${#temporals.format(yesterday, 'dd MMM yyyy')}"></option>
+								<option th:value="${previousDayValue}" th:text="${#temporals.format(previousDay, 'dd MMM yyyy')}"></option>
+							</select>
+							<div id="estTime_hourly_actual_div"></div>
+						</div>
+						<div class="tab-pane" id="SixB">
+							SixB content
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 		</div>
 	</div>
 </div>
 
 <div th:replace="fragments/layout.html :: footer"></div>
+
+<script th:inline="javascript">
+        
+        var queueCount_data = /*[[${queueCountData}]]*/'noValue';
+        var est_data = /*[[${estWaitingTimeData}]]*/'noValue';
+        
+        $(document).ready(function() {
+        	
+            google.charts.load('current', {
+                packages : [ 'corechart', 'bar' ]
+            });
+            google.charts.setOnLoadCallback(function() {
+            	drawActualMonthlyChart(new Date());
+            	drawActualDailyChart(new Date());
+            	drawActualHourlyChart(new Date());
+            	drawEstTimeActualMonthlyChart(new Date());
+            	drawEstTimeActualDailyChart(new Date());
+            	drawEstTimeActualHourlyChart(new Date());
+            });
+
+        });
+
+		
+        //Load filter options
+        function updateQueueCountYear(element) {
+			if (document.readyState === 'complete') {
+				drawActualMonthlyChart(new Date(element.value));
+			}
+		}
+		
+		function updateMonth(element) {
+			if (document.readyState === 'complete') {
+				drawActualDailyChart(new Date(element.value));
+			}
+		}
+        
+		function updateDate(element) {
+			if (document.readyState === 'complete') {
+				drawActualHourlyChart(new Date(element.value));
+			}
+		}
+		
+		function updateEstTimeYear(element) {
+			if (document.readyState === 'complete') {
+				drawEstTimeActualMonthlyChart(new Date(element.value));
+			}
+		}
+        
+        function updateEstTimeMonth(element) {
+			if (document.readyState === 'complete') {
+				drawEstTimeActualDailyChart(new Date(element.value));
+			}
+		}
+        
+        function updateEstTimeDate(element) {
+			if (document.readyState === 'complete') {
+				drawEstTimeActualHourlyChart(new Date(element.value));
+			}
+		}
+		
+		
+		//Draw Charts
+        function drawActualMonthlyChart(chosenDate) {
+            var data = new google.visualization.DataTable();
+         
+            data.addColumn('datetime', 'Date');
+            data.addColumn('number', 'Queues');
+            Object.keys(queueCount_data).forEach(function(key) {
+                data.addRow([ new Date(key), queueCount_data[key] ]);
+            });
+            
+            var view = new google.visualization.DataView(data)
+            
+            view.setRows(data.getFilteredRows([{
+            	column: 0,
+            	test: function(value) {
+            		return (value.getFullYear() == chosenDate.getFullYear());
+            	}
+            }]));            
+            
+            var grouped_data = google.visualization.data.group(
+            		  view,
+            		  [{'column': 0, 'modifier': function(val){return new Date(val.getFullYear(), val.getMonth())}, 'type': 'date'}],
+            		  [{'column': 1, 'aggregation': google.visualization.data.sum, 'type': 'number'}]
+            	 );
+            
+            var options = {
+                title : 'Queue Stats',
+                hAxis : {
+                    title : 'Month',
+
+                },
+                vAxis : {
+                    title : 'Queue Count'
+                },
+                chartArea: {  width: "50%", height: "70%" }
+            };
+            var chart = new google.visualization.LineChart(document
+                .getElementById('monthly_actual_div'));
+            chart.draw(grouped_data, options);
+        }
+
+        function drawActualDailyChart(chosenDate) {
+            var data = new google.visualization.DataTable();
+         
+            data.addColumn('datetime', 'Date');
+            data.addColumn('number', 'Queues');
+            Object.keys(queueCount_data).forEach(function(key) {
+                data.addRow([ new Date(key), queueCount_data[key] ]);
+            });
+            
+			var view = new google.visualization.DataView(data)
+            
+            view.setRows(data.getFilteredRows([{
+            	column: 0,
+            	test: function(value) {
+            		return (value.getFullYear()== chosenDate.getFullYear() && value.getMonth() == chosenDate.getMonth());
+            	}
+            }])); 
+            
+            var grouped_data = google.visualization.data.group(
+            		  view,
+            		  [{'column': 0, 'modifier': function(val){return new Date(val.getFullYear(), val.getMonth(), val.getDate());}, 'type': 'date'}],
+            		  [{'column': 1, 'aggregation': google.visualization.data.sum, 'type': 'number'}]
+            	 );
+            
+            var options = {
+                title : 'Queue Stats',
+                hAxis : {
+                    title : 'Day',
+
+                },
+                vAxis : {
+                    title : 'Queue Count'
+                },
+                chartArea: {  width: "50%", height: "70%" }
+            };
+            var chart = new google.visualization.LineChart(document
+                .getElementById('daily_actual_div'));
+            chart.draw(grouped_data, options);
+        }
+        
+        
+        function drawActualHourlyChart(chosenDate) {
+            var data = new google.visualization.DataTable();
+         
+            data.addColumn('datetime', 'Date');
+            data.addColumn('number', 'Queues');
+            Object.keys(queueCount_data).forEach(function(key) {
+                data.addRow([ new Date(key), queueCount_data[key] ]);
+            });
+            
+			var view = new google.visualization.DataView(data)
+            
+            view.setRows(data.getFilteredRows([{
+            	column: 0,
+            	test: function(value) {
+            		return (value.getFullYear()== chosenDate.getFullYear() && value.getMonth() == chosenDate.getMonth() && value.getDate() == chosenDate.getDate());
+            	}
+            }]));
+            
+            var grouped_data = google.visualization.data.group(
+            		  view,
+            		  [{'column': 0, 'modifier': function(val){return new Date(val.getFullYear(), val.getMonth(), val.getDate(), val.getHours());}, 'type': 'datetime'}],
+            		  [{'column': 1, 'aggregation': google.visualization.data.sum, 'type': 'number'}]
+            	 );
+             
+            
+            var options = {
+                title : 'Queue Stats',
+                hAxis : {
+                    title : 'Hour',
+
+                },
+                vAxis : {
+                    title : 'Queue Count'
+                },
+                chartArea: {  width: "50%", height: "70%" }
+            };
+            var chart = new google.visualization.LineChart(document
+                .getElementById('hourly_actual_div'));
+            chart.draw(grouped_data, options);
+        }
+        
+        //Est Time Charts here
+        function drawEstTimeActualMonthlyChart(chosenDate) {
+            var data = new google.visualization.DataTable();
+         
+            data.addColumn('datetime', 'Date');
+            data.addColumn('number', 'Queues');
+            Object.keys(est_data).forEach(function(key) {
+                data.addRow([ new Date(key), est_data[key] ]);
+            });
+            
+			var view = new google.visualization.DataView(data)
+            
+            view.setRows(data.getFilteredRows([{
+            	column: 0,
+            	test: function(value) {
+            		return (value.getFullYear() == chosenDate.getFullYear());
+            	}
+            }]));
+            
+            var grouped_data = google.visualization.data.group(
+            		  view,
+            		  [{'column': 0, 'modifier': google.visualization.data.month, 'type': 'number'}],
+            		  [{'column': 1, 'aggregation': google.visualization.data.avg, 'type': 'number'}]
+            	 );
+            
+            var options = {
+                title : 'Estimated Wait Time',
+                hAxis : {
+                    title : 'Month',
+
+                },
+                vAxis : {
+                    title : 'Avg Est Time'
+                },
+                chartArea: {  width: "50%", height: "70%" }
+            };
+            var chart = new google.visualization.ColumnChart(document
+                .getElementById('estTime_monthly_actual_div'));
+            chart.draw(grouped_data, options);
+        }
+
+        function drawEstTimeActualDailyChart(chosenDate) {
+            var data = new google.visualization.DataTable();
+         
+            data.addColumn('datetime', 'Date');
+            data.addColumn('number', 'Queues');
+            Object.keys(est_data).forEach(function(key) {
+                data.addRow([ new Date(key), est_data[key] ]);
+            });
+            
+			var view = new google.visualization.DataView(data)
+            
+            view.setRows(data.getFilteredRows([{
+            	column: 0,
+            	test: function(value) {
+            		return (value.getFullYear()== chosenDate.getFullYear() && value.getMonth() == chosenDate.getMonth());
+            	}
+            }])); 
+            
+            var grouped_data = google.visualization.data.group(
+            		  view,
+            		  [{'column': 0, 'modifier': function(val){return new Date(val.getFullYear(), val.getMonth(),val.getDate())}, 'type': 'date'}],
+            		  [{'column': 1, 'aggregation': google.visualization.data.avg, 'type': 'number'}]
+            	 );
+            
+            var options = {
+                title : 'Estimated Wait Time',
+                hAxis : {
+                    title : 'Day',
+
+                },
+                vAxis : {
+                    title : 'Avg Est Time'
+                },
+                chartArea: {  width: "50%", height: "70%" }
+            };
+            var chart = new google.visualization.ColumnChart(document
+                .getElementById('estTime_daily_actual_div'));
+            chart.draw(grouped_data, options);
+        }
+        
+        
+        function drawEstTimeActualHourlyChart(chosenDate) {
+            var data = new google.visualization.DataTable();
+         
+            data.addColumn('datetime', 'Date');
+            data.addColumn('number', 'Queues');
+            Object.keys(est_data).forEach(function(key) {
+                data.addRow([ new Date(key), est_data[key] ]);
+            });
+            
+            
+			var view = new google.visualization.DataView(data)
+            
+            view.setRows(data.getFilteredRows([{
+            	column: 0,
+            	test: function(value) {
+            		return (value.getFullYear()== chosenDate.getFullYear() && value.getMonth() == chosenDate.getMonth() && value.getDate() == chosenDate.getDate());
+            	}
+            }]));
+            
+            var grouped_data = google.visualization.data.group(
+            		  view,
+            		  [{'column': 0, 'modifier': function(val){return new Date(val.getFullYear(), val.getMonth(), val.getDate(), val.getHours());}, 'type': 'datetime'}],
+            		  [{'column': 1, 'aggregation': google.visualization.data.avg, 'type': 'number'}]
+            	 );
+            
+            var options = {
+                title : 'Estimated Waiting Time',
+                hAxis : {
+                    title : 'Hour',
+
+                },
+                vAxis : {
+                    title : 'Avg Est Time'
+                },
+                chartArea: {  width: "50%", height: "70%" }
+            };
+            var chart = new google.visualization.ColumnChart(document
+                .getElementById('estTime_hourly_actual_div'));
+            chart.draw(grouped_data, options);
+        }
+        
+    </script>
 
 </body>
 </html>

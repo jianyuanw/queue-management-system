@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class PrototypeController {
 	@GetMapping("/")
 	public String initPrototypeInterface() {
-		return "prototype";
+		return "prototype/main";
 	}
 }

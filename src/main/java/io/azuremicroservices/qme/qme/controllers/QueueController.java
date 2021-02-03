@@ -9,7 +9,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class QueueController {
@@ -22,9 +26,15 @@ public class QueueController {
 
     @GetMapping("/prototype/viewQueue")
     public String viewQueuePrototype(Model model) {
+        /* Will shift code to service layer */
         List<QueuePosition> queuePositions = queueService.findActiveQueuePositionsForPrototype(1L);
+        Map<QueuePosition, Duration> queuePositionDurationMap = new LinkedHashMap<>();
+        for (QueuePosition queuePosition : queuePositions) {
+            queuePositionDurationMap.put(queuePosition,
+                    Duration.between(queuePosition.getQueueStartTime(), LocalDateTime.now()));
+        }
         Queue queue = queueService.findQueue(1L);
-        model.addAttribute("queuePositions", queuePositions);
+        model.addAttribute("queuePositionDurationMap", queuePositionDurationMap);
         model.addAttribute("queue", queue);
         return "prototype/viewQueue";
     }
@@ -43,7 +53,6 @@ public class QueueController {
 
     @GetMapping("/prototype/sse")
     public SseEmitter registerClient() {
-        SseEmitter emitter = queueService.addEmitter();
-        return emitter;
+        return queueService.addEmitter();
     }
 }

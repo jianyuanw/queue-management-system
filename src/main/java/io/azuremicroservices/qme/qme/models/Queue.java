@@ -1,14 +1,22 @@
 package io.azuremicroservices.qme.qme.models;
 
+import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.util.List;
+import lombok.ToString;
 
 @Entity
 @NoArgsConstructor
 @Data
+@ToString(exclude="queuePositions")
 public class Queue {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

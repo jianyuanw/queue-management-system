@@ -38,8 +38,8 @@
 					<div class="tab-content" style="padding: 15px;">
 						<div class="tab-pane active" id="OneA">
 							<select onchange="updateYear(this)">
-								<option value="2019">2019</option>
-								<option value="2018">2018</option>
+								<option value="2020">2020</option>
+								<option value ="2019">2019</option>
 							</select>
 							<div id="monthly_actual_div"></div>
 				     	</div>
@@ -60,6 +60,10 @@
 					</ul>
 					<div class="tab-content" style="padding: 15px;">
 						<div class="tab-pane active" id="TwoA">
+							<select onchange="updateMonth(this)">
+								<option value="11">This Month</option>
+								<option value ="10">Last Month</option>
+							</select>
 							<div id="daily_actual_div"></div>
 						</div>
 						<div class="tab-pane" id="TwoB">
@@ -80,6 +84,10 @@
 					</ul>
 					<div class="tab-content" style="padding: 15px;">
 						<div class="tab-pane active" id="ThreeA">
+						<select onchange="updateDate(this)">
+								<option value="31">Today</option>
+								<option value ="30">Yesterday</option>
+							</select>
 							<div id="hourly_actual_div"></div>
 						</div>
 						<div class="tab-pane" id="ThreeB">
@@ -95,14 +103,21 @@
         var real_data = /*[[${chartData}]]*/'noValue';
 
         $(document).ready(function() {
+        	
             google.charts.load('current', {
                 packages : [ 'corechart', 'bar' ]
             });
             google.charts.setOnLoadCallback(function() {
-            	drawActualMonthlyChart(2019);
+            	drawActualMonthlyChart(new Date().getFullYear()-1);
             });
-            google.charts.setOnLoadCallback(drawActualDailyChart);
-            google.charts.setOnLoadCallback(drawActualHourlyChart);
+            
+            google.charts.setOnLoadCallback(function() {
+            	drawActualDailyChart(11);
+            });
+            google.charts.setOnLoadCallback(function() {
+            	drawActualHourlyChart(31);
+            });
+       
 
         });
 
@@ -111,7 +126,19 @@
 				drawActualMonthlyChart(element.value);
 			}
 		}
+		
+		function updateMonth(element) {
+			if (document.readyState === 'complete') {
+				drawActualDailyChart(element.value);
+			}
+		}
         
+		function updateDate(element) {
+			if (document.readyState === 'complete') {
+				drawActualHourlyChart(element.value);
+			}
+		}
+		
         function drawActualMonthlyChart(year) {
             var data = new google.visualization.DataTable();
          
@@ -134,7 +161,7 @@
             
             var grouped_data = google.visualization.data.group(
             		  view,
-            		  [{'column': 0, 'modifier': google.visualization.data.month, 'type': 'number'}],
+            		  [{'column': 0, 'modifier': function(val){return new Date(val.getFullYear(), val.getMonth())}, 'type': 'date'}],
             		  [{'column': 1, 'aggregation': google.visualization.data.sum, 'type': 'number'}]
             	 );
             
@@ -154,7 +181,7 @@
             chart.draw(grouped_data, options);
         }
 
-        function drawActualDailyChart() {
+        function drawActualDailyChart(month) {
             var data = new google.visualization.DataTable();
          
             data.addColumn('datetime', 'Date');
@@ -163,9 +190,18 @@
                 data.addRow([ new Date(key), real_data[key] ]);
             });
             
+			var view = new google.visualization.DataView(data)
+            
+            view.setRows(data.getFilteredRows([{
+            	column: 0,
+            	test: function(value) {
+            		return (value.getFullYear() == 2020 && value.getMonth() == month);
+            	}
+            }])); 
+            
             var grouped_data = google.visualization.data.group(
-            		  data,
-            		  [{'column': 0, 'modifier': function(val){return val.getDate();}, 'type': 'number'}],
+            		  view,
+            		  [{'column': 0, 'modifier': function(val){return new Date(val.getFullYear(), val.getMonth(), val.getDate());}, 'type': 'date'}],
             		  [{'column': 1, 'aggregation': google.visualization.data.sum, 'type': 'number'}]
             	 );
             
@@ -186,7 +222,7 @@
         }
         
         
-        function drawActualHourlyChart() {
+        function drawActualHourlyChart(date) {
             var data = new google.visualization.DataTable();
          
             data.addColumn('datetime', 'Date');
@@ -195,11 +231,21 @@
                 data.addRow([ new Date(key), real_data[key] ]);
             });
             
+			var view = new google.visualization.DataView(data)
+            
+            view.setRows(data.getFilteredRows([{
+            	column: 0,
+            	test: function(value) {
+            		return (value.getFullYear() == 2020 && value.getMonth() == 11 && value.getDate() == date);
+            	}
+            }]));
+            
             var grouped_data = google.visualization.data.group(
-            		  data,
-            		  [{'column': 0, 'modifier': function(val){return val.getHours();}, 'type': 'number'}],
+            		  view,
+            		  [{'column': 0, 'modifier': function(val){return new Date(val.getFullYear(), val.getMonth(), val.getDate(), val.getHours());}, 'type': 'datetime'}],
             		  [{'column': 1, 'aggregation': google.visualization.data.sum, 'type': 'number'}]
             	 );
+             
             
             var options = {
                 title : 'Queue Stats',

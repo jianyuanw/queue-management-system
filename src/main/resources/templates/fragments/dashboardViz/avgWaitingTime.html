@@ -93,8 +93,8 @@
                 packages : [ 'corechart', 'bar' ]
             });
             google.charts.setOnLoadCallback(drawActual1MonthlyChart);
-            google.charts.setOnLoadCallback(drawActualDailyChart);
-            google.charts.setOnLoadCallback(drawActualHourlyChart);
+            google.charts.setOnLoadCallback(drawActualDailyChart1);
+            google.charts.setOnLoadCallback(drawActualHourlyChart1);
         });
 
         function drawActual1MonthlyChart() {
@@ -128,7 +128,7 @@
             chart.draw(grouped_data, options);
         }
 
-        function drawActualDailyChart() {
+        function drawActualDailyChart1() {
             var data = new google.visualization.DataTable();
          
             data.addColumn('datetime', 'Date');
@@ -155,12 +155,12 @@
                 chartArea: {  width: "50%", height: "70%" }
             };
             var chart = new google.visualization.LineChart(document
-                .getElementById('daily_actual_div'));
+                .getElementById('daily_actual1_div'));
             chart.draw(grouped_data, options);
         }
         
         
-        function drawActualHourlyChart() {
+        function drawActualHourlyChart1() {
             var data = new google.visualization.DataTable();
          
             data.addColumn('datetime', 'Date');
@@ -187,7 +187,7 @@
                 chartArea: {  width: "50%", height: "70%" }
             };
             var chart = new google.visualization.LineChart(document
-                .getElementById('hourly_actual_div'));
+                .getElementById('hourly_actual1_div'));
             chart.draw(grouped_data, options);
         }
     </script>

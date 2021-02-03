@@ -1,4 +1,4 @@
-package io.azuremicroservices.qme.qme;
+/*package io.azuremicroservices.qme.qme;
 import io.azuremicroservices.qme.qme.models.QueuePosition;
 import io.azuremicroservices.qme.qme.repositories.QueuePositionRepository;
 import io.azuremicroservices.qme.qme.services.QueueEstimationService;
@@ -77,3 +77,4 @@ class QueueEstimationServiceTest {
         return queue;
     }
 }
+*/

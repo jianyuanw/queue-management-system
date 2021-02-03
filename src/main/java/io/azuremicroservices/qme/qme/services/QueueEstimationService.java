@@ -1,4 +1,4 @@
-package io.azuremicroservices.qme.qme.services;
+/*package io.azuremicroservices.qme.qme.services;
 import io.azuremicroservices.qme.qme.models.QueuePosition;
 import io.azuremicroservices.qme.qme.repositories.QueuePositionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class QueueEstimationService {
      * Estimate queue time in minutes, using moving average.
      *
      * @return estimated queue time in minutes
-     */
+     *
     public int estimateQueueTime() {
         List<QueuePosition> lastNQueuePosition =
                 queuePositionRepository.findLastNCompletedQueuePosition(MOVING_AVERAGE_WINDOW);
@@ -51,3 +51,4 @@ public class QueueEstimationService {
         return movingAverageInMinutes;
     }
 }
+*/

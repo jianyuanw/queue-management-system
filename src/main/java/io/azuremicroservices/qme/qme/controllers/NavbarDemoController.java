@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping
 public class NavbarDemoController {
 
-    @GetMapping("controllerdemo")
-    public String controllerDemo() {
-        return "controllerdemo";
+    @GetMapping("/prototype/navbar")
+    public String initNavbarPrototypeInterface() {
+        return "prototype/navbardemo";
     }
 }

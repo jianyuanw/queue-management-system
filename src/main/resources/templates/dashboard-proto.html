@@ -328,7 +328,7 @@
                 },
                 chartArea: {  width: "50%", height: "70%" }
             };
-            var chart = new google.visualization.LineChart(document
+            var chart = new google.visualization.ColumnChart(document
                 .getElementById('monthly_actual_div'));
             chart.draw(grouped_data, options);
         }
@@ -368,7 +368,7 @@
                 },
                 chartArea: {  width: "50%", height: "70%" }
             };
-            var chart = new google.visualization.LineChart(document
+            var chart = new google.visualization.ColumnChart(document
                 .getElementById('daily_actual_div'));
             chart.draw(grouped_data, options);
         }
@@ -410,7 +410,7 @@
                 },
                 chartArea: {  width: "50%", height: "70%" }
             };
-            var chart = new google.visualization.LineChart(document
+            var chart = new google.visualization.ColumnChart(document
                 .getElementById('hourly_actual_div'));
             chart.draw(grouped_data, options);
         }
@@ -555,7 +555,6 @@
             final_data.addColumn('datetime', 'Date');
             final_data.addColumn('number', 'Queues');
             
-			var currDate = new Date();
             var slidingWindow = 10;
 			
 			for(var i = 0; i< 3; i++){
@@ -566,14 +565,13 @@
             	}
             	avg = total/slidingWindow;
             	
-            	//Need to fix
-            	data.addRow([new Date(currDate.setMonth(currDate.getMonth()+i)), avg]);
-            	final_data.addRow([new Date(currDate.setMonth(currDate.getMonth()+i)), avg]);
+            	data.addRow([new Date(new Date().setMonth(new Date().getMonth()+i)), avg]);
+            	final_data.addRow([new Date(new Date().setMonth(new Date().getMonth()+i)), avg]);
             }
             
             
             var options = {
-                title : 'Queue Stats',
+                title : 'Forecast Queue Stats',
                 hAxis : {
                     title : 'Month',
 
@@ -583,7 +581,7 @@
                 },
                 chartArea: {  width: "50%", height: "70%" }
             };
-            var chart = new google.visualization.LineChart(document
+            var chart = new google.visualization.ColumnChart(document
                 .getElementById('monthly_actual_forecast_div'));
             chart.draw(final_data, options);
         }
@@ -604,7 +602,6 @@
              final_data.addColumn('datetime', 'Date');
              final_data.addColumn('number', 'Queues');
              
- 			var currDate = new Date();
              var slidingWindow = 10;
  			
  			for(var i = 0; i< 3; i++){
@@ -616,8 +613,8 @@
              	avg = total/slidingWindow;
              	
              	//Need to fix
-             	data.addRow([new Date(currDate.setMonth(currDate.getMonth()+i)), avg]);
-             	final_data.addRow([new Date(currDate.setMonth(currDate.getMonth()+i)), avg]);
+             	data.addRow([new Date(new Date().setMonth(new Date().getMonth()+i)), avg]);
+             	final_data.addRow([new Date(new Date().setMonth(new Date().getMonth()+i)), avg]);
              }
              
              
@@ -625,6 +622,7 @@
                  title : 'Estimated Wait Time',
                  hAxis : {
                      title : 'Month',
+                     format: 'MMM, yy'
 
                  },
                  vAxis : {
@@ -632,7 +630,7 @@
                  },
                  chartArea: {  width: "50%", height: "70%" }
              };
-             var chart = new google.visualization.LineChart(document
+             var chart = new google.visualization.ColumnChart(document
                  .getElementById('monthly_ewt_forecast_div'));
              chart.draw(final_data, options);
          }
@@ -683,7 +681,7 @@
                  },
                  chartArea: {  width: "50%", height: "70%" }
              };
-             var chart = new google.visualization.LineChart(document
+             var chart = new google.visualization.ColumnChart(document
                  .getElementById('daily_actual_forecast_div'));
              chart.draw(final_data, options);
          }
@@ -732,7 +730,7 @@
                  },
                  chartArea: {  width: "50%", height: "70%" }
              };
-             var chart = new google.visualization.LineChart(document
+             var chart = new google.visualization.ColumnChart(document
                  .getElementById('hourly_actual_forecast_div'));
              chart.draw(final_data, options);
          } */

@@ -23,7 +23,7 @@ public class dashboardProtoController {
 	QueuePositionRepository qpRepo;
      
      
-	 @GetMapping("/dashboard")
+	 @GetMapping("/prototype/dashboard")
 	    public String dashboard(Model model) {
 	        List<QueuePosition> qps = qpRepo.findAll();
 	        
@@ -102,7 +102,7 @@ public class dashboardProtoController {
 	        model.addAttribute("previousYear", LocalDateTime.now().minusYears(2));
 	        model.addAttribute("previousYearValue", LocalDateTime.now().minusYears(2).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'")));
 	        
-	        return "dashboard-proto";
+	        return "prototype/dashboard-proto";
 	 }
 	 
 }

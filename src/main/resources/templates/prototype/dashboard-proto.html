@@ -14,7 +14,7 @@
 </head>
 <body>
 
-<div th:replace="fragments/layout.html :: navbar"></div>
+<div th:replace="fragments/layout.html :: prototype-navbar"></div>
 <div class = "container">
 	<div class = "row">
 		
@@ -351,6 +351,13 @@
             	}
             }])); 
             
+			let hAxisTicks = [];
+			let dateRange = view.getColumnRange(0);
+			const oneDay = (1000 * 60 * 60 * 24);
+			for (var i = dateRange.min.getTime(); i <= dateRange.max.getTime(); i = i + oneDay) {
+			  hAxisTicks.push(new Date(i));
+			}			
+			
             var grouped_data = google.visualization.data.group(
             		  view,
             		  [{'column': 0, 'modifier': function(val){return new Date(val.getFullYear(), val.getMonth(), val.getDate());}, 'type': 'date'}],
@@ -361,8 +368,8 @@
                 title : 'Queue Stats',
                 hAxis : {
                     title : 'Day',
-                    format: 'dd'
-
+                    format: 'dd MMM',
+                    ticks: hAxisTicks
                 },
                 vAxis : {
                     title : 'Queue Count'
@@ -475,6 +482,13 @@
             	}
             }])); 
             
+			let hAxisTicks = [];
+			let dateRange = view.getColumnRange(0);
+			const oneDay = (1000 * 60 * 60 * 24);
+			for (var i = dateRange.min.getTime(); i <= dateRange.max.getTime(); i = i + oneDay) {
+			  hAxisTicks.push(new Date(i));
+			}			
+			
             var grouped_data = google.visualization.data.group(
             		  view,
             		  [{'column': 0, 'modifier': function(val){return new Date(val.getFullYear(), val.getMonth(),val.getDate())}, 'type': 'date'}],
@@ -485,7 +499,8 @@
                 title : 'Estimated Wait Time',
                 hAxis : {
                     title : 'Day',
-                    format: 'dd'
+                    format: 'dd MMM',
+                    ticks: hAxisTicks
 
                 },
                 vAxis : {

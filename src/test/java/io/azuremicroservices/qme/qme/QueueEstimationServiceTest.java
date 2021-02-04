@@ -1,6 +1,6 @@
 /*package io.azuremicroservices.qme.qme;
 import io.azuremicroservices.qme.qme.models.QueuePosition;
-import io.azuremicroservices.qme.qme.repositories.QueuePositionRepository;
+import io.azuremicroservices.qme.qme.repositories.QueuePositionRepository1;
 import io.azuremicroservices.qme.qme.services.QueueEstimationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,7 @@ class QueueEstimationServiceTest {
     QueueEstimationService estimationService;
 
     @Mock
-    QueuePositionRepository queuePositionRepository;
+    QueuePositionRepository1 queuePositionRepository;
 
     @BeforeEach
     public void setup() {

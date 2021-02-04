@@ -6,6 +6,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -48,6 +49,13 @@ public class dashboardProtoController {
 
 	        model.addAttribute("queueCountData", queueCountData);
 	        model.addAttribute("estWaitingTimeData", estWaitingTimeData);
+	        
+	        var monthlyQueueCount = qps.stream()
+	        		  .filter(qp -> qp.getQueueStartTime() != null)
+					  .filter(qp -> qp.getQueueStartTime().isAfter(LocalDateTime.now().minusMonths(10)))                   
+					  .collect(Collectors.groupingBy(qp -> ((QueuePosition) qp).getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM")) + "-01'T'00:00:00'+0800'", 
+					                                 Collectors.counting()));
+	        model.addAttribute("mqc", monthlyQueueCount);
 	       
 	        //Gangster way (to be reviewed)
 	        model.addAttribute("today", LocalDateTime.now());
@@ -64,6 +72,8 @@ public class dashboardProtoController {
 	        model.addAttribute("lastYearValue", LocalDateTime.now().minusYears(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'")));
 	        model.addAttribute("previousYear", LocalDateTime.now().minusYears(2));
 	        model.addAttribute("previousYearValue", LocalDateTime.now().minusYears(2).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'")));
+	        
 	        return "dashboardProto";
-	    }
+	 }
+	 
 }

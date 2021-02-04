@@ -55,6 +55,7 @@
 							<div id="monthly_actual_div"></div>
 				     	</div>
 						<div class="tab-pane" id="OneB">
+						<div id="monthly_actual_forecast_div"></div>
 						</div>
 					</div>
 				</div>
@@ -213,6 +214,8 @@
 		</div>
 	</div>
 </div>
+<!-- For checking 
+<div th:each="mqcs:${mqc}"><p th:text="${mqcs}"></p></div> -->
 
 <div th:replace="fragments/layout.html :: footer"></div>
 
@@ -220,6 +223,7 @@
         
         var queueCount_data = /*[[${queueCountData}]]*/'noValue';
         var est_data = /*[[${estWaitingTimeData}]]*/'noValue';
+        var forecast_qc_data = /*[[${mqc}]]*/'noValue';
         
         $(document).ready(function() {
         	
@@ -234,6 +238,8 @@
             	drawEstTimeActualDailyChart(new Date());
             	drawEstTimeActualHourlyChart(new Date());
             });
+            
+            google.charts.setOnLoadCallback(drawActualMonthlyForecastChart);
 
         });
 
@@ -520,6 +526,53 @@
             var chart = new google.visualization.ColumnChart(document
                 .getElementById('estTime_hourly_actual_div'));
             chart.draw(grouped_data, options);
+        }
+        
+        //Draw forecasting chart
+         function drawActualMonthlyForecastChart() {
+            var data = new google.visualization.DataTable();
+         
+            data.addColumn('datetime', 'Date');
+            data.addColumn('number', 'Queues');
+            Object.keys(forecast_qc_data).forEach(function(key) {
+                data.addRow([ new Date(key), forecast_qc_data[key] ]);
+            });
+            
+            data.sort({column:0});
+            
+			var final_data = new google.visualization.DataTable();
+            
+            final_data.addColumn('datetime', 'Date');
+            final_data.addColumn('number', 'Queues');
+            
+			var currDate = new Date();
+            
+			for(var i = 0; i< 3; i++){
+            	var avg = 0;
+            	var total = 0;
+            	var rowInds = data.getSortedRows([{column:0}]);
+            	for(var j=0; j < rowInds.length; j++){
+            		total += data.getValue(rowInds[i], 1);
+            	}
+            	avg = total/10;
+            	final_data.addRow([new Date(currDate.setMonth(currDate.getMonth()+i)), avg]);
+            }
+            
+            
+            var options = {
+                title : 'Queue Stats',
+                hAxis : {
+                    title : 'Month',
+
+                },
+                vAxis : {
+                    title : 'Queue Count'
+                },
+                chartArea: {  width: "50%", height: "70%" }
+            };
+            var chart = new google.visualization.LineChart(document
+                .getElementById('monthly_actual_forecast_div'));
+            chart.draw(final_data, options);
         }
         
     </script>

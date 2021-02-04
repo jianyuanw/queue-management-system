@@ -42,7 +42,7 @@ public class dashboardProtoController {
 	        
 	        for(QueuePosition qp: qps) {
 	        	if(qp.getQueueStartTime() != null && qp.getQueueEndTime() != null) {
-	        		long diff = ChronoUnit.MINUTES.between(qp.getQueueStartTime(),qp.getQueueEndTime());
+	        		long diff = ChronoUnit.MINUTES.between(qp.getQueueEndTime(),qp.getQueueStartTime());
 	        		estWaitingTimeData.put(qp.getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'")), diff);
 	        	}
 	        } 
@@ -50,12 +50,28 @@ public class dashboardProtoController {
 	        model.addAttribute("queueCountData", queueCountData);
 	        model.addAttribute("estWaitingTimeData", estWaitingTimeData);
 	        
-	        var monthlyQueueCount = qps.stream()
+	        //To add in services for actual
+	        var forecastQcDataMonthly = qps.stream()
 	        		  .filter(qp -> qp.getQueueStartTime() != null)
-					  .filter(qp -> qp.getQueueStartTime().isAfter(LocalDateTime.now().minusMonths(10)))                   
+					  .filter(qp -> qp.getQueueStartTime().isAfter(LocalDateTime.now().minusMonths(10)))  
+					  .filter(qp -> qp.getQueueStartTime().isBefore(LocalDateTime.now().minusDays(LocalDateTime.now().getDayOfMonth())))
 					  .collect(Collectors.groupingBy(qp -> ((QueuePosition) qp).getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM")) + "-01'T'00:00:00'+0800'", 
 					                                 Collectors.counting()));
-	        model.addAttribute("mqc", monthlyQueueCount);
+	        model.addAttribute("forecastQcDataMonthly", forecastQcDataMonthly);
+	        
+	        var forecastQcDataDaily = qps.stream()
+	        		  .filter(qp -> qp.getQueueStartTime() != null)
+					  .filter(qp -> qp.getQueueStartTime().isAfter(LocalDateTime.now().minusDays(10)))  
+					  .collect(Collectors.groupingBy(qp -> ((QueuePosition) qp).getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "'T'00:00:00'+0800'", 
+					                                 Collectors.counting()));
+	        model.addAttribute("forecastQcDataDaily", forecastQcDataDaily);
+	        
+	        var forecastQcDataHourly = qps.stream()
+	        		  .filter(qp -> qp.getQueueStartTime() != null)
+					  .filter(qp -> qp.getQueueStartTime().isAfter(LocalDateTime.now().minusHours(10)))  
+					  .collect(Collectors.groupingBy(qp -> ((QueuePosition) qp).getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH")) + ":00:00'+0800'", 
+					                                 Collectors.counting()));
+	        model.addAttribute("forecastQcDataHourly", forecastQcDataHourly);
 	       
 	        //Gangster way (to be reviewed)
 	        model.addAttribute("today", LocalDateTime.now());

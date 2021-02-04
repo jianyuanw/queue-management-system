@@ -43,6 +43,12 @@ public class QueueService {
     public Queue findQueue(Long queueId) {
         return queueRepo.findById(queueId).get();
     }
+    
+    public void createNewQueue(String name, String description,State state,
+    		Double timePerClient,Integer notificationPosition, Double notificationDelay) {
+    	queueRepo.save(new Queue(name,description, state,timePerClient, 
+    			notificationPosition,notificationDelay));
+    }
 
     public void addRandomQueueNumber(Long queueId) {
         Queue queue = queueRepo.findById(queueId).get();

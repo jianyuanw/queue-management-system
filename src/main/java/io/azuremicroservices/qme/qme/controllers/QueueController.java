@@ -50,6 +50,12 @@ public class QueueController {
         queueService.refreshBrowsers();
         return "prototype/addQueueNumber";
     }
+    
+    @GetMapping("/manage-branchAdmin/manageQueue")
+    public String createNewQueuePrototype() {
+    	queueService.createNewQueue();
+    	return "prototype/manageQueue";
+    }
 
     @GetMapping("/prototype/sse")
     public SseEmitter registerClient() {

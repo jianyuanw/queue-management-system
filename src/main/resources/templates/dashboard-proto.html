@@ -297,7 +297,7 @@
             var data = new google.visualization.DataTable();
          
             data.addColumn('datetime', 'Date');
-            data.addColumn('number', 'Queues');
+            data.addColumn('number', 'Customers');
             Object.keys(queueCount_data).forEach(function(key) {
                 data.addRow([ new Date(key), queueCount_data[key] ]);
             });
@@ -337,7 +337,7 @@
             var data = new google.visualization.DataTable();
          
             data.addColumn('datetime', 'Date');
-            data.addColumn('number', 'Queues');
+            data.addColumn('number', 'Customers');
             Object.keys(queueCount_data).forEach(function(key) {
                 data.addRow([ new Date(key), queueCount_data[key] ]);
             });
@@ -361,6 +361,7 @@
                 title : 'Queue Stats',
                 hAxis : {
                     title : 'Day',
+                    format: 'dd'
 
                 },
                 vAxis : {
@@ -378,7 +379,7 @@
             var data = new google.visualization.DataTable();
          
             data.addColumn('datetime', 'Date');
-            data.addColumn('number', 'Queues');
+            data.addColumn('number', 'Customers');
             Object.keys(queueCount_data).forEach(function(key) {
                 data.addRow([ new Date(key), queueCount_data[key] ]);
             });
@@ -420,7 +421,7 @@
             var data = new google.visualization.DataTable();
          
             data.addColumn('datetime', 'Date');
-            data.addColumn('number', 'Queues');
+            data.addColumn('number', 'Average waiting minutes');
             Object.keys(est_data).forEach(function(key) {
                 data.addRow([ new Date(key), est_data[key] ]);
             });
@@ -460,7 +461,7 @@
             var data = new google.visualization.DataTable();
          
             data.addColumn('datetime', 'Date');
-            data.addColumn('number', 'Queues');
+            data.addColumn('number', 'Average waiting minutes');
             Object.keys(est_data).forEach(function(key) {
                 data.addRow([ new Date(key), est_data[key] ]);
             });
@@ -484,6 +485,7 @@
                 title : 'Estimated Wait Time',
                 hAxis : {
                     title : 'Day',
+                    format: 'dd'
 
                 },
                 vAxis : {
@@ -501,7 +503,7 @@
             var data = new google.visualization.DataTable();
          
             data.addColumn('datetime', 'Date');
-            data.addColumn('number', 'Queues');
+            data.addColumn('number', 'Average waiting minutes');
             Object.keys(est_data).forEach(function(key) {
                 data.addRow([ new Date(key), est_data[key] ]);
             });
@@ -543,7 +545,7 @@
             var data = new google.visualization.DataTable();
          
             data.addColumn('datetime', 'Date');
-            data.addColumn('number', 'Queues');
+            data.addColumn('number', 'Customers');
             Object.keys(forecast_qc_data_monthly).forEach(function(key) {
                 data.addRow([ new Date(key), forecast_qc_data_monthly[key] ]);
             });
@@ -600,7 +602,7 @@
  			var final_data = new google.visualization.DataTable();
              
              final_data.addColumn('datetime', 'Date');
-             final_data.addColumn('number', 'Queues');
+             final_data.addColumn('number', 'Average waiting minutes');
              
              var slidingWindow = 10;
  			
@@ -619,7 +621,7 @@
              
              
              var options = {
-                 title : 'Estimated Wait Time',
+                 title : 'Forecast Estimated Wait Time',
                  hAxis : {
                      title : 'Month',
                      format: 'MMM, yy'

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>qMe - Create Account</title>
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+</head>
+<body>
+    <div class="m-4 text-center">
+        <h2>Account created successfully!</h2>
+        <h2>You may now login.</h2>
+        <a th:href="@{/login}">
+            <button class="btn btn-info">Login</button>
+        </a>
+    </div>
+</body>
+</html>

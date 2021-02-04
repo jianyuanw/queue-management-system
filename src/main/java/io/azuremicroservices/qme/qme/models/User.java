@@ -52,7 +52,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<UserQueuePermission> userQueuePermissions;
 
-    enum Role {
+    public enum Role {
         CLIENT,
         APP_ADMIN,
         VENDOR_ADMIN,

@@ -59,7 +59,18 @@ public class dashboardProtoController {
 					                                 Collectors.counting()));
 	        model.addAttribute("forecastQcDataMonthly", forecastQcDataMonthly);
 	        
-	        var forecastQcDataDaily = qps.stream()
+	        var forecastEWTDataMonthly = qps.stream()
+	        		  .filter(qp -> qp.getQueueStartTime() != null)
+					  .filter(qp -> qp.getQueueStartTime().isAfter(LocalDateTime.now().minusMonths(10)))  
+					  .filter(qp -> qp.getQueueStartTime().isBefore(LocalDateTime.now().minusDays(LocalDateTime.now().getDayOfMonth())))
+					  .collect(Collectors.groupingBy(qp -> ((QueuePosition) qp).getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM")) + "-01'T'00:00:00'+0800'", 
+					                                 Collectors.averagingLong(qp -> (ChronoUnit.MINUTES.between(qp.getQueueEndTime(),qp.getQueueStartTime())))));
+	        model.addAttribute("forecastEWTDataMonthly", forecastEWTDataMonthly);
+	       
+	        
+	        
+	       //Under consideration 
+	       /* var forecastQcDataDaily = qps.stream()
 	        		  .filter(qp -> qp.getQueueStartTime() != null)
 					  .filter(qp -> qp.getQueueStartTime().isAfter(LocalDateTime.now().minusDays(10)))  
 					  .collect(Collectors.groupingBy(qp -> ((QueuePosition) qp).getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "'T'00:00:00'+0800'", 
@@ -71,7 +82,9 @@ public class dashboardProtoController {
 					  .filter(qp -> qp.getQueueStartTime().isAfter(LocalDateTime.now().minusHours(10)))  
 					  .collect(Collectors.groupingBy(qp -> ((QueuePosition) qp).getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH")) + ":00:00'+0800'", 
 					                                 Collectors.counting()));
-	        model.addAttribute("forecastQcDataHourly", forecastQcDataHourly);
+	        model.addAttribute("forecastQcDataHourly", forecastQcDataHourly); */
+	        
+	        
 	       
 	        //Gangster way (to be reviewed)
 	        model.addAttribute("today", LocalDateTime.now());

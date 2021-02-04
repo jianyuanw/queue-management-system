@@ -27,6 +27,24 @@
         <!-- Material Design Bootstrap -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.0/css/mdb.min.css">
     </th:block>
+    
+    <th:block th:fragment="mdbootstrap-table">
+	    <!-- MDBootstrap Datatables  -->
+		<link th:href="@{/css/datatables.min.css}" rel="stylesheet">
+		<!-- MDBootstrap Datatables  -->
+		<script type="text/javascript" th:src="@{/js/datatables.min.js}"></script>
+		
+		<script type="text/javascript">
+			$(document).ready(function () {
+				$('#dataTable').DataTable();
+				$('.dataTables_length').addClass('bs-select');
+			});
+		</script>			
+    </th:block>
+    
+    <th:block th:fragment="form-floating-labels">
+    	<link th:href="@{/css/floating-labels.css}" rel="stylesheet">
+    </th:block>
 
     <th:block th:fragment="google-charts">
         <script src="https://www.gstatic.com/charts/loader.js"></script>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <title>Create Branch</title>
+    <meta charset="UTF-8">
+
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+</head>
+<body>
+    <div th:replace="fragments/layout.html :: navbar"></div>
+	
+	<form class="text-center border border-light p-5" method="post" th:action="@{/manage/branch/create}" th:object="${branch}">
+	
+	    <p class="h4 mb-4">New Branch</p>
+	
+		<input type="hidden" th:field="*{vendor}">
+	
+	    <div class="form-row mb-4">
+	        <div class="col">
+	            <input type="text" id="branchName" class="form-control" th:field="*{name}" placeholder="Branch name">
+	        </div>
+	        
+	        <div class="col">
+	        	<select class="browser-default custom-select" name="category" th:field="*{category}">
+	        		<option value="" disabled selected>Category</option>
+	        		<option th:each="category : ${T(io.azuremicroservices.qme.qme.models.BranchCategory).values()}"
+	        			th:value="${category}" th:text="${category.displayValue}"></option>
+	        	</select>	            
+	        </div>	        
+	    </div>
+
+	    <!-- Temporarily unused
+	    <div class="form-row mb-4">
+	        <div class="col">
+	            <input type="text" id="country" class="form-control" placeholder="Country">
+	        </div>
+	    </div>
+	    
+	    <div class="form-row mb-4">
+	        <div class="col">
+	            <input type="text" id="State" class="form-control" placeholder="State">
+	        </div>
+	    </div>
+	    
+	    <div class="form-row mb-4">
+	        <div class="col">
+	            <input type="text" id="City" class="form-control" placeholder="City">
+	        </div>
+	    </div>
+	    
+	    <div class="form-row mb-4">
+	        <div class="col">
+	            <input type="text" id="postalCode" class="form-control" placeholder="Postal Code">
+	        </div>
+	    </div>	    
+	    Temporarily unused -->
+	    
+	    <div class="form-row mb-4">
+	        <div class="col">
+	            <input type="text" id="address" class="form-control" th:field="*{address}" placeholder="Address">
+	        </div>
+	    </div>
+	    
+	    <div class="form-row mb-4">
+	        <div class="col">
+	            <input type="text" id="description" class="form-control" th:field="*{description}" placeholder="Description">
+	        </div>
+	    </div>
+	    
+	    <div class="form-row mb-4">
+
+	    </div>	    	    	    
+	
+	    <!-- Newsletter -->
+	    <!-- 
+	    <div class="custom-control custom-checkbox">
+	        <input type="checkbox" class="custom-control-input" id="defaultRegisterFormNewsletter">
+	        <label class="custom-control-label" for="defaultRegisterFormNewsletter">Subscribe to our newsletter</label>
+	    </div>
+		-->
+	    <!-- Sign up button -->
+	    <button class="btn btn-info my-4 btn-block" type="submit">Submit</button>
+	
+	    <!-- Social register -->
+	    <!-- 
+	    <p>or sign up with:</p>
+
+	
+	    <a href="#" class="mx-2" role="button"><i class="fab fa-facebook-f light-blue-text"></i></a>
+	    <a href="#" class="mx-2" role="button"><i class="fab fa-twitter light-blue-text"></i></a>
+	    <a href="#" class="mx-2" role="button"><i class="fab fa-linkedin-in light-blue-text"></i></a>
+	    <a href="#" class="mx-2" role="button"><i class="fab fa-github light-blue-text"></i></a>
+	
+	    <hr>
+	     -->
+	
+		 
+	    <!-- Terms of service -->
+	    <!--
+	    <p>By clicking
+	        <em>Sign up</em> you agree to our
+	        <a href="" target="_blank">terms of service</a>
+	     -->
+	
+	</form>	
+
+    <div th:replace="fragments/layout.html :: footer"></div>
+</body>
+</html>

@@ -29,29 +29,6 @@ public class Branch {
 
     private String description;
 
-    private Category category;
+    private BranchCategory category;
 
-    enum Category {
-        HEALTHCARE,
-        FINANCE,
-        DINING,
-        TECHNOLOGY,
-        RETAIL,
-        GOVERNMENTAL;
-
-        private final String displayValue;
-
-        Category() {
-            // Generalized constructor that converts capitalized enum values to TitleCase
-            StringBuilder sb = new StringBuilder();
-
-            for (String word : this.name().split("_")) {
-                sb.append(word.charAt(0)).append(word.substring(1).toLowerCase()).append(" ");
-            }
-
-            this.displayValue = sb.toString().trim();
-        }
-
-        public String getDisplayValue() { return displayValue; }
-    }
 }

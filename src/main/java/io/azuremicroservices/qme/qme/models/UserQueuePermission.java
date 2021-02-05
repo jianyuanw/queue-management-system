@@ -1,22 +1,29 @@
 package io.azuremicroservices.qme.qme.models;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.io.Serializable;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import java.io.Serializable;
+import javax.persistence.Table;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
 @Data
-public class UserQueuePermission implements Serializable {
+@Table
+public class UserQueuePermission {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;	
+	    
     @ManyToOne
     private User user;
-
-    @Id
+    
     @ManyToOne
     private Queue queue;
 }

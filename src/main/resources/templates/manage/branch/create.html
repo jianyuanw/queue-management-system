@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <title>Create Branch</title>
+    <meta charset="UTF-8">
+
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+</head>
+<body>
+    <div th:replace="fragments/layout.html :: navbar"></div>
+	
+	<form class="text-center border border-light p-5" method="post" th:action="@{/manage/branch/create}" th:object="${branch}">
+	
+	    <p class="h4 mb-4">New Branch</p>
+	
+		<input type="hidden" th:field="*{vendor}">
+	
+	    <div class="form-row mb-4">
+	        <div class="col form-group">
+	        	<label class="form-label" for="branchName">Branch name</label>
+	            <input type="text" id="branchName" class="form-control" th:field="*{name}" required>	            
+	        </div>
+	        
+	        <div class="col form-group">
+	        	<label class="form-label" for="category">Category</label>
+	        	<select class="form-select form-control" name="category" th:field="*{category}" required>
+	        		<option value="" selected>Select Category</option>
+	        		<option th:each="category : ${T(io.azuremicroservices.qme.qme.models.BranchCategory).values()}"
+	        			th:value="${category}" th:text="${category.displayValue}"></option>
+	        	</select>	            
+	        </div>	        
+	    </div>
+	    
+	    <div class="form-row mb-4">
+	        <div class="col form-group">
+	        	<label class="form-label" for="address">Address</label>
+	            <input type="text" id="address" class="form-control" th:field="*{address}" required>
+	            
+	        </div>
+	    </div>
+	    
+	    <div class="form-row mb-4">
+	        <div class="col form-group">
+	        	<label class="form-label" for="description">Description</label>
+	            <input type="text" id="description" class="form-control" th:field="*{description}" placeholder="Description" required>
+	        </div>
+	    </div>
+	    
+	    <button class="btn btn-info my-4 btn-block" type="submit">Submit</button>
+	
+	</form>	
+
+    <div th:replace="fragments/layout.html :: footer"></div>
+</body>
+</html>

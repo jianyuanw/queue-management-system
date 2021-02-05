@@ -1,0 +1,123 @@
+.floating-control-group {
+    position: relative;
+}
+.floating-label {
+    opacity: 0.7;
+    -webkit-transition: all 200ms ease;
+    -moz-transition: all 200ms ease;
+    -ms-transition: all 200ms ease;
+    -o-transition: all 200ms ease;
+    transition: all 200ms ease;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding-top: .375rem;
+    padding-left: .75rem;
+}
+
+.fl-lg {
+    padding-top: .875rem;
+    padding-left: .75rem;
+}
+
+.fl-sm {
+    padding-top: .25rem;
+    padding-left: .5rem;
+}
+
+.floating-label-on {
+    font-size: 0.75rem;
+    opacity: 1;
+    padding: 0;
+    top: 5px;
+    transform: translate3d(0, -100%, 0);
+}
+
+.floating-label-primary {
+    color: #007bff;
+}
+
+.floating-label-secondary {
+    color: #383d41;
+}
+
+.floating-label-success {
+    color: #155724;
+}
+
+.floating-label-danger {
+    color: #721c24;
+}
+
+.floating-label-warning {
+    color: #856404;
+}
+
+.floating-label-info {
+    color: #0c5460;
+}
+
+.floating-label-light {
+    color: #818182;
+}
+
+.floating-label-dark {
+    color: #1b1e21;
+}
+
+.floating-input {
+    transition: border-bottom 100ms ease;
+    box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    outline: none !important;
+    border: none !important;
+    -webkit-border-radius: unset !important;
+    -moz-border-radius: unset !important;
+    border-radius: unset !important;
+    border-bottom: 1px solid #E5E6E7 !important;
+}
+
+.floating-input:focus {
+    box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    outline: none !important;
+    border: none !important;
+}
+
+.floating-input-primary:focus{
+    border-bottom: 1px solid #007bff !important;
+}
+
+.floating-input-secondary:focus{
+    border-bottom: 1px solid #383d41 !important;
+}
+
+.floating-input-success:focus{
+    border-bottom: 1px solid #155724 !important;
+}
+
+.floating-input-danger:focus{
+    border-bottom: 1px solid #721c24 !important;
+}
+
+.floating-input-warning:focus{
+    border-bottom: 1px solid #856404 !important;
+}
+
+.floating-input-info:focus{
+    border-bottom: 1px solid #0c5460 !important;
+}
+
+.floating-input-light:focus{
+    border-bottom: 1px solid #818182 !important;
+}
+
+.floating-input-dark:focus{
+    border-bottom: 1px solid #1b1e21 !important;
+}

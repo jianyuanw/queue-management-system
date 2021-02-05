@@ -1,4 +1,5 @@
 package io.azuremicroservices.qme.qme.services;
+
 import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.models.QueuePosition;
 import io.azuremicroservices.qme.qme.models.User;
@@ -11,10 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class ManageUserQueueService {
@@ -56,7 +53,7 @@ public class ManageUserQueueService {
                 user.getFirstName() + " " + user.getLastName());
     }
 
-     // User decide to leave queue without completing their biz
+    // User decide to leave queue without completing their biz
     public UserQueueNumberDto leaveQueue(String userId, String queueIdstr) {
         User user = userRepo
                 .findById(Long.parseLong(userId))
@@ -77,7 +74,7 @@ public class ManageUserQueueService {
                     queuePosRepo.save(queuePosition);
                 });
 
-        return new UserQueueNumberDto (
+        return new UserQueueNumberDto(
                 user,
                 null,
                 user.getFirstName() + " " + user.getLastName());
@@ -94,21 +91,18 @@ public class ManageUserQueueService {
 //    }
 //
 
-// This is to restart the Queue Number to 1 every new day
-    private String obtainQueueNumber(Long queueId)
-    {
+    // This is to restart the Queue Number to 1 every new day
+    private String obtainQueueNumber(Long queueId) {
         int count = queuePosRepo
                 .findTotalNumberofQueueByQueueIdAndDate(
                         Long.parseLong(String.valueOf(queueId)),
-                        LocalDate.now())
-                ;
+                        LocalDate.now());
 
-             count = count+1;
-            return String.valueOf(count) ;
+        count = count + 1;
+        return String.valueOf(count);
     }
 
 
-
-    }
+}
 
 

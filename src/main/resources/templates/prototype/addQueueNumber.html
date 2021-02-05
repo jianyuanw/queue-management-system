@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <title>Prototype - Add Queue Number</title>
+
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+</head>
+<body>
+    <div th:replace="fragments/layout.html :: prototype-navbar"></div>
+
+    <div class="mx-5">
+        <h2 class="my-4">Prototype for real-time update of queue numbers</h2>
+        <a th:href="@{/prototype/viewQueue}" target="_blank">
+            <button class="btn btn-primary">Go to view queue page</button>
+        </a>
+        <form th:action="@{/prototype/addQueueNumber}" method="post">
+            <button type="submit" class="btn btn-success my-4">Click to add random queue number</button>
+        </form>
+    </div>
+
+    <div th:replace="fragments/layout.html :: footer"></div>
+</body>
+</html>

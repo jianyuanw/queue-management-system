@@ -1,17 +1,24 @@
 package io.azuremicroservices.qme.qme.models;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
-import java.util.List;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
 @Data
+@Table
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,12 +47,15 @@ public class User {
     private List<SupportTicket> supportTickets;
 
     @OneToMany(mappedBy = "user")
+    private List<UserVendorPermission> userVendorPermissions;    
+    
+    @OneToMany(mappedBy = "user")
     private List<UserBranchPermission> userBranchPermissions;
 
     @OneToMany(mappedBy = "user")
     private List<UserQueuePermission> userQueuePermissions;
 
-    enum Role {
+    public enum Role {
         CLIENT,
         APP_ADMIN,
         VENDOR_ADMIN,

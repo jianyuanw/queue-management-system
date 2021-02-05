@@ -1,13 +1,14 @@
 package io.azuremicroservices.qme.qme.services;
+
 import io.azuremicroservices.qme.qme.models.QueuePosition;
 import io.azuremicroservices.qme.qme.repositories.QueuePositionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 @Service
 public class QueueEstimationService {
@@ -15,23 +16,28 @@ public class QueueEstimationService {
     //1 window = max 10 people queues or less
     public static final int MOVING_AVERAGE_WINDOW = 10;
 
-    private QueuePositionRepository queuePositionRepository1;
+    private QueuePositionRepository queuePositionRepository;
 
     @Autowired
-    public QueueEstimationService(QueuePositionRepository queuePositionRepository1) {
-        this.queuePositionRepository1 = queuePositionRepository1;
+    public QueueEstimationService(QueuePositionRepository repo) {
+        this.queuePositionRepository = repo;
     }
 
     /**
      * Estimate queue time in minutes, using moving average.
      *
      * @return estimated queue time in minutes
+     * <p>
      */
-    public int estimateQueueTime() {
-        List<QueuePosition> lastNQueuePosition =
-        new ArrayList<>();//queuePositionRepository1.findLastNCompletedQueuePosition(MOVING_AVERAGE_WINDOW);
+    public int estimateQueueTime(String queueId) {
+        Page<QueuePosition> lastNQueuePosition =
+                queuePositionRepository.findLastNCompletedQueuePosition(
+                        PageRequest.of(0, MOVING_AVERAGE_WINDOW, Sort.Direction.DESC),
+                        Long.parseLong(queueId),
+                        QueuePosition.State.INACTIVE_COMPLETE
+                );
         //if nobody queue
-        if (lastNQueuePosition.size() == 0) {
+        if (lastNQueuePosition.isEmpty()) {
             return 0;
         }
         //duration between start and end of each queue
@@ -44,12 +50,16 @@ public class QueueEstimationService {
                 .reduce((total, current) -> {
                     return total.plus(current);
                 })
-//                .reduce(Duration::plus)
+                //                .reduce(Duration::plus)
                 .orElse(Duration.ofMinutes(0));
         //convert to minutes
         int movingAverageInMinutes =
-                (int) (totalDuration.toMinutes() / lastNQueuePosition.size());
+                (int) (totalDuration.toMinutes() / lastNQueuePosition.getSize());
 
         return movingAverageInMinutes;
     }
+
+
 }
+
+

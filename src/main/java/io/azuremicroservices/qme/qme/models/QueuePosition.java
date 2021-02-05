@@ -1,11 +1,21 @@
 package io.azuremicroservices.qme.qme.models;
-import lombok.*;
-import javax.persistence.*;
 import java.time.LocalDateTime;
+
+import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
 @Data
+@Table
 public class QueuePosition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,6 +29,7 @@ public class QueuePosition {
 
     private String queueNumber;
 
+    @Enumerated
     private State state;
 
     private LocalDateTime queueStartTime;
@@ -26,12 +37,18 @@ public class QueuePosition {
     private LocalDateTime queueEndTime;
 
     private LocalDateTime stateChangeTime;
-    //this is for estimated waiting time
+
+    public QueuePosition(Queue queue, String queueNumber, State state, LocalDateTime queueStartTime) {
+        this.queue = queue;
+        this.queueNumber = queueNumber;
+        this.state = state;
+        this.queueStartTime = queueStartTime;
+    }
+
+    //this is for estimated waiting time prototype
     public QueuePosition(LocalDateTime startTime, LocalDateTime endTime) {
     }
-    //active requeue = rejoin
-    //inactive complete = complete
-    //inactive _left = left queue without completing
+
     public enum State {
         ACTIVE_QUEUE,
         ACTIVE_REQUEUE,

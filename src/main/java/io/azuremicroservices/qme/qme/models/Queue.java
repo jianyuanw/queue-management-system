@@ -37,9 +37,6 @@ public class Queue {
     private Integer notificationPosition;
 
     private Double notificationDelay;
-    
-    @OneToMany(mappedBy = "queue")
-    private List<UserVendorPermission> userQueuePermissions;
 
     @OneToMany(mappedBy = "queue")
     @Exclude

@@ -16,14 +16,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Table
-public class UserBranchPermission {
+public class UserVendorPermission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;    
-    
-    @ManyToOne
-    private User user;
-
-    @ManyToOne
-    private Branch branch;
+    private Long id;	
+		
+	@ManyToOne
+	private User user;
+		
+	@ManyToOne
+	private Vendor vendor;
 }

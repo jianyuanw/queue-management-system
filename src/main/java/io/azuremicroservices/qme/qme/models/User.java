@@ -47,6 +47,9 @@ public class User {
     private List<SupportTicket> supportTickets;
 
     @OneToMany(mappedBy = "user")
+    private List<UserVendorPermission> userVendorPermissions;    
+    
+    @OneToMany(mappedBy = "user")
     private List<UserBranchPermission> userBranchPermissions;
 
     @OneToMany(mappedBy = "user")

@@ -33,10 +33,10 @@
 				<td class="col" th:text="${branch.category.getDisplayValue()}"></td>
 				<td class="col">
 					<a th:href="@{/manage/branch/update/__${branch.id}__}">
-						<i class="fas fa-edit fa-lg"></i>
+						<i class="fas fa-edit fa-lg" title="Edit branch"></i>
 					</a>
 					
-      				<a href="#"><i class="fas fa-trash-alt fa-lg" data-toggle="modal" th:data-target="${'#deleteConfirm' + branch.id}"></i></a>
+      				<a href="#"><i class="fas fa-trash-alt fa-lg" data-toggle="modal" th:data-target="${'#deleteConfirm' + branch.id}" title="Delete Branch"></i></a>
       				
 					<th:block th:insert="fragments/support-elements.html :: modalbox-red"
 						th:with="modalId=${'deleteConfirm' + branch.id},modalTitle=${'Confirm Deletion'},modalBody=${'Are you sure you want to delete ' + branch.name + '?'},

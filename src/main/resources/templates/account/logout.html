@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>qMe - Logout</title>
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+</head>
+<body>
+    <div class="m-4 text-center">
+        <h4 class="mb-4">Are you sure you want to log out?</h4>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="btn btn-danger">log Out</button>
+        </form>
+    </div>
+</body>
+</html>

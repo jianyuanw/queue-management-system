@@ -53,7 +53,8 @@ public class QueueController {
     
     @GetMapping("/manage-branchAdmin/manageQueue")
     public String createNewQueuePrototype() {
-    	queueService.createNewQueue();
+    	// Commented out due to error in Service
+    	// queueService.createNewQueue();
     	return "prototype/manageQueue";
     }
 

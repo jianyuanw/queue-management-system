@@ -51,6 +51,9 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<UserQueuePermission> userQueuePermissions;
+    
+    @OneToMany(mappedBy = "user")
+    private List<UserVendorPermission> userVendorPermissions;
 
     public enum Role {
         CLIENT,

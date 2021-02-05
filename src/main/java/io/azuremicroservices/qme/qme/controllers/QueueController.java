@@ -60,6 +60,7 @@ public class QueueController {
     }
     
     @GetMapping("/manage-branchAdmin/manageQueue")
+<<<<<<< HEAD
     public String showQueueManageForm(Model model) {
     	//display queue list
     	//model.addAttribute("name",queueService.getName());
@@ -68,6 +69,12 @@ public class QueueController {
     	//model.addAttribute("name",queueService.getNotificationDelay());
     	
     	return "manage-branchAdmin/manageQueue";
+=======
+    public String createNewQueuePrototype() {
+    	// Commented out due to error in Service
+    	// queueService.createNewQueue();
+    	return "prototype/manageQueue";
+>>>>>>> branch 'master' of https://github.com/SA51-T10/qme-qms
     }
     
     @GetMapping("/manage-branchAdmin/manageQueue/manageCounters")

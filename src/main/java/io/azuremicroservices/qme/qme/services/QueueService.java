@@ -44,11 +44,13 @@ public class QueueService {
         return queueRepo.findById(queueId).get();
     }
     
-    public void createNewQueue(String name, String description,State state,
-    		Double timePerClient,Integer notificationPosition, Double notificationDelay) {
-    	queueRepo.save(new Queue(name,description, state,timePerClient, 
-    			notificationPosition,notificationDelay));
-    }
+// Temporarily commented out to state error
+//    public void createNewQueue(String name, String description,State state,
+//    		Double timePerClient,Integer notificationPosition, Double notificationDelay) {
+//    	 
+//    	 queueRepo.save(new Queue(name,description, state,timePerClient, 
+//    			notificationPosition,notificationDelay));
+//    }
 
     public void addRandomQueueNumber(Long queueId) {
         Queue queue = queueRepo.findById(queueId).get();

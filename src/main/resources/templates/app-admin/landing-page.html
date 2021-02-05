@@ -4,12 +4,12 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>qMe - Login</title>
+    <title>qMe - App Admin</title>
     <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
 </head>
 <body>
-    <div class="m-4 text-center">
-        <h2>Login successful!</h2>
-    </div>
+    <div th:replace="fragments/layout.html :: navbar"></div>
+    <h2 class="text-center">App Admin Landing Page</h2>
+    <div th:replace="fragments/layout.html :: footer"></div>
 </body>
 </html>

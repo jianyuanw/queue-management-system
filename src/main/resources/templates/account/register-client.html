@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>qMe - Create Account</title>
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+    <style>
+        #container {
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div class="m-4">
+        <div class="mx-auto text-center" id="container">
+            <h2 class="font-weight-bold mb-4"><img width="65" th:src="@{/images/logos/qMe_logo.png}"> qMe+<sup>+</sup></h2>
+            <h3 class="mb-4">Sign up with us to start queueing!</h3>
+            <form th:action="@{/register}" method="post" th:object="${user}" id="form">
+                <input type="text" class="form-control form-control-lg mb-3" placeholder="Full Name" th:field="*{firstName}" autofocus>
+                <p class="text-danger text-left" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></p>
+                <input type="text" class="form-control form-control-lg mb-3" placeholder="E-mail" th:field="*{email}">
+                <p class="text-danger text-left" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+                <input type="number" class="form-control form-control-lg mb-3" placeholder="Mobile Number" th:field="*{handphoneNo}">
+                <p class="text-danger text-left" th:if="${#fields.hasErrors('handphoneNo')}" th:errors="*{handphoneNo}"></p>
+                <input type="text" class="form-control form-control-lg mb-3" placeholder="Username" th:field="*{username}">
+                <p class="text-danger text-left" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>
+                <input type="password" class="form-control form-control-lg mb-3" placeholder="Password" th:field="*{password}" id="password">
+                <p class="text-danger text-left" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
+                <input type="password" class="form-control form-control-lg mb-4" placeholder="Confirm Password" id="confirm-password">
+                <p class="text-danger text-left" style="display: none" id="password-error">Passwords do not match</p>
+                <button type="submit" class="btn btn-info btn-block mb-4 p-2"><h5 class="m-0">Sign Up</h5></button>
+            </form>
+        </div>
+    </div>
+<script type="text/javascript" th:src="@{/js/account/create-client.js}"></script>
+</body>
+</html>

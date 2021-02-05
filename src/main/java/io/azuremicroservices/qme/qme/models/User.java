@@ -2,6 +2,7 @@ package io.azuremicroservices.qme.qme.models;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -46,7 +47,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<SupportTicket> supportTickets;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserVendorPermission> userVendorPermissions;    
     
     @OneToMany(mappedBy = "user")

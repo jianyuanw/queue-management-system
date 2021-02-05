@@ -2,6 +2,7 @@ package io.azuremicroservices.qme.qme.models;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -38,7 +39,7 @@ public class Queue {
 
     private Double notificationDelay;
 
-    @OneToMany(mappedBy = "queue")
+    @OneToMany(mappedBy = "queue", cascade=CascadeType.ALL)
     @Exclude
     private List<QueuePosition> queuePositions;
 

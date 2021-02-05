@@ -4,7 +4,7 @@
 	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
-	<title>Branch List</title>
+	<title>Vendor List</title>
 	<meta charset="UTF-8">
 	
 	<th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
@@ -31,10 +31,15 @@
 				<td class="col" th:text="${vendor.description}"></td>
 				<td class="col">
 					<a th:href="@{/manage/vendor/update/__${vendor.id}__}">
-						<button type="button" class="btn btn-mdb-color btn-sm m-0">Update</button>
+						<i class="fas fa-edit fa-lg" title="Edit Vendor"></i>
 					</a>
 					
-      				<button type="button" class="btn btn-danger btn-sm m-0" data-toggle="modal" th:data-target="${'#deleteConfirm' + vendor.id}">Delete</button>
+      				<a href="#">
+      					<i class="fas fa-trash-alt fa-lg" data-toggle="modal" th:data-target="${'#deleteConfirm' + vendor.id}" title="Delete Vendor"></i>
+      				</a>
+      				<a href="@{/manage/vendor/create-vendor-account/__${vendor.id}__}"><i class="fas fa-user-plus fa-lg" data-toggle="modal" title="Add Vendor Account"></i></a>
+      				
+      				
       				
 					<th:block th:insert="fragments/support-elements.html :: modalbox-red"
 						th:with="modalId=${'deleteConfirm' + vendor.id},modalTitle=${'Confirm Deletion'},modalBody=${'Are you sure you want to delete ' + vendor.name + '?'},

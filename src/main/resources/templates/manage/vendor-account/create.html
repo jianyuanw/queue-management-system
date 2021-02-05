@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <title>Create Vendor Account</title>
+    <meta charset="UTF-8">
+
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+</head>
+<body>
+    <div th:replace="fragments/layout.html :: navbar"></div>
+	
+	<form class="text-center border border-light p-5" method="post" th:action="@{/manage/vendor-account/create}">
+	
+	    <p class="h4 mb-4">New Vendor Account</p>
+	    
+	    <div class="form-row mb-4">
+	        <div class="col form-group">
+	        	<label class="form-label" for="vendorAccountFirstName">First Name</label>
+	            <input type="text" id="vendorAccountFirstName" class="form-control" th:field="${user.firstName}">	            
+	        </div>
+	        
+	        <div class="col form-group">
+	        	<label class="form-label" for="vendorAccountLastName">Last Name</label>
+	            <input type="text" id="vendorAccountLastName" class="form-control" th:field="${user.lastName}">	            
+	        </div>
+	        
+	        <div class="col form-group">
+	        	<label class="form-label" for="vendorAccountHandphoneNo">Handphone Number<label>
+	            <input type="text" id="vendorAccountHandphoneNo" class="form-control" th:field="${user.handphoneNo}">	            
+	        </div>		        
+	    </div>
+	
+	    <div class="form-row mb-4">
+	        <div class="col form-group">
+	        	<label class="form-label" for="vendorAccountUsername">Username</label>
+	            <input type="text" id="vendorAccountUsername" class="form-control" th:field="${user.username}" required>	            
+	        </div>
+	        
+	        <div class="col form-group">
+	        	<label class="form-label" for="vendorAccountPassword">Password</label>
+	            <input type="text" id="vendorAccountPassword" class="form-control" th:field="${user.password}" required>	            
+	        </div>	        
+	    </div>
+	    
+	    <input type="hidden" th:field="${user.role}" th:value="T(io.azuremicroservices.qme.qme.models.User.Role).VENDOR_ADMIN">
+	    
+	    <input type="hidden" th:field="${uvp.user}" th:value="${user}">
+	    <input type="hidden" th:field="${uvp.vendor}" th:value="${vendor}">
+	    
+	    <button class="btn btn-info my-4 btn-block" type="submit">Submit</button>
+	
+	</form>	
+
+    <div th:replace="fragments/layout.html :: footer"></div>
+</body>
+</html>

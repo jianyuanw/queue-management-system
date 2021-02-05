@@ -28,8 +28,8 @@ public interface QueuePositionRepository extends JpaRepository<QueuePosition, Lo
     @Query(value = "select count(*) from Queue_Position as qp where qp.queue_id= :queueId and cast(qp.queue_start_time as date)=:qsd", nativeQuery = true)
     public int findTotalNumberofQueueByQueueIdAndDate(@Param("queueId") long queueId, @Param("qsd") LocalDate dateTime);
 
-    @Query("SELECT qp from QueuePosition qp WHERE qp.queue.id = :queueId and qp.state=:state ORDER BY qp.queueStartTime DESC")
-    public Page<QueuePosition> findLastNCompletedQueuePosition(PageRequest pq, @Param("queueId") long queueId, @Param("state") QueuePosition.State state);
+    @Query(value = "SELECT * from QueuePosition qp WHERE qp.queue_id = :queueId and qp.state=:state ORDER BY queue_start_time DESC LIMIT :n", nativeQuery = true)
+    public List<QueuePosition> findLastNCompletedQueuePosition(@Param("n") int n, @Param("queueId") long queueId, @Param("state") QueuePosition.State state);
 
     @Query("SELECT qp FROM QueuePosition qp WHERE qp.queue = :queue")
     public List<QueuePosition> findAllByQueue(@Param("queue") Queue queue);

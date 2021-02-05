@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.List;
 
 @Service
 public class QueueEstimationService {
@@ -30,9 +31,9 @@ public class QueueEstimationService {
      * <p>
      */
     public int estimateQueueTime(String queueId) {
-        Page<QueuePosition> lastNQueuePosition =
+        List<QueuePosition> lastNQueuePosition =
                 queuePositionRepository.findLastNCompletedQueuePosition(
-                        PageRequest.of(0, MOVING_AVERAGE_WINDOW, Sort.Direction.DESC),
+                        MOVING_AVERAGE_WINDOW,
                         Long.parseLong(queueId),
                         QueuePosition.State.INACTIVE_COMPLETE
                 );
@@ -54,7 +55,7 @@ public class QueueEstimationService {
                 .orElse(Duration.ofMinutes(0));
         //convert to minutes
         int movingAverageInMinutes =
-                (int) (totalDuration.toMinutes() / lastNQueuePosition.getSize());
+                (int) (totalDuration.toMinutes() / lastNQueuePosition.size());
 
         return movingAverageInMinutes;
     }

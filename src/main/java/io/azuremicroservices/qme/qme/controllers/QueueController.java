@@ -1,10 +1,12 @@
 package io.azuremicroservices.qme.qme.controllers;
 
-import io.azuremicroservices.qme.qme.models.Queue;
-import io.azuremicroservices.qme.qme.models.QueuePosition;
-import io.azuremicroservices.qme.qme.services.QueueService;
-import sg.edu.iss.ims.item.Item;
-import sg.edu.iss.ims.product.Product;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.validation.Valid;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,13 +17,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.validation.Valid;
+import io.azuremicroservices.qme.qme.models.Branch;
+import io.azuremicroservices.qme.qme.models.Queue;
+import io.azuremicroservices.qme.qme.models.QueuePosition;
+import io.azuremicroservices.qme.qme.models.Vendor;
+import io.azuremicroservices.qme.qme.services.QueueService;
 
 @Controller
 public class QueueController {
@@ -60,7 +60,6 @@ public class QueueController {
     }
     
     @GetMapping("/manage-branchAdmin/manageQueue")
-<<<<<<< HEAD
     public String showQueueManageForm(Model model) {
     	//display queue list
     	//model.addAttribute("name",queueService.getName());
@@ -69,12 +68,12 @@ public class QueueController {
     	//model.addAttribute("name",queueService.getNotificationDelay());
     	
     	return "manage-branchAdmin/manageQueue";
-=======
+    }
+    
     public String createNewQueuePrototype() {
     	// Commented out due to error in Service
     	// queueService.createNewQueue();
     	return "prototype/manageQueue";
->>>>>>> branch 'master' of https://github.com/SA51-T10/qme-qms
     }
     
     @GetMapping("/manage-branchAdmin/manageQueue/manageCounters")
@@ -84,8 +83,7 @@ public class QueueController {
     }
     
     @GetMapping("/manage-branchAdmin/manageQueue/createNewQueue")
-    public void createNewQueue(Model model) {
-    	@Autowired
+    public String createNewQueue(Model model) {
     	Queue queue=new Queue();  	
     	model.addAttribute("name",queue.getName());
     	model.addAttribute("description",queue.getDescription());
@@ -100,7 +98,7 @@ public class QueueController {
     							@ModelAttribute @Valid Vendor vendor, BindingResult vendorBinding,
     							@ModelAttribute @Valid Branch branch, BindingResult branchBinding,
     							String newName, String newDescription, Double newTimePerClient, 
-    							Double newNotifyPosition, Double newDelayBeforeCall, LocalDateTime newCreateTime
+    							Double newNotifyPosition, Double newDelayBeforeCall, LocalDateTime newCreateTime,
     							Model model, RedirectAttributes redirAttr){
        	model.addAttribute("name",newName);
     	model.addAttribute("description",newDescription);
@@ -110,27 +108,27 @@ public class QueueController {
     	model.addAttribute("createTime",newCreateTime); 
     	return "redirect:manage-branchAdmin/manageQueue"; 	
     }
-    
-    @GetMapping("/manage-branchOperator/notification-create")
-    public String showNotification(Model model) {
-    	//get queue info
-    	model.addAttribute()
-    	return "manage-branchOperator/branchOperatorNotification";
-    }
-    
-    @GetMapping("/manage-branchOperator/notification-edit")
-    public String showNotification(Model model) {
-    	//get queue info
-    	model.addAttribute()
-    	return "manage-branchOperator/branchOperatorNotification";
-    }
-    
-    @GetMapping("/manage-branchOperator/notification-delete")
-    public String showNotification(Model model) {
-    	//get queue info
-    	model.addAttribute()
-    	return "manage-branchOperator/branchOperatorNotification";
-    }
+    // Commented out due to errors, please either rename the methods or overload properly or combine the methods
+//    @GetMapping("/manage-branchOperator/notification-create")
+//    public String showNotification(Model model) {
+//    	//get queue info
+//    	model.addAttribute()
+//    	return "manage-branchOperator/branchOperatorNotification";
+//    }
+//    
+//    @GetMapping("/manage-branchOperator/notification-edit")
+//    public String showNotification(Model model) {
+//    	//get queue info
+//    	model.addAttribute()
+//    	return "manage-branchOperator/branchOperatorNotification";
+//    }
+//    
+//    @GetMapping("/manage-branchOperator/notification-delete")
+//    public String showNotification(Model model) {
+//    	//get queue info
+//    	model.addAttribute()
+//    	return "manage-branchOperator/branchOperatorNotification";
+//    }
     
 
     @GetMapping("/prototype/sse")

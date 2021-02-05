@@ -21,15 +21,19 @@ import io.azuremicroservices.qme.qme.models.Branch;
 import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.models.QueuePosition;
 import io.azuremicroservices.qme.qme.models.Vendor;
+import io.azuremicroservices.qme.qme.services.BranchOperatorNotificationService;
 import io.azuremicroservices.qme.qme.services.QueueService;
 
 @Controller
 public class QueueController {
 
     private final QueueService queueService;
+    private final BranchOperatorNotificationService BoNotifyService;
 
-    public QueueController(QueueService queueService) {
+    public QueueController(QueueService queueService,
+    		BranchOperatorNotificationService BoNotifyService) {
         this.queueService = queueService;
+        this.BoNotifyService=BoNotifyService;
     }
 
     @GetMapping("/prototype/viewQueue")
@@ -105,7 +109,14 @@ public class QueueController {
     	model.addAttribute("timePerClient",newTimePerClient);
     	model.addAttribute("notificationPosition",newNotifyPosition);
     	model.addAttribute("notificationPosition",newDelayBeforeCall); 
-    	model.addAttribute("createTime",newCreateTime); 
+    	//model.addAttribute("createTime",newCreateTime); 
+    	
+    	String message=
+    			branch+newName+
+    			newDescription+newTimePerClient+
+    			newNotifyPosition+newDelayBeforeCall;
+    	BoNotifyService.saveNotification(message);
+    	
     	return "redirect:manage-branchAdmin/manageQueue"; 	
     }
     // Commented out due to errors, please either rename the methods or overload properly or combine the methods

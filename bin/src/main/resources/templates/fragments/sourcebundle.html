@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Filler title, should not show up -->
+    <Title>Source Bundles</Title>
+    <!-- Required meta tags -->
+    <th:block th:fragment="mdbootstrap">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- JQuery -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <!-- Bootstrap tooltips -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
+        <!-- Bootstrap core JavaScript -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.min.js"></script>
+        <!-- MDB core JavaScript -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.0/js/mdb.min.js"></script>
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+        <!-- Google Fonts -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+        <!-- Bootstrap core CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css">
+        <!-- Material Design Bootstrap -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.0/css/mdb.min.css">
+    </th:block>
+    
+    <th:block th:fragment="mdbootstrap-table">
+	    <!-- MDBootstrap Datatables  -->
+		<link th:href="@{/css/datatables.min.css}" rel="stylesheet">
+		<!-- MDBootstrap Datatables  -->
+		<script type="text/javascript" th:src="@{/js/datatables.min.js}"></script>
+		
+		<script type="text/javascript">
+			$(document).ready(function () {
+				$('#dataTable').DataTable();
+				$('.dataTables_length').addClass('bs-select');
+			});
+		</script>			
+    </th:block>
+    
+    <th:block th:fragment="form-floating-labels">
+    	<link th:href="@{/css/floating-labels.css}" rel="stylesheet">
+    </th:block>
+
+    <th:block th:fragment="google-charts">
+        <script src="https://www.gstatic.com/charts/loader.js"></script>
+    </th:block>
+
+</head>
+</html>

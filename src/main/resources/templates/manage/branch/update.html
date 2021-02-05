@@ -22,12 +22,12 @@
 	    <div class="form-row mb-4">
 	        <div class="col">
 	            <label class="form-label" for="branchName">Branch name</label>
-	            <input type="text" id="branchName" class="form-control" th:field="*{name}">	            
+	            <input type="text" id="branchName" class="form-control" th:field="*{name}" required>	            
 	        </div>
 	        
 	        <div class="col">
 	        	<label class="form-label" for="category">Category</label>
-	        	<select class="form-select form-control" name="category" th:field="*{category}">
+	        	<select class="form-select form-control" name="category" th:field="*{category}" required>
 	        		<option value="" selected>Select Category</option>
 	        		<option th:each="category : ${T(io.azuremicroservices.qme.qme.models.BranchCategory).values()}"
 	        			th:value="${category}" th:text="${category.displayValue}"></option>
@@ -38,14 +38,14 @@
 	    <div class="form-row mb-4">
 	        <div class="col">
 	        	<label class="form-label" for=address>Address</label>
-	            <input type="text" id="address" class="form-control" th:field="*{address}" placeholder="Address">
+	            <input type="text" id="address" class="form-control" th:field="*{address}" placeholder="Address" required>
 	        </div>
 	    </div>
 	    
 	    <div class="form-row mb-4">
 	        <div class="col">
 		        <label class="form-label" for="description">Description</label>
-	            <input type="text" id="description" class="form-control" th:field="*{description}" placeholder="Description">
+	            <input type="text" id="description" class="form-control" th:field="*{description}" placeholder="Description" required>
 	        </div>
 	    </div>  	    	    
 

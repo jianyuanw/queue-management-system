@@ -29,28 +29,28 @@ class QueueEstimationServiceTest {
         estimationService = new QueueEstimationService(queuePositionRepository);
     }
 
-    @Test
-    public void estimateQueueTime_should_return_movingAvg_of_theLastNQueueDuration() {
-        // given
-        List<QueuePosition> givenLastNQueuePosition = Arrays.asList(
-                queueWithDuration(10, 30, 15),
-                queueWithDuration(10, 30, 30),
-                queueWithDuration(10, 45, 15),
-                queueWithDuration(11, 00, 5),
-                queueWithDuration(11, 00, 10)
-        );
-        when(queuePositionRepository.findLastNCompletedQueuePosition(anyInt()))
-                .thenReturn(givenLastNQueuePosition);
-
-        // when
-        int estimatedQueueTimeInMinutes = estimationService.estimateQueueTime();
-
-        // then
-        int expectedAverageTime = (15 + 30 + 15 + 5 + 10) / 5;
-        // expected compare to the actual
-        assertEquals(expectedAverageTime, estimatedQueueTimeInMinutes);
-    }
-
+//    @Test
+//    public void estimateQueueTime_should_return_movingAvg_of_theLastNQueueDuration() {
+//        // given
+//        List<QueuePosition> givenLastNQueuePosition = Arrays.asList(
+//                queueWithDuration(10, 30, 15),
+//                queueWithDuration(10, 30, 30),
+//                queueWithDuration(10, 45, 15),
+//                queueWithDuration(11, 00, 5),
+//                queueWithDuration(11, 00, 10)
+//        );
+//        when(queuePositionRepository.findLastNCompletedQueuePosition(anyInt()))
+//                .thenReturn(givenLastNQueuePosition);
+//
+//        // when
+//        int estimatedQueueTimeInMinutes = estimationService.estimateQueueTime();
+//
+//        // then
+//        int expectedAverageTime = (15 + 30 + 15 + 5 + 10) / 5;
+//        // expected compare to the actual
+//        assertEquals(expectedAverageTime, estimatedQueueTimeInMinutes);
+//    }
+//
     @Test
     public void estimateQueueTime_should_handle_situation_when_thereIsNo_previousQueues() {
         // given

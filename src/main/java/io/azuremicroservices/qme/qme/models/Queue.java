@@ -34,7 +34,8 @@ public class Queue {
 
     enum State {
         OPEN,
-        CLOSED;
+        CLOSED,
+        UNKNOWN;
 
         private final String displayValue;
 

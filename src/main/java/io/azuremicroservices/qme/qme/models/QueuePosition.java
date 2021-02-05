@@ -26,15 +26,18 @@ public class QueuePosition {
     private LocalDateTime queueEndTime;
 
     private LocalDateTime stateChangeTime;
-    //this is for estimated waiting time prototype
+    //this is for estimated waiting time
     public QueuePosition(LocalDateTime startTime, LocalDateTime endTime) {
     }
-
-    enum State {
-        QUEUE,
-        PROCESSED_PRESENT,
-        PROCESSED_ABSENT,
-        REJOIN_QUEUE;
+    //active requeue = rejoin
+    //inactive complete = complete
+    //inactive _left = left queue without completing
+    public enum State {
+        ACTIVE_QUEUE,
+        ACTIVE_REQUEUE,
+        INACTIVE_COMPLETE,
+        INACTIVE_NO_SHOW,
+        INACTIVE_LEFT;
 
         private final String displayValue;
 

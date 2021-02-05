@@ -32,11 +32,26 @@
 				<td class="col" th:text="${branch.description}"></td>
 				<td class="col" th:text="${branch.category.getDisplayValue()}"></td>
 				<td class="col">
-					<img th:src="@{/images/icons/iconfinder_edit.png}" width="35px" />
-					<img th:src="@{/images/icons/iconfinder_trash.png}" width="35px" />
+					<a th:href="@{/manage/branch/update/__${branch.id}__}">
+						<button type="button" class="btn btn-mdb-color btn-sm m-0">Update</button>
+					</a>
+					
+      				<button type="button" class="btn btn-danger btn-sm m-0" data-toggle="modal" th:data-target="${'#deleteConfirm' + branch.id}">Delete</button>
+      				
+					<th:block th:insert="fragments/support-elements.html :: modalbox-red"
+						th:with="modalId=${'deleteConfirm' + branch.id},modalTitle=${'Confirm Deletion'},modalBody=${'Are you sure you want to delete ' + branch.name + '?'},
+							modalConfirm=${'Delete'},confirmUrl=${'/manage/branch/delete/' + branch.id}">
+					</th:block>
 				</td>
 			</tr>
 		</tbody>
+		<tfoot>
+			<tr class="row">
+				<td class="col">
+					<a th:href="@{/manage/branch/create}"><button class="btn btn-info btn-block">Create New Branch</button></a>
+				</td>
+			</tr>
+		</tfoot>
 	</table>	
 
 	<div th:replace="fragments/layout.html :: footer"></div>

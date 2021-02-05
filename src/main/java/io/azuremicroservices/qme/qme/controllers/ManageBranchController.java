@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -61,7 +62,7 @@ public class ManageBranchController {
 	}
 	
 	@GetMapping("/update/{branchId}")
-	public String initUpdateBranchForm(Model model, @PathParam("branchId") Long branchId) {
+	public String initUpdateBranchForm(Model model, @PathVariable("branchId") Long branchId) {
 		Branch branch = branchRepo.findById(branchId).get();
 		// TODO: Authenticate when security is in
 		//if (permissionService.authenticateVendor(user, vendor))
@@ -81,8 +82,12 @@ public class ManageBranchController {
 		return "redirect:/manage/branch/list";
 	}
 	
-	@PostMapping("/delete")
-	public String deleteBranch(@PathParam("branchId") Long branchId) {
+	@GetMapping("/delete/{branchId}")
+	public String deleteBranch(@PathVariable("branchId") Long branchId) {
+		Branch branch = branchRepo.findById(branchId).get();
+		if (branch != null) {
+			branchRepo.delete(branch);
+		}
 //		Branch branch = branchRepo.findById(branchId).get();
 //		// TODO: Authenticate when security is in
 //		//if (permissionService.authenticateVendor(user, vendor))
@@ -90,6 +95,6 @@ public class ManageBranchController {
 //		// TODO: Link to current admin's vendor ID		
 //		model.addAttribute("branch", branch);
 //		return "manage/branch/update";
-		return "redirect:/";
+		return "redirect:/manage/branch/list";
 	}
 }

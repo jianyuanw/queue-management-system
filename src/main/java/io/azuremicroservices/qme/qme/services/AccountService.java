@@ -39,7 +39,8 @@ public class AccountService {
         userRepo.save(user);
     }
     
-    public void changePerspective(User user, Role perspective) {
+    public void changePerspective(String username, Role perspective) {
+    	User user = this.findUserByUsername(username);
     	if (user.getRolePerspectives().containsKey(perspective.getDisplayValue())) {
     		user.setPerspective(perspective);
     	}

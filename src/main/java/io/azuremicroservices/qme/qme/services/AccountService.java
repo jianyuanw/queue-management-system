@@ -1,6 +1,7 @@
 package io.azuremicroservices.qme.qme.services;
 
 import io.azuremicroservices.qme.qme.models.User;
+import io.azuremicroservices.qme.qme.models.User.Role;
 import io.azuremicroservices.qme.qme.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -36,5 +37,11 @@ public class AccountService {
     public void createClient(User user) {
         user.setRole(User.Role.CLIENT);
         userRepo.save(user);
+    }
+    
+    public void changePerspective(User user, Role perspective) {
+    	if (user.getRolePerspectives().containsKey(perspective.getDisplayValue())) {
+    		user.setPerspective(perspective);
+    	}
     }
 }

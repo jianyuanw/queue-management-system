@@ -1,12 +1,14 @@
 package io.azuremicroservices.qme.qme.configurations.security;
 
-import io.azuremicroservices.qme.qme.models.User;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Arrays;
-import java.util.Collection;
+import io.azuremicroservices.qme.qme.models.User;
 
 public class MyUserDetails implements UserDetails {
 
@@ -29,6 +31,14 @@ public class MyUserDetails implements UserDetails {
     @Override
     public String getUsername() {
         return user.getUsername();
+    }
+    
+    public String getPerspective() {
+    	return user.getPerspective().getDisplayValue().toLowerCase().replace(" ", "");
+    }
+    
+    public LinkedHashMap<String, Integer> getRolePerspectives() {
+    	return user.getRolePerspectives();
     }
 
     @Override

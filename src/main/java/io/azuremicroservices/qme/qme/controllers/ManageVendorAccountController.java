@@ -59,9 +59,9 @@ public class ManageVendorAccountController {
 		
 	}
 	
-	/*@GetMapping("/update/{vendorAccId}")
+	@GetMapping("/update/{vendorAccId}")
 	public String UpdateVendorAccountForm(Model model, @PathVariable("vendorAccId") Long vendorAccId) {
-		model.addAttribute("user", userRepo.findById(vendorAccId));
+		model.addAttribute("vendorAcc", userRepo.findById(vendorAccId).get());
 		return "manage/vendor-account/update";
 	}
 	
@@ -73,7 +73,7 @@ public class ManageVendorAccountController {
 			userRepo.save(vendorAcc);
 		}
 		return "redirect:/manage/vendor-account/list"; 
-	} */
+	} 
 	
 	@GetMapping("/delete/{vendorAccId}")
 	public String deleteVendor(@PathVariable("vendorAccId") Long vendorAccId) {

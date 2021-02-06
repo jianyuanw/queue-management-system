@@ -52,7 +52,5 @@ public class AccountService {
     	user.setRole(Role.VENDOR_ADMIN);
     	user.getUserVendorPermissions().add(vendor);
     	userRepo.save(user);
-    }
-    
-
+    }  
 }

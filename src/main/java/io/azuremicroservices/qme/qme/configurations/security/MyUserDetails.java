@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import io.azuremicroservices.qme.qme.models.User;
+import io.azuremicroservices.qme.qme.models.User.Role;
 
 public class MyUserDetails implements UserDetails {
 
@@ -34,11 +35,23 @@ public class MyUserDetails implements UserDetails {
     }
     
     public String getPerspective() {
-    	return user.getPerspective().getDisplayValue().toLowerCase().replace(" ", "");
+    	return user.getPerspective().getDisplayValue();
     }
+    
+    public void setPerspective(Role perspective) {
+    	user.setPerspective(perspective);
+    }    
     
     public LinkedHashMap<String, Integer> getRolePerspectives() {
     	return user.getRolePerspectives();
+    }
+    
+    public String getFullName() {
+    	return user.getFirstName() + " " + user.getLastName();
+    }
+    
+    public String getRole() {
+    	return user.getRole().getDisplayValue();
     }
 
     @Override

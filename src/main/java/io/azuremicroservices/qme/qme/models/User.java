@@ -71,7 +71,7 @@ public class User {
     	if (allowedPerspectives.get(this.role).length < 2) {
     		currentPerspectives = null;
     	} else {
-    		currentPerspectives.put(this.perspective.getDisplayValue(), this.perspective.ordinal());
+    		// currentPerspectives.put(this.perspective.getDisplayValue(), this.perspective.ordinal());
     		for (Role role : allowedPerspectives.get(this.role)) {
     			if (!role.equals(this.perspective)) {
     				currentPerspectives.put(role.getDisplayValue(), role.ordinal());

@@ -1,12 +1,12 @@
 package io.azuremicroservices.qme.qme.controllers;
 
-import javax.servlet.http.HttpServletRequest;
-
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
 import io.azuremicroservices.qme.qme.models.User.Role;
 import io.azuremicroservices.qme.qme.services.AccountService;
 
@@ -20,8 +20,9 @@ public class PerspectiveController {
 	}
 	
 	@GetMapping("/{perspectiveValue}")
-	public String changePerspective(@PathVariable("perspectiveValue") Integer perspectiveValue, HttpServletRequest request) {
-		accountService.changePerspective(request.getUserPrincipal().getName(), Role.values()[perspectiveValue]);
+	public String changePerspective(@PathVariable("perspectiveValue") Integer perspectiveValue, Authentication authentication) {
+		MyUserDetails details = (MyUserDetails) authentication.getPrincipal();
+		accountService.changePerspective(details, Role.values()[perspectiveValue]);
 		return "redirect:/";
 	}
 }

@@ -1,9 +1,13 @@
 package io.azuremicroservices.qme.qme.services;
 
+import javax.transaction.Transactional;
+
+import org.springframework.stereotype.Service;
+
+import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
 import io.azuremicroservices.qme.qme.models.User;
 import io.azuremicroservices.qme.qme.models.User.Role;
 import io.azuremicroservices.qme.qme.repositories.UserRepository;
-import org.springframework.stereotype.Service;
 
 @Service
 public class AccountService {
@@ -39,10 +43,13 @@ public class AccountService {
         userRepo.save(user);
     }
     
-    public void changePerspective(String username, Role perspective) {
-    	User user = this.findUserByUsername(username);
-    	if (user.getRolePerspectives().containsKey(perspective.getDisplayValue())) {
-    		user.setPerspective(perspective);
-    	}
+    @Transactional
+    public void changePerspective(MyUserDetails currentDetails, Role perspective) {    	
+    	currentDetails.setPerspective(perspective);
+//    	User user = this.findUserByUsername(currentDetails.getUsername());
+//    	if (user.getRolePerspectives().containsKey(perspective.getDisplayValue())) {
+//    		user.setPerspective(perspective);
+//    	}
+    	// userRepo.save(user);    	    	
     }
 }

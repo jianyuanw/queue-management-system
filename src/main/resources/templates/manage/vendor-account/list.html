@@ -34,17 +34,17 @@
 				<td class="col" th:text="${vendor.username}"></td>
 				<td class="col" th:text="${vendor.role.getDisplayValue()}"></td>
 				<td class="col">
-					<!-- TODO
-					<a th:href="@{/manage/branch/update/__${branch.id}__}">
-						<i class="fas fa-edit fa-lg" title="Edit branch"></i>
+					
+					<a th:href="@{/manage/vendor-account/update/__${vendor.id}__}">
+						<i class="fas fa-edit fa-lg" title="Edit Vendor Account"></i>
 					</a>
 					
-      				<a href="#"><i class="fas fa-trash-alt fa-lg" data-toggle="modal" th:data-target="${'#deleteConfirm' + branch.id}" title="Delete Branch"></i></a>
+      				<a href="#"><i class="fas fa-trash-alt fa-lg" data-toggle="modal" th:data-target="${'#deleteConfirm' + vendor.id}" title="Delete Vendor Account"></i></a>
       				
 					<th:block th:insert="fragments/support-elements.html :: modalbox-red"
-						th:with="modalId=${'deleteConfirm' + branch.id},modalTitle=${'Confirm Deletion'},modalBody=${'Are you sure you want to delete ' + branch.name + '?'},
-							modalConfirm=${'Delete'},confirmUrl=${'/manage/branch/delete/' + branch.id}">
-					</th:block> -->
+						th:with="modalId=${'deleteConfirm' + vendor.id},modalTitle=${'Confirm Deletion'},modalBody=${'Are you sure you want to delete ' + vendor.username + '?'},
+							modalConfirm=${'Delete'},confirmUrl=${'/manage/vendor-account/delete/' + vendor.id}">
+					</th:block>
 				</td>
 			</tr>
 		</tbody>

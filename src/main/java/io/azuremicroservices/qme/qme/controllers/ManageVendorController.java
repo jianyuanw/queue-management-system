@@ -12,19 +12,23 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import io.azuremicroservices.qme.qme.models.Branch;
+import io.azuremicroservices.qme.qme.models.User;
 import io.azuremicroservices.qme.qme.models.Vendor;
+import io.azuremicroservices.qme.qme.repositories.UserRepository;
 import io.azuremicroservices.qme.qme.repositories.VendorRepository;
 
 @Controller
 @RequestMapping("manage/vendor")
 public class ManageVendorController {
 	private final VendorRepository vendorRepo;
+	private final UserRepository userRepo;
 	
 	@Autowired
-	public ManageVendorController(VendorRepository vendorRepo) {
+	public ManageVendorController(VendorRepository vendorRepo, UserRepository userRepo) {
 		this.vendorRepo = vendorRepo;
+		this.userRepo = userRepo;
 	}
 	
 	@GetMapping("/list")
@@ -39,7 +43,7 @@ public class ManageVendorController {
 	}
 	
 	@PostMapping("/create")
-	public String CreateVendor(@Valid @ModelAttribute("vendor")Vendor vendor, BindingResult bindingResult) {
+	public String CreateVendor(@Valid @ModelAttribute Vendor vendor, BindingResult bindingResult) {
 		if(bindingResult.hasErrors()) {
 			return "manage/vendor/create";
 		}
@@ -51,11 +55,11 @@ public class ManageVendorController {
 	@GetMapping("/update/{vendorId}")
 	public String UpdateVendorForm(Model model, @PathVariable("vendorId") Long vendorId) {
 		model.addAttribute("vendor", vendorRepo.findById(vendorId));
-		return "/manage/vendor/update";
+		return "manage/vendor/update";
 	}
 	
 	@PostMapping("/update")
-	public String updateVendor(@ModelAttribute @Valid Vendor vendor, BindingResult bindingResult, @PathParam("vendorId") Long vendorId) {
+	public String updateVendor(@ModelAttribute @Valid Vendor vendor, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
 			return "manage/vendor/update";
 		} else {
@@ -65,7 +69,7 @@ public class ManageVendorController {
 	}
 	
 	@GetMapping("/delete/{vendorId}")
-	public String deleteVendorh(@PathVariable("vendorId") Long vendorId) {
+	public String deleteVendor(@PathVariable("vendorId") Long vendorId) {
 		Vendor vendor = vendorRepo.findById(vendorId).get();
 		if (vendor != null) {
 			vendorRepo.delete(vendor);

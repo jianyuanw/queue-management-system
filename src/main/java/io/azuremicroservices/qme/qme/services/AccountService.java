@@ -1,5 +1,7 @@
 package io.azuremicroservices.qme.qme.services;
 
+import java.util.ArrayList;
+
 import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
@@ -7,15 +9,19 @@ import org.springframework.stereotype.Service;
 import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
 import io.azuremicroservices.qme.qme.models.User;
 import io.azuremicroservices.qme.qme.models.User.Role;
+import io.azuremicroservices.qme.qme.models.Vendor;
+
 import io.azuremicroservices.qme.qme.repositories.UserRepository;
 
 @Service
 public class AccountService {
 
     private final UserRepository userRepo;
+    private final PermissionService permissionService;
 
-    public AccountService(UserRepository userRepo) {
+    public AccountService(UserRepository userRepo, PermissionService permissionService) {
         this.userRepo = userRepo;
+        this.permissionService = permissionService;
     }
 
     public boolean usernameExists(String username) {
@@ -39,7 +45,7 @@ public class AccountService {
     }
 
     public void createClient(User user) {
-        user.setRole(User.Role.CLIENT);
+        user.setRole(Role.CLIENT);
         userRepo.save(user);
     }
     
@@ -52,4 +58,10 @@ public class AccountService {
 //    	}
     	// userRepo.save(user);    	    	
     }
+
+    public void createVendorAdmin(User user, Vendor vendor) {
+    	user.setRole(Role.VENDOR_ADMIN);
+    	user.getUserVendorPermissions().add(vendor);
+    	userRepo.save(user);
+    }  
 }

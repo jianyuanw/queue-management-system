@@ -37,7 +37,7 @@
       				<a href="#">
       					<i class="fas fa-trash-alt fa-lg" data-toggle="modal" th:data-target="${'#deleteConfirm' + vendor.id}" title="Delete Vendor"></i>
       				</a>
-      				<a href="@{/manage/vendor/create-vendor-account/__${vendor.id}__}"><i class="fas fa-user-plus fa-lg" data-toggle="modal" title="Add Vendor Account"></i></a>
+      				<a th:href="@{~/manage/vendor-account/create/__${vendor.id}__}"><i class="fas fa-user-plus fa-lg" title="Add Vendor Account"></i></a>
       				
       				
       				

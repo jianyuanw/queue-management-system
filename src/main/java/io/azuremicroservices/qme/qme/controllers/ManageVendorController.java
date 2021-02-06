@@ -59,11 +59,11 @@ public class ManageVendorController {
 	@GetMapping("/update/{vendorId}")
 	public String UpdateVendorForm(Model model, @PathVariable("vendorId") Long vendorId) {
 		model.addAttribute("vendor", vendorRepo.findById(vendorId));
-		return "/manage/vendor/update";
+		return "manage/vendor/update";
 	}
 	
 	@PostMapping("/update")
-	public String updateVendor(@ModelAttribute @Valid Vendor vendor, BindingResult bindingResult, @PathParam("vendorId") Long vendorId) {
+	public String updateVendor(@ModelAttribute @Valid Vendor vendor, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
 			return "manage/vendor/update";
 		} else {
@@ -80,24 +80,5 @@ public class ManageVendorController {
 		}
 		return "redirect:/manage/vendor/list";
 	}
-	
-	@GetMapping("/create-vendor-account/{vendorId}")
-	public String CreateVendorAccountForm(Model model,@ModelAttribute User user, @ModelAttribute UserVendorPermission uvp, @PathVariable("vendorId") Long vendorId) {
-		model.addAttribute("vendor", vendorRepo.findById(vendorId));
-		return "manage/vendor-account/create";
-	}
-	
-	@PostMapping("/create-vendor-account")
-	public String CreateVendorAccount(@Valid @ModelAttribute User user, @Valid @ModelAttribute UserVendorPermission uvp, BindingResult bindingResult) {
-		if(bindingResult.hasErrors()) {
-			return "manage/vendor-account/create";
-		}
-		userRepo.save(user);
-		uvpRepo.save(uvp);
-		
-		return "manage/vendor-account/list";
-		
-	}
-	
 
 }

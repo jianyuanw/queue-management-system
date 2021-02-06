@@ -37,7 +37,26 @@ public class ManageVendorAccountController {
 		//Get all users first
 		//TODO: Return only app_admin and vendor_admin
 		model.addAttribute("vendorAccounts", userRepo.findAll());
+		return "manage/vendor-account/list";
+	}
+	
+	@GetMapping("/create/{vendorId}")
+	public String CreateVendorAccountForm(Model model,@ModelAttribute User user, @ModelAttribute UserVendorPermission uvp, @PathVariable("vendorId") Long vendorId) {
+		model.addAttribute("vendor", vendorRepo.findById(vendorId));
+		model.addAttribute("uvp", new UserVendorPermission());
 		return "manage/vendor-account/create";
+	}
+	
+	@PostMapping("/create")
+	public String CreateVendorAccount(@Valid @ModelAttribute User user, @Valid @ModelAttribute UserVendorPermission uvp, BindingResult bindingResult) {
+		if(bindingResult.hasErrors()) {
+			return "manage/vendor-account/create";
+		}
+		userRepo.save(user);
+		uvpRepo.save(uvp);
+		
+		return "redirect:/manage/vendor-account/list";
+		
 	}
 	
 }

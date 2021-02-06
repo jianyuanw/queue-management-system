@@ -25,6 +25,8 @@ public class Queue {
 
     @ManyToOne
     private Branch branch;
+    @ManyToOne
+    private Vendor vendor;
 
     private String name;
 
@@ -42,7 +44,7 @@ public class Queue {
     @Exclude
     private List<QueuePosition> queuePositions;
 
-    enum State {
+    public enum State {
         OPEN,
         CLOSED;
 
@@ -61,5 +63,19 @@ public class Queue {
 
         public String getDisplayValue() { return displayValue; }
     }
+
+	public Queue(Vendor vendor,Branch branch, String name, String description, State state, Double timePerClient,
+			Integer notificationPosition, Double notificationDelay) {
+		super();
+    	this.vendor=vendor;
+		this.branch = branch;
+		this.name = name;
+		this.description = description;
+		this.state = state;
+		this.timePerClient = timePerClient;
+		this.notificationPosition = notificationPosition;
+		this.notificationDelay = notificationDelay;
+	}
+    
 
 }

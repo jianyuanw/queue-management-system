@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -33,9 +34,10 @@ public class BranchOperatorNotificationService {
     	  return BoNotifyRepo.findAll();
     }
     
-    public void saveNotification(String message) {
+    public void saveNotification(String message, LocalTime localtime) {
     	BranchOperatorNotification BoNotify=new BranchOperatorNotification();
     	BoNotify.setMessage(message);
+    	BoNotify.setTime(localtime);
     	BoNotifyRepo.save(BoNotify);
     }
 }

@@ -41,7 +41,7 @@ public class ManageVendorAccountController {
 	}
 	
 	@GetMapping("/create/{vendorId}")
-	public String CreateVendorAccountForm(Model model,@ModelAttribute User user, @ModelAttribute UserVendorPermission uvp, @PathVariable("vendorId") Long vendorId) {
+	public String CreateVendorAccountForm(Model model,@ModelAttribute User user, @PathVariable("vendorId") Long vendorId) {
 		model.addAttribute("vendor", vendorRepo.findById(vendorId));
 		model.addAttribute("uvp", new UserVendorPermission());
 		return "manage/vendor-account/create";

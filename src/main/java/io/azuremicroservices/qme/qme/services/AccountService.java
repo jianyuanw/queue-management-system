@@ -6,9 +6,11 @@ import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
+import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
 import io.azuremicroservices.qme.qme.models.User;
 import io.azuremicroservices.qme.qme.models.User.Role;
 import io.azuremicroservices.qme.qme.models.Vendor;
+
 import io.azuremicroservices.qme.qme.repositories.UserRepository;
 
 @Service
@@ -48,6 +50,15 @@ public class AccountService {
     }
     
     @Transactional
+    public void changePerspective(MyUserDetails currentDetails, Role perspective) {    	
+    	currentDetails.setPerspective(perspective);
+//    	User user = this.findUserByUsername(currentDetails.getUsername());
+//    	if (user.getRolePerspectives().containsKey(perspective.getDisplayValue())) {
+//    		user.setPerspective(perspective);
+//    	}
+    	// userRepo.save(user);    	    	
+    }
+
     public void createVendorAdmin(User user, Vendor vendor) {
     	user.setRole(Role.VENDOR_ADMIN);
     	user.getUserVendorPermissions().add(vendor);

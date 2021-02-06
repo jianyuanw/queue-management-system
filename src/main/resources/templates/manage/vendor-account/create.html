@@ -53,12 +53,9 @@
 	        	<label class="form-label" for="vendorAccountPassword">Password</label>
 	            <input type="text" id="vendorAccountPassword" class="form-control" th:field="${user.password}" required>	            
 	        </div>	        
-	    </div>
-	    
-	    <input type="hidden" th:field="${user.role}" th:value="${T(io.azuremicroservices.qme.qme.models.User.Role).VENDOR_ADMIN}">
+	    </div>	    
 	     
-	    <input type="hidden" th:field="${uvp.user}" th:value="${user}">
-	    <input type="hidden" th:field="${uvp.vendor}" th:value="${vendor}">
+	    <input type="hidden" th:field="${vendor}">
 	    
 	    <button class="btn btn-info my-4 btn-block" type="submit">Submit</button>
 	

@@ -1,5 +1,6 @@
 package io.azuremicroservices.qme.qme.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -7,6 +8,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
@@ -47,8 +51,13 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<SupportTicket> supportTickets;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<UserVendorPermission> userVendorPermissions;    
+    @ManyToMany(cascade=CascadeType.ALL)
+    @JoinTable(
+    		name = "user_vendor_permission",
+    		joinColumns = { @JoinColumn(name = "user_id") },
+    		inverseJoinColumns = { @JoinColumn(name = "vendor_id") }
+    )
+    private List<Vendor> userVendorPermissions = new ArrayList<Vendor>();    
     
     @OneToMany(mappedBy = "user")
     private List<UserBranchPermission> userBranchPermissions;

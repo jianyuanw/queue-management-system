@@ -15,10 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import io.azuremicroservices.qme.qme.models.User;
-import io.azuremicroservices.qme.qme.models.UserVendorPermission;
 import io.azuremicroservices.qme.qme.models.Vendor;
 import io.azuremicroservices.qme.qme.repositories.UserRepository;
-import io.azuremicroservices.qme.qme.repositories.UserVendorPermissionRepository;
 import io.azuremicroservices.qme.qme.repositories.VendorRepository;
 
 @Controller
@@ -26,13 +24,11 @@ import io.azuremicroservices.qme.qme.repositories.VendorRepository;
 public class ManageVendorController {
 	private final VendorRepository vendorRepo;
 	private final UserRepository userRepo;
-	private final UserVendorPermissionRepository uvpRepo;
 	
 	@Autowired
-	public ManageVendorController(VendorRepository vendorRepo, UserRepository userRepo, UserVendorPermissionRepository uvpRepo) {
+	public ManageVendorController(VendorRepository vendorRepo, UserRepository userRepo) {
 		this.vendorRepo = vendorRepo;
 		this.userRepo = userRepo;
-		this.uvpRepo = uvpRepo;
 	}
 	
 	@GetMapping("/list")

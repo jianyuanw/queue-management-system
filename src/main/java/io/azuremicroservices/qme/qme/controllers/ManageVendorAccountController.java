@@ -13,23 +13,24 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import io.azuremicroservices.qme.qme.models.User;
-import io.azuremicroservices.qme.qme.models.UserVendorPermission;
+import io.azuremicroservices.qme.qme.models.User.Role;
+import io.azuremicroservices.qme.qme.models.Vendor;
 import io.azuremicroservices.qme.qme.repositories.UserRepository;
-import io.azuremicroservices.qme.qme.repositories.UserVendorPermissionRepository;
 import io.azuremicroservices.qme.qme.repositories.VendorRepository;
+import io.azuremicroservices.qme.qme.services.AccountService;
 
 @Controller
 @RequestMapping("manage/vendor-account")
 public class ManageVendorAccountController {
 	private final VendorRepository vendorRepo;
 	private final UserRepository userRepo;
-	private final UserVendorPermissionRepository uvpRepo;
+	private final AccountService accountService;
 	
 	@Autowired
-	public ManageVendorAccountController(VendorRepository vendorRepo, UserRepository userRepo, UserVendorPermissionRepository uvpRepo) {
+	public ManageVendorAccountController(VendorRepository vendorRepo, UserRepository userRepo, AccountService accountService) {
 		this.vendorRepo = vendorRepo;
 		this.userRepo = userRepo;
-		this.uvpRepo = uvpRepo;
+		this.accountService = accountService;
 	}
 	
 	@GetMapping("/list")
@@ -41,19 +42,18 @@ public class ManageVendorAccountController {
 	}
 	
 	@GetMapping("/create/{vendorId}")
-	public String CreateVendorAccountForm(Model model,@ModelAttribute User user, @PathVariable("vendorId") Long vendorId) {
+	public String CreateVendorAccountForm(Model model, @PathVariable("vendorId") Long vendorId) {
 		model.addAttribute("vendor", vendorRepo.findById(vendorId));
-		model.addAttribute("uvp", new UserVendorPermission());
+		model.addAttribute("user", new User());
 		return "manage/vendor-account/create";
 	}
 	
 	@PostMapping("/create")
-	public String CreateVendorAccount(@Valid @ModelAttribute User user, @Valid @ModelAttribute UserVendorPermission uvp, BindingResult bindingResult) {
+	public String CreateVendorAccount(@Valid @ModelAttribute User user, @Valid @ModelAttribute Vendor vendor, BindingResult bindingResult) {
 		if(bindingResult.hasErrors()) {
 			return "manage/vendor-account/create";
 		}
-		userRepo.save(user);
-		uvpRepo.save(uvp);
+		accountService.createVendorAdmin(user, vendor);
 		
 		return "redirect:/manage/vendor-account/list";
 		

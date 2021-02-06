@@ -50,6 +50,9 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<SupportTicket> supportTickets;
+    
+    @OneToMany(mappedBy = "user", cascade=CascadeType.ALL)
+    private List<QueuePosition> queuePositions;
 
     @ManyToMany(cascade=CascadeType.ALL)
     @JoinTable(

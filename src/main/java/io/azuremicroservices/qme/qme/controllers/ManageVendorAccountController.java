@@ -35,9 +35,7 @@ public class ManageVendorAccountController {
 	
 	@GetMapping("/list")
 	public String ManageVendorList(Model model) {
-		//Get all users first
-		//TODO: Return only app_admin and vendor_admin
-		model.addAttribute("vendorAccounts", userRepo.findAll());
+		model.addAttribute("vendorAccounts", userRepo.findVendorAdmin());
 		return "manage/vendor-account/list";
 	}
 	

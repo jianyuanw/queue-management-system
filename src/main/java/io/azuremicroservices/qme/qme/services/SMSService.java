@@ -15,6 +15,15 @@ public class SMSService {
 	private static final String AUTH_TOKEN = "d4290b0c34c4962ee4114e6e6ac7d4eb";    
     private static final String FROM_NUMBER = "+14159680152";
 
+    public void send(String recipientNumber, String messageBody) {
+        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+
+        Message message = Message.creator(new PhoneNumber(recipientNumber), new PhoneNumber(FROM_NUMBER), messageBody)
+                .create();
+        // Use message.getSid() if you need the unique ID required to follow up with the transaction
+
+    }
+    
     public void send(SMS sms) {
         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
 
@@ -22,5 +31,5 @@ public class SMSService {
                 .create();
         // Use message.getSid() if you need the unique ID required to follow up with the transaction
 
-    }
+    }    
 }

@@ -67,6 +67,7 @@ public class AccountController {
         return "redirect:/login";
     }
 
+    // TODO: Remove the following endpoint (and html file) after client logout is implemented
     @GetMapping("/logout")
     public String logout() {
         return "account/logout";

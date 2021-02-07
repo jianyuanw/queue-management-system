@@ -91,7 +91,6 @@ public class ManageBranchController {
 			return "redirect:/manage/branch/list";
 		}
 		
-		
 		return "manage/branch/update";
 	}
 

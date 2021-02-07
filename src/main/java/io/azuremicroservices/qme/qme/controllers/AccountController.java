@@ -45,7 +45,7 @@ public class AccountController {
             } else if (user.getRole() == User.Role.BRANCH_ADMIN) {
                 return "redirect:/branch-admin";
             } else if (user.getRole() == User.Role.BRANCH_OPERATOR) {
-                return "redirect:/BranchOperator";
+                return "branch-operator/landing-page";
             } else {
                 return "redirect:/client";
             }

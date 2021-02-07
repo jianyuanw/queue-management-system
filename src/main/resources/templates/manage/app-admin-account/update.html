@@ -5,7 +5,7 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
-    <title>Create Vendor Account</title>
+    <title>Update App Admin Account</title>
     <meta charset="UTF-8">
 
     <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
@@ -13,19 +13,21 @@
 <body>
     <div th:replace="fragments/layout.html :: navbar"></div>
 	
-	<form class="text-center border border-light p-5" method="post" th:action="@{/manage/vendor-account/create}" th:object = "${user}">
+	<form class="text-center border border-light p-5" method="post" th:action="@{/manage/app-admin-account/update}" th:object ="${appAdminAcc}">
 	
-	    <p class="h4 mb-4">New Vendor Account</p>
+	    <p class="h4 mb-4">App Admin Account</p>
+	    
+	    <input type="hidden" th:field="*{id}">
 	    
 	    <div class="form-row mb-4">
 	        <div class="col form-group">
-	        	<label class="form-label" for="vendorAccountFirstName">First Name</label>
-	            <input type="text" id="vendorAccountFirstName" class="form-control" th:field="*{firstName}">	            
+	        	<label class="form-label" for="appAdminAccountFirstName">First Name</label>
+	            <input type="text" id="appAdminAccountFirstName" class="form-control" th:field="*{firstName}">	            
 	        </div>
 	        
 	        <div class="col form-group">
-	        	<label class="form-label" for="vendorAccountLastName">Last Name</label>
-	            <input type="text" id="vendorAccountLastName" class="form-control" th:field="*{lastName}">	            
+	        	<label class="form-label" for="appAdminAccountLastName">Last Name</label>
+	            <input type="text" id="appAdminAccountLastName" class="form-control" th:field="*{lastName}">	            
 	        </div>
 	        
 	        		        
@@ -50,12 +52,12 @@
 	        </div>
 	        
 	        <div class="col form-group">
-	        	<label class="form-label" for="vendorAccountPassword">Password</label>
-	            <input type="text" id="vendorAccountPassword" class="form-control" th:field="*{password}" required>	            
+	        	<label class="form-label" for="appAdminAccountPassword">Password</label>
+	            <input type="text" id="appAdminAccountPassword" class="form-control" th:field="*{password}" required>	            
 	        </div>	        
 	    </div>	    
 	     
-	    <input type="hidden" th:field="${vendor}">
+	    <input type="hidden" th:field="*{role}">
 	    
 	    <button class="btn btn-info my-4 btn-block" type="submit">Submit</button>
 	

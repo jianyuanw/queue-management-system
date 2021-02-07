@@ -42,5 +42,8 @@ public class BranchService {
 		return branchRepo.findAllByVendor_Id(vendorId);
 	}
 	
+	public boolean branchNameExistsForVendor(String branchName, Long vendorId) {
+		return branchRepo.findAllByVendor_IdAndName(vendorId, branchName).size() > 0;
+	}	
 	
 }

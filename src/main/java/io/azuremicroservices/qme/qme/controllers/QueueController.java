@@ -3,13 +3,18 @@ package io.azuremicroservices.qme.qme.controllers;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.validation.Valid;
 
+import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
+import io.azuremicroservices.qme.qme.models.*;
+import io.azuremicroservices.qme.qme.models.Queue;
+import io.azuremicroservices.qme.qme.services.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,19 +25,40 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import io.azuremicroservices.qme.qme.models.Branch;
-import io.azuremicroservices.qme.qme.models.BranchOperatorNotification;
-import io.azuremicroservices.qme.qme.models.Queue;
-import io.azuremicroservices.qme.qme.models.QueuePosition;
-import io.azuremicroservices.qme.qme.models.Vendor;
 import io.azuremicroservices.qme.qme.services.BranchOperatorNotificationService;
 import io.azuremicroservices.qme.qme.services.QueueService;
 
 @Controller
 public class QueueController {
+	/*
+		Use cases relevant with queue
+		Branch operator: advance queue
+						call next in line
+						check-in to counter
+						close / open queue
+						move client forward
+						notified rejoined
+						raise ticket
+						view queue
+						view rejoin list
+						view notification
+
+		Branch admin: Manage operator account
+					Manage queue
+					View branch analytics
+					View branch queues
+					View operators
+		Vendor admin:
+
+		App admin:
+	 */
+
+	private final List<User.Role> permittedRoleForQueueOperation = Arrays.asList(User.Role.BRANCH_OPERATOR, User.Role.BRANCH_ADMIN, User.Role.VENDOR_ADMIN, User.Role.APP_ADMIN);
 
     private final QueueService queueService;
     private final BranchOperatorNotificationService BoNotifyService;
+    @Autowired
+    private PermissionService permissionService;
 
     public QueueController(QueueService queueService,
     		BranchOperatorNotificationService BoNotifyService) {
@@ -69,12 +95,14 @@ public class QueueController {
     
     @GetMapping("/manage-branchAdmin/manageQueue")
     public String showQueueManageForm(Model model) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+		User user = myUserDetails.getUser();
+		if(!permittedRoleForQueueOperation.contains(user.getRole()))
+			return "/no_permission_error";
 
-    	//model.addAttribute("name",queueService.getName());
-    	//model.addAttribute("name",queueService.getTimePerClient());
-    	//model.addAttribute("name",queueService.getNotificationPosition());
-    	//model.addAttribute("name",queueService.getNotificationDelay());
-    	
+		List<Queue> queues = permissionService.getQueuePermissions(user.getId());
+		model.addAttribute("queuelist", queues);
     	return "manage-branchAdmin/manageQueue";
     }
     

@@ -93,5 +93,10 @@ public class AccountService {
 			userRepo.delete(user.get());
 		}
 	}
+	
+	public void createAppAdmin(User user) {
+		user.setRole(Role.APP_ADMIN);
+		userRepo.save(user);
+	}
 
 }

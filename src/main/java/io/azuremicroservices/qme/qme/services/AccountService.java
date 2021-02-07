@@ -5,6 +5,7 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
@@ -20,10 +21,12 @@ public class AccountService {
 
     private final UserRepository userRepo;
     private final PermissionService permissionService;
+    private final PasswordEncoder passwordEncoder;
 
-    public AccountService(UserRepository userRepo, PermissionService permissionService) {
+    public AccountService(UserRepository userRepo, PermissionService permissionService, PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
         this.permissionService = permissionService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public boolean usernameExists(String username) {
@@ -56,6 +59,7 @@ public class AccountService {
 
     public void createClient(User user) {
         user.setRole(Role.CLIENT);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepo.save(user);
     }
     

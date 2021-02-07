@@ -42,7 +42,7 @@ public class AccountController {
             } else if (user.getRole() == User.Role.BRANCH_ADMIN) {
                 return "branch-admin/landing-page";
             } else if (user.getRole() == User.Role.BRANCH_OPERATOR) {
-                return "branch-operator/landing-page";
+                return "redirect:/BranchOperator";
             } else {
                 return "client/landing-page";
             }

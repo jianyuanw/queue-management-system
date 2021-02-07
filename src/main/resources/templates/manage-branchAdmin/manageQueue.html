@@ -1,26 +1,59 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+	<th:block th:replace="fragments/layout.html :: head"/>
+	<th:block th:replace="fragments/bundle.html :: mdtable"/>
+	<Title>Manage Queue- branchAdmin</Title>
 </head>
 <body>
-	<a th:href="@{/prototype/???}" target="_blank">
-            <button class="btn btn-primary mb-4">Manage Counters</button>
-    </a>
-    
-    <a th:href="@{/prototype/???}" target="_blank">
-            <button class="btn btn-primary mb-4">Edit</button>
-    </a>
-    
-    <a th:href="@{/prototype/???}" target="_blank">
-            <button class="btn btn-primary mb-4">Delete</button>
-    </a>
-    
-    <a th:href="@{/prototype/???}" target="_blank">
-            <button class="btn btn-primary mb-4">Create New Queue</button>
-    </a>
-        
+	<div th:replace="fragments/layout.html :: header"></div>
 
+	<div class="px-5 py-4">
+		<h2>Manage Queue</h2>
+		
+		//list option   
+		//select vendor
+		
+		<table id="dataTableH" class="table table-striped table-bordered table-sm">
+			<thead>
+				<tr>
+					<th class="th-sm">Queue Name</th>
+					<th class="th-sm">Time per client</th>
+					<th class="th-sm">Notify at position</th>
+					<th class="th-sm">Delay before call</th>
+					<th class="th-sm">Counters</th>
+					<th class="th-sm">Change queue settings</th>
+					<th class="th-sm">Delete</th>
+					
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="queue:${queuelist}">
+					<td th:text="${queue.name}">ID</td>
+					<td th:text="${queue.timePerClient}">ID</td>
+					<td th:text="${product.notificationPosition}">ID</td>
+					<td th:text="${product.notificationDelay}">ID</td>
+
+					<td>
+						<a th:href="@{/manage-branchAdmin/manageCounters/}+${queue.id}">
+							<button type="button" class="btn btn-mdb-color btn-sm m-0">Manage Counters</button>
+						</a>
+					</td>
+					<td>
+						<a th:href="@{/manage-branchAdmin/editQueue/}+${queue.id}">
+							<button type="button" class="btn btn-danger btn-sm m-0">Edit</button>
+						</a>						
+					</td>
+					<td>
+						<a th:href="@{/manage-branchAdmin/deleteQueue/}+${queue.id}">
+							<button type="button" class="btn btn-danger btn-sm m-0">Delete</button>
+						</a>						
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div th:replace="fragments/layout.html :: footer"></div>
 </body>
 </html>

@@ -46,9 +46,8 @@ public class ManageBranchController {
 	
 	@GetMapping("/list")
 	public String initManageBranchList(Model model, Authentication authentication) {
-		Vendor vendor = permissionService.getVendorPermission(((MyUserDetails) authentication.getPrincipal()).getId());
+		model.addAttribute("branches", permissionService.getBranchPermissions(((MyUserDetails) authentication.getPrincipal()).getId()));
 		
-		model.addAttribute("branches", branchService.findAllBranchesByVendorId(vendor.getId()));
 		return "manage/branch/list";
 	}
 	

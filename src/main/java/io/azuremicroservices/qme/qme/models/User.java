@@ -86,14 +86,15 @@ public class User {
     )
     private List<Queue> userQueuePermissions;
     
-    public Vendor getUserVendorPermission() {    	
+    public List<Vendor> getVendorPermissions() {    	
     	List<Vendor> vendorPermissions = this.getUserVendorPermissions();
     	// Set to ensure only one vendor permission without changing db design for future proofing
-    	if (this.getUserVendorPermissions().size() != 1) {
-    		throw new RuntimeException("User has more or less than one vendor permission");
+    	if (vendorPermissions.size() != 1) {
+    		// Intentionally return empty list
+    		vendorPermissions = new ArrayList<>();
     	} 
     	
-    	return vendorPermissions.get(0);
+    	return vendorPermissions;
     }     
     
     public LinkedHashMap<String, Integer> getRolePerspectives() {

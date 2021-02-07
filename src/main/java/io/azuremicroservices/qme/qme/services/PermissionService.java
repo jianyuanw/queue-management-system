@@ -1,41 +1,67 @@
 package io.azuremicroservices.qme.qme.services;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
-import org.hibernate.validator.internal.metadata.aggregated.GetterCascadable.Builder;
 import org.springframework.stereotype.Service;
 
 import io.azuremicroservices.qme.qme.models.Branch;
 import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.models.User;
-import io.azuremicroservices.qme.qme.models.User.Role;
 import io.azuremicroservices.qme.qme.models.Vendor;
+import io.azuremicroservices.qme.qme.repositories.BranchRepository;
+import io.azuremicroservices.qme.qme.repositories.QueueRepository;
 import io.azuremicroservices.qme.qme.repositories.UserRepository;
 
 @Service
 public class PermissionService {
-	private final UserRepository userRepo;
+	private final UserRepository userRepo;	
+	private final BranchRepository branchRepo;
+	private final QueueRepository queueRepo;
 	
-	public PermissionService(UserRepository userRepo) {
-		this.userRepo = userRepo;
+	public PermissionService(UserRepository userRepo, BranchRepository branchRepo, QueueRepository queueRepo) {
+		this.userRepo = userRepo;		
+		this.branchRepo = branchRepo;
+		this.queueRepo = queueRepo;
+		
 	}
 	
 	@Transactional
-	public Vendor getVendorPermission(Long userId) {
-		return userRepo.findById(userId).get().getUserVendorPermission();
+	public Vendor getVendorPermission(Long userId) {		
+		List<Vendor> vendors = userRepo.findById(userId).get().getUserVendorPermissions();
+		if (vendors.size() == 0) {
+			return null;
+		}
+		
+		return vendors.get(0);
 	}
 	
 	@Transactional
 	public List<Branch> getBranchPermissions(Long userId) {
-		return userRepo.findById(userId).get().getUserBranchPermissions();
+		List<Branch> branchPermissions = userRepo.findById(userId).get().getUserBranchPermissions();
+		
+		Vendor vendor = this.getVendorPermission(userId);
+		
+		if (vendor != null) {
+			branchPermissions.addAll(branchRepo.findAllByVendor_Id(vendor.getId()));
+		}
+		
+		return branchPermissions;
 	}
 	
 	@Transactional
 	public List<Queue> getQueuePermissions(Long userId) {
-		return userRepo.findById(userId).get().getUserQueuePermissions();
+		List<Queue> queuePermissions = userRepo.findById(userId).get().getUserQueuePermissions();
+		
+		List<Long> branches = this.getBranchPermissions(userId).stream().map(Branch::getId).collect(Collectors.toList());
+		
+		if (branches.size() > 0) {
+			queuePermissions.addAll(queueRepo.findAllByBranch_IdIn(branches));
+		}
+		
+		return queuePermissions;
 	}	
 	
 	@Transactional
@@ -50,11 +76,8 @@ public class PermissionService {
 	
 	@Transactional
 	public boolean authenticateBranch(User user, Branch branch) {
-		List<Role> authenticatedRoles = new ArrayList<>(List.of(Role.VENDOR_ADMIN));
 		boolean authenticated = false;
 		if (this.getBranchPermissions(user.getId()).contains(branch)) {
-			authenticated = true;
-		} else if (authenticatedRoles.contains(user.getRole()) && this.authenticateVendor(user, branch.getVendor())) {
 			authenticated = true;
 		}
 		
@@ -63,11 +86,8 @@ public class PermissionService {
 	
 	@Transactional
 	public boolean authenticateQueue(User user, Queue queue) {
-		List<Role> authenticatedRoles = new ArrayList<>(List.of(Role.VENDOR_ADMIN, Role.BRANCH_ADMIN));
 		boolean authenticated = false;
 		if (this.getQueuePermissions(user.getId()).contains(queue)) {
-			authenticated = true;
-		} else if (authenticatedRoles.contains(user.getRole()) && this.authenticateBranch(user, queue.getBranch())) {
 			authenticated = true;
 		}
 		

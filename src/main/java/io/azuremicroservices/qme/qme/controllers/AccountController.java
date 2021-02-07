@@ -2,6 +2,7 @@ package io.azuremicroservices.qme.qme.controllers;
 
 import io.azuremicroservices.qme.qme.models.User;
 import io.azuremicroservices.qme.qme.services.AccountService;
+import io.azuremicroservices.qme.qme.services.AlertService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,9 +18,11 @@ import javax.validation.Valid;
 public class AccountController {
 
     private final AccountService accountService;
+    private final AlertService alertService;
 
-    public AccountController(AccountService accountService) {
+    public AccountController(AccountService accountService, AlertService alertService) {
         this.accountService = accountService;
+        this.alertService = alertService;
     }
 
     @GetMapping("/login")
@@ -34,17 +37,17 @@ public class AccountController {
     public String loginSuccess(HttpServletRequest request, RedirectAttributes redirAttr) {
         User user = accountService.findUserByUsername(request.getUserPrincipal().getName());
         if (user != null) {
-//            redirAttr.addFlashAttribute("alert", new Alert("success", "Login successful"));
+            alertService.createAlert(AlertService.AlertColour.GREEN, "Login successful", redirAttr);
             if (user.getRole() == User.Role.APP_ADMIN) {
-                return "app-admin/landing-page";
+                return "redirect:/app-admin";
             } else if (user.getRole() == User.Role.VENDOR_ADMIN) {
-                return "vendor-admin/landing-page";
+                return "redirect:/vendor-admin";
             } else if (user.getRole() == User.Role.BRANCH_ADMIN) {
-                return "branch-admin/landing-page";
+                return "redirect:/branch-admin";
             } else if (user.getRole() == User.Role.BRANCH_OPERATOR) {
                 return "branch-operator/landing-page";
             } else {
-                return "client/landing-page";
+                return "redirect:/client";
             }
         } else {
             return "redirect:/login";
@@ -53,17 +56,18 @@ public class AccountController {
 
     @GetMapping("/login/error")
     public String loginError(RedirectAttributes redirAttr) {
-//        redirAttr.addFlashAttribute("alert", new Alert("warning", "Incorrect username or password"));
         redirAttr.addFlashAttribute("error", "Incorrect username or password");
         return "redirect:/login";
     }
 
     @GetMapping("/login/expired")
     public String loginExpired(RedirectAttributes redirAttr) {
-//        redirAttr.addFlashAttribute("alert", new Alert("warning", "Your session has expired. Please login again."));
+        alertService.createAlert(AlertService.AlertColour.YELLOW,
+                "Your session has expired. Please login again.", redirAttr);
         return "redirect:/login";
     }
 
+    // TODO: Remove the following endpoint (and html file) after client logout is implemented
     @GetMapping("/logout")
     public String logout() {
         return "account/logout";
@@ -71,7 +75,7 @@ public class AccountController {
 
     @GetMapping("/logout/success")
     public String logoutSuccess(RedirectAttributes redirAttr) {
-//        redirAttr.addFlashAttribute("alert", new Alert("success", "Logout successful"));
+        alertService.createAlert(AlertService.AlertColour.GREEN, "Logout successful", redirAttr);
         return "redirect:/login";
     }
 
@@ -111,8 +115,8 @@ public class AccountController {
         return "branch-admin/landing-page";
     }
 
-    @GetMapping("/branch-operator")
-    public String landingPageBranchOperator() {
-        return "branch-operator/landing-page";
+    @GetMapping("/client")
+    public String landingPageClient() {
+        return "client/landing-page";
     }
 }

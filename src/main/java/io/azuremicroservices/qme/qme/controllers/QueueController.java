@@ -53,7 +53,8 @@ public class QueueController {
 		App admin:
 	 */
 
-	private final List<User.Role> permittedRoleForQueueOperation = Arrays.asList(User.Role.BRANCH_OPERATOR, User.Role.BRANCH_ADMIN, User.Role.VENDOR_ADMIN, User.Role.APP_ADMIN);
+	private final List<User.Role> permittedRoleForViewQueue = Arrays.asList(User.Role.BRANCH_OPERATOR, User.Role.BRANCH_ADMIN, User.Role.VENDOR_ADMIN);
+	private final List<User.Role> permittedRoleForEditQueue = Arrays.asList(User.Role.BRANCH_OPERATOR);
 
     private final QueueService queueService;
     private final BranchOperatorNotificationService BoNotifyService;
@@ -98,11 +99,12 @@ public class QueueController {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
 		User user = myUserDetails.getUser();
-		if(!permittedRoleForQueueOperation.contains(user.getRole()))
+		if(!permittedRoleForViewQueue.contains(user.getRole()))
 			return "/no_permission_error";
 
 		List<Queue> queues = permissionService.getQueuePermissions(user.getId());
 		model.addAttribute("queuelist", queues);
+		model.addAttribute("user",user);
     	return "manage-branchAdmin/manageQueue";
     }
     

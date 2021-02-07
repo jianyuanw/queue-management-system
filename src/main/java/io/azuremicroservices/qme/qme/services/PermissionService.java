@@ -24,7 +24,7 @@ public class PermissionService {
 	}
 	
 	@Transactional
-	public Vendor getVendorPermissions(Long userId) {
+	public Vendor getVendorPermission(Long userId) {
 		return userRepo.findById(userId).get().getUserVendorPermission();
 	}
 	
@@ -41,7 +41,7 @@ public class PermissionService {
 	@Transactional
 	public boolean authenticateVendor(User user, Vendor vendor) {
 		boolean authenticated = false;
-		if (this.getVendorPermissions(user.getId()).equals(vendor)) {
+		if (this.getVendorPermission(user.getId()).equals(vendor)) {
 			authenticated = true;
 		}
 		

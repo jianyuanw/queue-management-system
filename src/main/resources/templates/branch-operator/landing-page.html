@@ -10,6 +10,20 @@
 <body>
     <div th:replace="fragments/layout.html :: navbar"></div>
     <h2 class="text-center">Branch Operator Landing Page</h2>
+    <h2>Hi</h2>
+    <span th:text="${test}">zzz</span>
+    <table >
+        <tbody th:each="queue:${queues}">
+            <tr>
+                <td><span th:text="${queue.name}">Name</span> </td>
+                <td><span th:text="${queue.description}">Description</span> </td>
+                <td><span th:text="${queue.state}">State</span> </td>
+                <td><span th:text="${queue.timePerClient}">TimePerClient</span> </td>
+                <td><span th:text="${queue.notificationPosition}">NotificationPosition</span> </td>
+                <td><span th:text="${queue.notificationDelay}">NotificationDelay</span> </td>
+            </tr>
+        </tbody>
+    </table>
     <div th:replace="fragments/layout.html :: footer"></div>
 </body>
 </html>

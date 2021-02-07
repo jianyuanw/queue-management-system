@@ -31,6 +31,13 @@ import io.azuremicroservices.qme.qme.services.QueueService;
 @Controller
 public class QueueController {
 	/*
+		Feature available control:
+			 List<User.Role> permittedRoleForViewQueue : contains allowed roles for view
+			 List<User.Role> permittedRoleForEditQueue : contains allowed roles for edit
+			 pass user to html and recognize user.getPerspective() to show/not show edit buttons
+			 pass user to html and recognize user.getRole() to show different navigation bar
+			 return "no_permission_error.html" or 404 page for no permission.
+			 
 		Use cases relevant with queue
 		Branch operator: advance queue
 						call next in line

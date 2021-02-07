@@ -10,4 +10,6 @@ public interface BranchRepository extends JpaRepository<Branch, Long> {
 
 	List<Branch> findAllByVendor_Id(Long vendorId);
 
+	List<Branch> findAllByVendor_IdAndName(Long vendorId, String branchName);
+
 }

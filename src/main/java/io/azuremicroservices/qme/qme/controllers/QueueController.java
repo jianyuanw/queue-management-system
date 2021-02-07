@@ -3,14 +3,13 @@ package io.azuremicroservices.qme.qme.controllers;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.validation.Valid;
 
 import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
 import io.azuremicroservices.qme.qme.models.*;
+import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.services.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -31,6 +30,30 @@ import io.azuremicroservices.qme.qme.services.QueueService;
 
 @Controller
 public class QueueController {
+	/*
+		Use cases relevant with queue
+		Branch operator: advance queue
+						call next in line
+						check-in to counter
+						close / open queue
+						move client forward
+						notified rejoined
+						raise ticket
+						view queue
+						view rejoin list
+						view notification
+
+		Branch admin: Manage operator account
+					Manage queue
+					View branch analytics
+					View branch queues
+					View operators
+		Vendor admin:
+
+		App admin:
+	 */
+
+	private final List<User.Role> permittedRoleForQueueOperation = Arrays.asList(User.Role.BRANCH_OPERATOR, User.Role.BRANCH_ADMIN, User.Role.VENDOR_ADMIN, User.Role.APP_ADMIN);
 
     private final QueueService queueService;
     private final BranchOperatorNotificationService BoNotifyService;
@@ -75,14 +98,11 @@ public class QueueController {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
 		User user = myUserDetails.getUser();
+		if(!permittedRoleForQueueOperation.contains(user.getRole()))
+			return "/no_permission_error";
+
 		List<Queue> queues = permissionService.getQueuePermissions(user.getId());
 		model.addAttribute("queuelist", queues);
-
-    	//model.addAttribute("name",queueService.getName());
-    	//model.addAttribute("name",queueService.getTimePerClient());
-    	//model.addAttribute("name",queueService.getNotificationPosition());
-    	//model.addAttribute("name",queueService.getNotificationDelay());
-    	
     	return "manage-branchAdmin/manageQueue";
     }
     

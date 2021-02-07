@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -77,11 +78,6 @@ public class QueueController {
     	return "manage-branchAdmin/manageQueue";
     }
     
-    public String createNewQueuePrototype() {
-    	// Commented out due to error in Service
-    	// queueService.createNewQueue();
-    	return "prototype/manageQueue";
-    }
     
     @GetMapping("/manage-branchAdmin/manageCounters")
     public String manageCounter(Model model) {
@@ -128,8 +124,8 @@ public class QueueController {
     	return "redirect:manage-branchAdmin/manageQueue"; 	
     }
     
-    @GetMapping("/manage-branchAdmin/editQueue")
-    public String editNewQueue(@ModelAttribute @Valid Queue queue, BindingResult queueBinding, 
+    @GetMapping("/manage-branchAdmin/editQueue/{queueId}")
+    public String editNewQueue(@PathVariable("queueId") Long id, @ModelAttribute @Valid Queue queue, BindingResult queueBinding, 
 			@ModelAttribute @Valid Vendor vendor, BindingResult vendorBinding,
 			@ModelAttribute @Valid Branch branch, BindingResult branchBinding,
 			Model model) { 
@@ -179,7 +175,7 @@ public class QueueController {
     	return "redirect:manage-branchAdmin/manageQueue";
     }
     
-    @GetMapping("/manage-branchAdmin/deleteQueue")
+    @GetMapping("/manage-branchAdmin/deleteQueue/{queueId}")
     public String deleteQueue(@ModelAttribute @Valid Queue queue, BindingResult queueBinding, 
 			@ModelAttribute @Valid Vendor vendor, BindingResult vendorBinding,
 			@ModelAttribute @Valid Branch branch, BindingResult branchBinding,

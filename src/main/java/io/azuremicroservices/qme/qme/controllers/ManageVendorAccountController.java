@@ -11,11 +11,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import io.azuremicroservices.qme.qme.models.User;
 import io.azuremicroservices.qme.qme.models.User.Role;
 import io.azuremicroservices.qme.qme.models.Vendor;
 import io.azuremicroservices.qme.qme.services.AccountService;
+import io.azuremicroservices.qme.qme.services.AlertService;
+import io.azuremicroservices.qme.qme.services.AlertService.AlertColour;
+import io.azuremicroservices.qme.qme.services.PermissionService;
 import io.azuremicroservices.qme.qme.services.VendorService;
 
 @Controller
@@ -23,15 +27,19 @@ import io.azuremicroservices.qme.qme.services.VendorService;
 public class ManageVendorAccountController {
 	private final AccountService accountService;
 	private final VendorService vendorService;
+	private final PermissionService permissionService;
+	private final AlertService alertService;
 	
 	@Autowired
-	public ManageVendorAccountController(AccountService accountService, VendorService vendorService) {
+	public ManageVendorAccountController(AccountService accountService, VendorService vendorService, PermissionService permissionService, AlertService alertService) {
 		this.accountService = accountService;
 		this.vendorService = vendorService;
+		this.permissionService = permissionService;
+		this.alertService = alertService;
 	}
 	
 	@GetMapping("/list")
-	public String ManageVendorList(Model model) {
+	public String ManageVendorAccountList(Model model) {
 		model.addAttribute("vendorAccounts", accountService.findAllUsersByRole(Role.VENDOR_ADMIN));
 		return "manage/vendor-account/list";
 	}
@@ -44,11 +52,12 @@ public class ManageVendorAccountController {
 	}
 	
 	@PostMapping("/create")
-	public String CreateVendorAccount(@Valid @ModelAttribute User user, @Valid @ModelAttribute Vendor vendor, BindingResult bindingResult) {
+	public String CreateVendorAccount(@Valid @ModelAttribute User user, @Valid @ModelAttribute Vendor vendor, BindingResult bindingResult, RedirectAttributes redirAttr) {
 		if(bindingResult.hasErrors()) {
 			return "manage/vendor-account/create";
 		}
 		accountService.createVendorAdmin(user, vendor);
+		alertService.createAlert(AlertColour.GREEN, "Vendor Account successfully created", redirAttr);
 		
 		return "redirect:/manage/vendor-account/list";
 		
@@ -61,18 +70,19 @@ public class ManageVendorAccountController {
 	}
 	
 	@PostMapping("/update")
-	public String updateVendor(@ModelAttribute @Valid User vendorAcc, BindingResult bindingResult) {
+	public String updateVendor(@ModelAttribute @Valid User vendorAcc, BindingResult bindingResult, RedirectAttributes redirAttr) {
 		if (bindingResult.hasErrors()) {
 			return "manage/vendor-account/update";
 		} else {
 			accountService.updateUser(vendorAcc);
-		}
+		}alertService.createAlert(AlertColour.GREEN, "Vendor Account successfully updated", redirAttr);
 		return "redirect:/manage/vendor-account/list"; 
 	} 
 	
 	@GetMapping("/delete/{vendorAccId}")
-	public String deleteVendor(@PathVariable("vendorAccId") Long vendorAccId) {
+	public String deleteVendor(@PathVariable("vendorAccId") Long vendorAccId, RedirectAttributes redirAttr) {
 		accountService.deleteUserById(vendorAccId);
+		alertService.createAlert(AlertColour.GREEN, "Vendor Account successfully deleted", redirAttr);
 		return "redirect:/manage/vendor-account/list";
 	}
 	

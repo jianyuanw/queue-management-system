@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -43,6 +44,10 @@ public class Queue {
     @OneToMany(mappedBy = "queue")
     @Exclude
     private List<QueuePosition> queuePositions;
+    
+    @ManyToMany(mappedBy = "userBranchPermissions")
+    @Exclude
+    private List<User> userBranchPermissions;    
 
     public enum State {
         OPEN,
@@ -76,6 +81,5 @@ public class Queue {
 		this.notificationPosition = notificationPosition;
 		this.notificationDelay = notificationDelay;
 	}
-    
 
 }

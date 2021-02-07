@@ -1,16 +1,18 @@
 package io.azuremicroservices.qme.qme.services;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
+import io.azuremicroservices.qme.qme.models.Branch;
+import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.models.User;
 import io.azuremicroservices.qme.qme.models.User.Role;
 import io.azuremicroservices.qme.qme.models.Vendor;
-
 import io.azuremicroservices.qme.qme.repositories.UserRepository;
 
 @Service
@@ -43,6 +45,14 @@ public class AccountService {
     public User findUserByUsername(String username) {
         return userRepo.findByUsername(username);
     }
+    
+    public List<User> findAllUsersByRole(Role role) {
+    	return userRepo.findAllByRole(role);
+    }
+    
+    public User findUserByRole(Role role) {
+    	return userRepo.findByRole(role);
+    }
 
     public void createClient(User user) {
         user.setRole(Role.CLIENT);
@@ -63,5 +73,21 @@ public class AccountService {
     	user.setRole(Role.VENDOR_ADMIN);
     	user.getUserVendorPermissions().add(vendor);
     	userRepo.save(user);
-    }  
+    }
+
+	public User findUserById(Long userId) {
+		return userRepo.findById(userId).get();
+	}
+	
+	public void updateUser(User user) {
+		userRepo.save(user);
+	}
+	
+	public void deleteUserById(Long userId) {
+		var user = userRepo.findById(userId);
+		if (user.isPresent()) {
+			userRepo.delete(user.get());
+		}
+	}
+
 }

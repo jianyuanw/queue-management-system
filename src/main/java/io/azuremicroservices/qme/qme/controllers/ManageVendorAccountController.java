@@ -15,33 +15,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import io.azuremicroservices.qme.qme.models.User;
 import io.azuremicroservices.qme.qme.models.User.Role;
 import io.azuremicroservices.qme.qme.models.Vendor;
-import io.azuremicroservices.qme.qme.repositories.UserRepository;
-import io.azuremicroservices.qme.qme.repositories.VendorRepository;
 import io.azuremicroservices.qme.qme.services.AccountService;
+import io.azuremicroservices.qme.qme.services.VendorService;
 
 @Controller
 @RequestMapping("manage/vendor-account")
 public class ManageVendorAccountController {
-	private final VendorRepository vendorRepo;
-	private final UserRepository userRepo;
 	private final AccountService accountService;
+	private final VendorService vendorService;
 	
 	@Autowired
-	public ManageVendorAccountController(VendorRepository vendorRepo, UserRepository userRepo, AccountService accountService) {
-		this.vendorRepo = vendorRepo;
-		this.userRepo = userRepo;
+	public ManageVendorAccountController(AccountService accountService, VendorService vendorService) {
 		this.accountService = accountService;
+		this.vendorService = vendorService;
 	}
 	
 	@GetMapping("/list")
 	public String ManageVendorList(Model model) {
-		model.addAttribute("vendorAccounts", userRepo.findVendorAdmin());
+		model.addAttribute("vendorAccounts", accountService.findAllUsersByRole(Role.VENDOR_ADMIN));
 		return "manage/vendor-account/list";
 	}
 	
 	@GetMapping("/create/{vendorId}")
 	public String CreateVendorAccountForm(Model model, @PathVariable("vendorId") Long vendorId) {
-		model.addAttribute("vendor", vendorRepo.findById(vendorId));
+		model.addAttribute("vendor", vendorService.findVendorById(vendorId));
 		model.addAttribute("user", new User());
 		return "manage/vendor-account/create";
 	}
@@ -59,7 +56,7 @@ public class ManageVendorAccountController {
 	
 	@GetMapping("/update/{vendorAccId}")
 	public String UpdateVendorAccountForm(Model model, @PathVariable("vendorAccId") Long vendorAccId) {
-		model.addAttribute("vendorAcc", userRepo.findById(vendorAccId).get());
+		model.addAttribute("vendorAcc", accountService.findUserById(vendorAccId));
 		return "manage/vendor-account/update";
 	}
 	
@@ -68,17 +65,14 @@ public class ManageVendorAccountController {
 		if (bindingResult.hasErrors()) {
 			return "manage/vendor-account/update";
 		} else {
-			userRepo.save(vendorAcc);
+			accountService.updateUser(vendorAcc);
 		}
 		return "redirect:/manage/vendor-account/list"; 
 	} 
 	
 	@GetMapping("/delete/{vendorAccId}")
 	public String deleteVendor(@PathVariable("vendorAccId") Long vendorAccId) {
-		User user = userRepo.findById(vendorAccId).get();
-		if (user != null) {
-			userRepo.delete(user);
-		}
+		accountService.deleteUserById(vendorAccId);
 		return "redirect:/manage/vendor-account/list";
 	}
 	

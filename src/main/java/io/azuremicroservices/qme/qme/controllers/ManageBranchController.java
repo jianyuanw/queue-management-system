@@ -1,9 +1,13 @@
 package io.azuremicroservices.qme.qme.controllers;
 
+import java.util.NoSuchElementException;
+
 import javax.validation.Valid;
 import javax.websocket.server.PathParam;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,89 +16,111 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
 import io.azuremicroservices.qme.qme.models.Branch;
-import io.azuremicroservices.qme.qme.repositories.BranchRepository;
-import io.azuremicroservices.qme.qme.repositories.VendorRepository;
+import io.azuremicroservices.qme.qme.models.Vendor;
+import io.azuremicroservices.qme.qme.services.AccountService;
+import io.azuremicroservices.qme.qme.services.AlertService;
+import io.azuremicroservices.qme.qme.services.AlertService.AlertColour;
 import io.azuremicroservices.qme.qme.services.BranchService;
 import io.azuremicroservices.qme.qme.services.PermissionService;
 
 @Controller
-@RequestMapping("manage/branch")
+@RequestMapping("/manage/branch")
 public class ManageBranchController {
-	private final VendorRepository vendorRepo;
-	private final BranchRepository branchRepo;
 	private final BranchService branchService;
 	private final PermissionService permissionService;
+	private final AlertService alertService;	
+	private final AccountService accountService;
+
 	
 	@Autowired
-	public ManageBranchController(VendorRepository vendorRepo, BranchRepository branchRepo, BranchService branchService, PermissionService permissionService) {
-		this.vendorRepo = vendorRepo;
-		this.branchRepo = branchRepo;
+	public ManageBranchController(BranchService branchService, PermissionService permissionService, AlertService alertService, AccountService accountService) {
 		this.branchService = branchService;
 		this.permissionService = permissionService;
+		this.alertService = alertService;
+		this.accountService = accountService;
 	}
 	
 	@GetMapping("/list")
-	public String initManageBranchList(Model model) {
-		model.addAttribute("branches", branchRepo.findAll());
+	public String initManageBranchList(Model model, Authentication authentication) {
+		Vendor vendor = permissionService.getVendorPermission(((MyUserDetails) authentication.getPrincipal()).getId());
+		
+		model.addAttribute("branches", branchService.findAllBranchesByVendorId(vendor.getId()));
 		return "manage/branch/list";
 	}
 	
 	@GetMapping("/create")
-	public String initCreateBranchForm(Model model) {
+	public String initCreateBranchForm(Model model, Authentication authentication) {		
+		Vendor vendor = permissionService.getVendorPermission(((MyUserDetails) authentication.getPrincipal()).getId());
+		
 		Branch branch = new Branch();
-		// Temporary solution because no login
-		// TODO: Link to current admin's vendor ID
-		branch.setVendor(vendorRepo.findById(1L).get());
+		branch.setVendor(vendor);
 		model.addAttribute("branch", branch);
+		
 		return "manage/branch/create";
 	}
 	
 	@PostMapping("/create")
-	public String createBranch(@ModelAttribute @Valid Branch branch, BindingResult bindingResult) {
+	public String createBranch(@ModelAttribute @Valid Branch branch, BindingResult bindingResult, RedirectAttributes redirAttr) {
 		if (bindingResult.hasErrors()) {
 			return "manage/branch/create";
 		} else {
-			branchRepo.save(branch);
+			branchService.createBranch(branch);
 		}
+		alertService.createAlert(AlertColour.GREEN, "Branch successfully created", redirAttr);
 		return "redirect:/manage/branch/list";
 	}
 	
 	@GetMapping("/update/{branchId}")
-	public String initUpdateBranchForm(Model model, @PathVariable("branchId") Long branchId) {
-		Branch branch = branchRepo.findById(branchId).get();
-		// TODO: Authenticate when security is in
-		//if (permissionService.authenticateVendor(user, vendor))
-		// Temporary solution because no login
-		// TODO: Link to current admin's vendor ID		
-		model.addAttribute("branch", branch);
+	public String initUpdateBranchForm(Model model, @PathVariable("branchId") Long branchId, Authentication authentication, RedirectAttributes redirAttr) {
+		try {
+			var branch = branchService.findBranchById(branchId);
+			
+			MyUserDetails user = (MyUserDetails) authentication.getPrincipal();
+			
+			if (!permissionService.authenticateBranch(accountService.findUserByUsername(user.getUsername()), branch.get())) {
+				alertService.createAlert(AlertColour.RED, "You do not have permission to access this branch", redirAttr);
+				return "redirect:/manage/branch/list";
+			}
+			model.addAttribute("branch", branch.get());
+		} catch (NoSuchElementException e) {
+			alertService.createAlert(AlertColour.YELLOW, "Branch could not be found", redirAttr);
+			return "redirect:/manage/branch/list";
+		}
+		
+		
 		return "manage/branch/update";
 	}
 
 	@PostMapping("/update")
-	public String updateBranch(@ModelAttribute @Valid Branch branch, BindingResult bindingResult, @PathParam("branchId") Long branchId) {
+	public String updateBranch(@ModelAttribute @Valid Branch branch, BindingResult bindingResult, @PathParam("branchId") Long branchId, RedirectAttributes redirAttr) {
 		if (bindingResult.hasErrors()) {
 			return "manage/branch/create";
 		} else {
-			branchRepo.save(branch);
+			branchService.updateBranch(branch);
 		}
+		alertService.createAlert(AlertColour.GREEN, "Branch successfully updated", redirAttr);
 		return "redirect:/manage/branch/list";
 	}
 	
 	@GetMapping("/delete/{branchId}")
-	public String deleteBranch(@PathVariable("branchId") Long branchId) {
-		Branch branch = branchRepo.findById(branchId).get();
-		if (branch != null) {
-			branchRepo.delete(branch);
+	public String deleteBranch(@PathVariable("branchId") Long branchId, Authentication authentication, RedirectAttributes redirAttr) {
+		try {
+			var branch = branchService.findBranchById(branchId);
+			
+			MyUserDetails user = (MyUserDetails) authentication.getPrincipal();
+			
+			if (!permissionService.authenticateBranch(accountService.findUserByUsername(user.getUsername()), branch.get())) {
+				alertService.createAlert(AlertColour.RED, "You do not have permission to access this branch", redirAttr);
+			}			
+		} catch (NoSuchElementException e) {
+			alertService.createAlert(AlertColour.YELLOW, "Branch could not be found", redirAttr);
 		}
-//		Branch branch = branchRepo.findById(branchId).get();
-//		// TODO: Authenticate when security is in
-//		//if (permissionService.authenticateVendor(user, vendor))
-//		// Temporary solution because no login
-//		// TODO: Link to current admin's vendor ID		
-//		model.addAttribute("branch", branch);
-//		return "manage/branch/update";
+		
+		alertService.createAlert(AlertColour.GREEN, "Branch successfully deleted", redirAttr);
 		return "redirect:/manage/branch/list";
 	}
 }

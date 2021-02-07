@@ -1,12 +1,13 @@
 package io.azuremicroservices.qme.qme.models;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,6 +19,9 @@ import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -66,11 +70,31 @@ public class User {
     )
     private List<Vendor> userVendorPermissions = new ArrayList<Vendor>();    
     
-    @OneToMany(mappedBy = "user")
-    private List<UserBranchPermission> userBranchPermissions;
+    @ManyToMany(cascade=CascadeType.ALL)
+    @JoinTable(
+    		name = "user_branch_permission",
+    		joinColumns = { @JoinColumn(name = "user_id") },
+    		inverseJoinColumns = { @JoinColumn(name = "branch_id") }
+    )
+    private List<Branch> userBranchPermissions;
 
-    @OneToMany(mappedBy = "user")
-    private List<UserQueuePermission> userQueuePermissions;
+    @ManyToMany(cascade=CascadeType.ALL)
+    @JoinTable(
+    		name = "user_queue_permission",
+    		joinColumns = { @JoinColumn(name = "user_id") },
+    		inverseJoinColumns = { @JoinColumn(name = "queue_id") }
+    )
+    private List<Queue> userQueuePermissions;
+    
+    public Vendor getUserVendorPermission() {    	
+    	List<Vendor> vendorPermissions = this.getUserVendorPermissions();
+    	// Set to ensure only one vendor permission without changing db design for future proofing
+    	if (this.getUserVendorPermissions().size() != 1) {
+    		throw new RuntimeException("User has more or less than one vendor permission");
+    	} 
+    	
+    	return vendorPermissions.get(0);
+    }     
     
     public LinkedHashMap<String, Integer> getRolePerspectives() {
     	HashMap<Role, Role[]> allowedPerspectives = new HashMap<>();

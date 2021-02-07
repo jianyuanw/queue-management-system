@@ -24,7 +24,7 @@ public class PermissionService {
 	}
 	
 	@Transactional
-	public Vendor getVendorPermission(Long userId) {
+	public Vendor getVendorPermissions(Long userId) {
 		return userRepo.findById(userId).get().getUserVendorPermission();
 	}
 	
@@ -41,7 +41,7 @@ public class PermissionService {
 	@Transactional
 	public boolean authenticateVendor(User user, Vendor vendor) {
 		boolean authenticated = false;
-		if (this.getVendorPermission(user.getId()).equals(vendor)) {
+		if (this.getVendorPermissions(user.getId()).equals(vendor)) {
 			authenticated = true;
 		}
 		
@@ -52,7 +52,7 @@ public class PermissionService {
 	public boolean authenticateBranch(User user, Branch branch) {
 		List<Role> authenticatedRoles = new ArrayList<>(List.of(Role.VENDOR_ADMIN));
 		boolean authenticated = false;
-		if (user.getUserBranchPermissions().contains(branch)) {
+		if (this.getBranchPermissions(user.getId()).contains(branch)) {
 			authenticated = true;
 		} else if (authenticatedRoles.contains(user.getRole()) && this.authenticateVendor(user, branch.getVendor())) {
 			authenticated = true;
@@ -65,7 +65,7 @@ public class PermissionService {
 	public boolean authenticateQueue(User user, Queue queue) {
 		List<Role> authenticatedRoles = new ArrayList<>(List.of(Role.VENDOR_ADMIN, Role.BRANCH_ADMIN));
 		boolean authenticated = false;
-		if (user.getUserQueuePermissions().contains(queue)) {
+		if (this.getQueuePermissions(user.getId()).contains(queue)) {
 			authenticated = true;
 		} else if (authenticatedRoles.contains(user.getRole()) && this.authenticateBranch(user, queue.getBranch())) {
 			authenticated = true;

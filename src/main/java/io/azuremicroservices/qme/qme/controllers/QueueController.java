@@ -9,7 +9,13 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
+import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
+import io.azuremicroservices.qme.qme.models.*;
+import io.azuremicroservices.qme.qme.services.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,11 +26,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import io.azuremicroservices.qme.qme.models.Branch;
-import io.azuremicroservices.qme.qme.models.BranchOperatorNotification;
-import io.azuremicroservices.qme.qme.models.Queue;
-import io.azuremicroservices.qme.qme.models.QueuePosition;
-import io.azuremicroservices.qme.qme.models.Vendor;
 import io.azuremicroservices.qme.qme.services.BranchOperatorNotificationService;
 import io.azuremicroservices.qme.qme.services.QueueService;
 
@@ -33,6 +34,8 @@ public class QueueController {
 
     private final QueueService queueService;
     private final BranchOperatorNotificationService BoNotifyService;
+    @Autowired
+    private PermissionService permissionService;
 
     public QueueController(QueueService queueService,
     		BranchOperatorNotificationService BoNotifyService) {
@@ -69,6 +72,11 @@ public class QueueController {
     
     @GetMapping("/manage-branchAdmin/manageQueue")
     public String showQueueManageForm(Model model) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+		User user = myUserDetails.getUser();
+		List<Queue> queues = permissionService.getQueuePermissions(user.getId());
+		model.addAttribute("queuelist", queues);
 
     	//model.addAttribute("name",queueService.getName());
     	//model.addAttribute("name",queueService.getTimePerClient());

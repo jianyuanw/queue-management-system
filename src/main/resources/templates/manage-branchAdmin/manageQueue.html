@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-	<th:block th:replace="fragments/layout.html :: head"/>
-	<th:block th:replace="fragments/bundle.html :: mdtable"/>
+	<meta charset="UTF-8">
+<!--	<th:block th:replace="fragments/layout.html :: head"/>-->
+<!--	<th:block th:replace="fragments/bundle.html :: mdtable"/>-->
 	<Title>Manage Queue- branchAdmin</Title>
 </head>
 <body>
-	<div th:replace="fragments/layout.html :: header"></div>
+<!--	<div th:replace="fragments/layout.html :: header"></div>-->
 
 	<div class="px-5 py-4">
 		<h2>Manage Queue</h2>
 		
-		//list option   
-		//select vendor
+<!--		//list option   -->
+<!--		//select vendor-->
 		
 		<table id="dataTableH" class="table table-striped table-bordered table-sm">
 			<thead>
@@ -31,8 +32,8 @@
 				<tr th:each="queue:${queuelist}">
 					<td th:text="${queue.name}">ID</td>
 					<td th:text="${queue.timePerClient}">ID</td>
-					<td th:text="${product.notificationPosition}">ID</td>
-					<td th:text="${product.notificationDelay}">ID</td>
+					<td th:text="${queue.notificationPosition}">ID</td>
+					<td th:text="${queue.notificationDelay}">ID</td>
 
 					<td>
 						<a th:href="@{/manage-branchAdmin/manageCounters/}+${queue.id}">
@@ -54,6 +55,6 @@
 		</table>
 	</div>
 
-	<div th:replace="fragments/layout.html :: footer"></div>
+<!--	<div th:replace="fragments/layout.html :: footer"></div>-->
 </body>
 </html>

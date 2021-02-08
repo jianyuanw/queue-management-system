@@ -37,7 +37,7 @@ public class QueueController {
 			 pass user to html and recognize user.getPerspective() to show/not show edit buttons
 			 pass user to html and recognize user.getRole() to show different navigation bar
 			 return "no_permission_error.html" or 404 page for no permission.
-			 
+
 		Use cases relevant with queue
 		Branch operator: advance queue
 						call next in line

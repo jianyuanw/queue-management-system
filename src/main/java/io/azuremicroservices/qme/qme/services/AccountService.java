@@ -64,8 +64,8 @@ public class AccountService {
     }
     
     @Transactional
-    public void changePerspective(MyUserDetails currentDetails, Role perspective) {    	
-    	currentDetails.setPerspective(perspective);
+    public void changePerspective(MyUserDetails details, Role perspective) {
+    	userRepo.updateUserPerspective(details.getUser().getId(),perspective);
 //    	User user = this.findUserByUsername(currentDetails.getUsername());
 //    	if (user.getRolePerspectives().containsKey(perspective.getDisplayValue())) {
 //    		user.setPerspective(perspective);

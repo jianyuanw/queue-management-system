@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>qMe - Login</title>
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+    <style>
+        #container {
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="fragments/layout.html :: navbar"></div>
+
+        <div class="m-4">
+            <div class="mx-auto text-center" id="container">
+                <h3 class="font-weight-bold">Welcome to qMe+<sup>+</sup>!</h3>
+                <h3 class="mb-4">Please login to proceed.</h3>
+                <form th:action="@{/login}" method="post">
+                    <input type="text" class="form-control form-control-lg mb-4" placeholder="Username" name="username" autofocus>
+                    <input type="password" class="form-control form-control-lg mb-4" placeholder="Password" name="password">
+                    <h5 class="h5 text-danger text-left" th:text="${error}"></h5>
+                    <button type="submit" class="btn btn-info btn-block mb-4 p-2"><h5 class="m-0">Login</h5></button>
+                </form>
+            </div>
+        </div>
+
+    <div th:replace="fragments/layout.html :: footer"></div>
+</body>
+</html>

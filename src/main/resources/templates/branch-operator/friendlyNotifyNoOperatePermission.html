@@ -1,15 +1,20 @@
 <!DOCTYPE html>
-<html lang="en"
-      xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>qMe</title>
     <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+    <title>Not allowed perspective</title>
 </head>
 <body>
 <div th:replace="fragments/layout.html :: navbar"></div>
-<h2 class="text-center">Sorry! Current perspective is not allowed. Please change your perspective.</h2>
+
+<p class="text-center h2 mt-4">Current Perspective is not allowed</p>
+<p class="text-center">Please switch your perspective and try again.</p>
+<div class="text-center mb-4">
+    <a th:href="@{/}">
+        <button class="btn btn-primary">Go to homepage</button>
+    </a>
+</div>
+
 <div th:replace="fragments/layout.html :: footer"></div>
 </body>
 </html>

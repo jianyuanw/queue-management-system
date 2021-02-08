@@ -62,15 +62,15 @@ public class AccountService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepo.save(user);
     }
-    
+
     @Transactional
-    public void changePerspective(MyUserDetails details, Role perspective) {
-    	userRepo.updateUserPerspective(details.getUser().getId(),perspective);
+    public void changePerspective(MyUserDetails currentDetails, Role perspective) {
+        currentDetails.setPerspective(perspective);
 //    	User user = this.findUserByUsername(currentDetails.getUsername());
 //    	if (user.getRolePerspectives().containsKey(perspective.getDisplayValue())) {
 //    		user.setPerspective(perspective);
 //    	}
-    	// userRepo.save(user);    	    	
+        // userRepo.save(user);
     }
 
     public void createVendorAdmin(User user, Vendor vendor) {

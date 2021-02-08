@@ -11,8 +11,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -70,6 +69,16 @@ public class OperateQueueController {
         model.addAttribute("queues",queues);
         model.addAttribute("branches",branches);
         return "branch-operator/viewQueuePage";
+    }
 
+    @PostMapping("/UpdateQueueState/{queueId}")
+    public String updateQueueState(@PathVariable("queueId") Long queueId) {
+        queueService.updateQueueState(queueId);
+        return "redirect:/OperateQueue/ViewQueue";
+    }
+
+    @GetMapping("/ViewSelectedQueue/{queueId}")
+    public String viewSelectedQueue(@PathVariable("queueId") Long queueId) {
+        return redirectTo404Page();
     }
 }

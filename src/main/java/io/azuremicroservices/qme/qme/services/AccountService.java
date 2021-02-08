@@ -30,19 +30,11 @@ public class AccountService {
     }
 
     public boolean usernameExists(String username) {
-        if (userRepo.findByUsername(username) != null) {
-            return true;
-        } else {
-            return false;
-        }
+        return userRepo.findByUsername(username) != null;
     }
 
     public boolean emailExists(String email) {
-        if (userRepo.findByEmail(email) != null) {
-            return true;
-        } else {
-            return false;
-        }
+        return userRepo.findByEmail(email) != null;
     }
 
     public User findUserByUsername(String username) {

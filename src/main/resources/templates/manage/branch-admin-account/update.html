@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <title>Update Vendor Account</title>
+    <meta charset="UTF-8">
+
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+</head>
+<body>
+    <div th:replace="fragments/layout.html :: navbar"></div>
+	<form class="text-center border border-light p-5" th:action="@{/manage/branch-admin-account/update}" method="post" th:object="${branchAdminAcc}">
+		<input type="hidden" th:field="${branchAdminAcc.id}">
+		<input type="hidden" th:field="${branchAdminAcc.password}">
+		<input type="hidden" th:field="${branchAdminAcc.perspective}">
+		<input type="hidden" th:field="${branchAdminAcc.role}">
+		<input type="hidden" th:field="${branchAdminAcc.username}">
+
+		<label class="form-label" for="BranchAdminAccFirstName">First Name</label>
+		<input type="text" id="BranchAdminAccFirstName" class="form-control form-control-lg mb-3" placeholder="First Name" th:field="*{firstName}" autofocus>
+		<p class="text-danger text-left" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></p>
+
+		<label class="form-label" for="BranchAdminAccLastName">Last Name</label>
+		<input type="text" id="BranchAdminAccLastName" class="form-control form-control-lg mb-3" placeholder="Last Name" th:field="*{lastName}" autofocus>
+		<p class="text-danger text-left" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></p>
+
+		<label class="form-label" for="BranchAdminemail">Email</label>
+		<input type="text" id="BranchAdminemail" class="form-control form-control-lg mb-3" placeholder="E-mail" th:field="*{email}">
+		<p class="text-danger text-left" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+
+		<label class="form-label" for="BranchAdminhandphoneno">Mobile Number</label>
+		<input type="number" id="BranchAdminhandphoneno" class="form-control form-control-lg mb-3" placeholder="Mobile Number" th:field="*{handphoneNo}">
+		<p class="text-danger text-left" th:if="${#fields.hasErrors('handphoneNo')}" th:errors="*{handphoneNo}"></p>
+
+		<button type="submit" class="btn btn-info btn-block mb-4 p-2"><h5 class="m-0">Save</h5></button>
+	</form>
+	<script type="text/javascript" th:src="@{/js/account/create-client.js}"></script>
+<!--	<form class="text-center border border-light p-5" method="post" th:action="@{/manage/branch-admin-account/update}">-->
+<!--	-->
+<!--	    <p class="h4 mb-4">Branch Admin Account</p>-->
+<!--	    -->
+<!--	    <input type="hidden" th:field="${branchAdminAcc.id}">-->
+<!--	    -->
+<!--	    <div class="form-row mb-4">-->
+<!--	        <div class="col form-group">-->
+<!--	        	<label class="form-label" for="BranchAdminAccFirstName">First Name</label>-->
+<!--	            <input type="text" id="BranchAdminAccFirstName" class="form-control" th:field="${branchAdminAcc.firstName}">-->
+<!--	        </div>-->
+<!--	        -->
+<!--	        <div class="col form-group">-->
+<!--	        	<label class="form-label" for="BranchAdminAccLastName">Last Name</label>-->
+<!--	            <input type="text" id="BranchAdminAccLastName" class="form-control" th:field="${branchAdminAcc.lastName}">-->
+<!--	        </div>-->
+<!--	        -->
+<!--	        		        -->
+<!--	    </div>-->
+<!--	    -->
+<!--	    <div class="form-row mb-4">-->
+<!--	        <div class="col form-group">-->
+<!--	        	<label class="form-label" for="BranchAdminAccEmail">Email</label>-->
+<!--	            <input type="text" id="BranchAdminAccEmail" class="form-control" th:field="${branchAdminAcc.email}" required>-->
+<!--	        </div>-->
+<!--	        -->
+<!--	        <div class="col form-group">-->
+<!--	        	<label class="form-label" for="BranchAdminAccHandphoneNo">Handphone Number</label>-->
+<!--	            <input type="text" id="BranchAdminAccHandphoneNo" class="form-control" th:field="${branchAdminAcc.handphoneNo}">-->
+<!--	        </div>	        -->
+<!--	    </div>-->
+<!--	-->
+<!--	    <div class="form-row mb-4">-->
+<!--	        <div class="col form-group">-->
+<!--	        	<label class="form-label" for="BranchAdminAccUsername">Username</label>-->
+<!--	            <input type="text" id="BranchAdminAccUsername" class="form-control" th:field="${branchAdminAcc.username}" required>-->
+<!--	        </div>-->
+<!--	        -->
+<!--&lt;!&ndash;	        <div class="col form-group">&ndash;&gt;-->
+<!--&lt;!&ndash;	        	<label class="form-label" for="BranchAdminAccPassword">Password</label>&ndash;&gt;-->
+<!--&lt;!&ndash;	            <input type="text" id="BranchAdminAccPassword" class="form-control" th:field="${branchAdminAcc.password}" required>&ndash;&gt;-->
+<!--&lt;!&ndash;	        </div>	        &ndash;&gt;-->
+<!--	    </div>	    -->
+<!--	     -->
+<!--	    <input type="hidden" th:field="${branchAdminAcc.role}">-->
+<!--	    -->
+<!--	    <button class="btn btn-info my-4 btn-block" type="submit">Submit</button>-->
+<!--	-->
+<!--	</form>	-->
+
+    <div th:replace="fragments/layout.html :: footer"></div>
+</body>
+</html>

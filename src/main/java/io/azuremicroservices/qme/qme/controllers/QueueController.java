@@ -31,6 +31,13 @@ import io.azuremicroservices.qme.qme.services.QueueService;
 @Controller
 public class QueueController {
 	/*
+		Feature available control:
+			 List<User.Role> permittedRoleForViewQueue : contains allowed roles for view
+			 List<User.Role> permittedRoleForEditQueue : contains allowed roles for edit
+			 pass user to html and recognize user.getPerspective() to show/not show edit buttons
+			 pass user to html and recognize user.getRole() to show different navigation bar
+			 return "no_permission_error.html" or 404 page for no permission.
+
 		Use cases relevant with queue
 		Branch operator: advance queue
 						call next in line
@@ -53,7 +60,8 @@ public class QueueController {
 		App admin:
 	 */
 
-	private final List<User.Role> permittedRoleForQueueOperation = Arrays.asList(User.Role.BRANCH_OPERATOR, User.Role.BRANCH_ADMIN, User.Role.VENDOR_ADMIN, User.Role.APP_ADMIN);
+	private final List<User.Role> permittedRoleForViewQueue = Arrays.asList(User.Role.BRANCH_OPERATOR, User.Role.BRANCH_ADMIN, User.Role.VENDOR_ADMIN);
+	private final List<User.Role> permittedRoleForEditQueue = Arrays.asList(User.Role.BRANCH_OPERATOR);
 
     private final QueueService queueService;
     private final BranchOperatorNotificationService BoNotifyService;
@@ -98,11 +106,12 @@ public class QueueController {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
 		User user = myUserDetails.getUser();
-		if(!permittedRoleForQueueOperation.contains(user.getRole()))
+		if(!permittedRoleForViewQueue.contains(user.getRole()))
 			return "/no_permission_error";
 
 		List<Queue> queues = permissionService.getQueuePermissions(user.getId());
 		model.addAttribute("queuelist", queues);
+		model.addAttribute("user",user);
     	return "manage-branchAdmin/manageQueue";
     }
     

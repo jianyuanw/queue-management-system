@@ -49,7 +49,7 @@ public class ManageAppAdminAccountController {
 		if(bindingResult.hasErrors()) {
 			return "manage/app-admin-account/create";
 		}
-		accountService.createAppAdmin(user);
+		accountService.createUser(user, Role.APP_ADMIN);
 		alertService.createAlert(AlertColour.GREEN, "App Admin Account successfully created", redirAttr);
 		
 		return "redirect:/manage/app-admin-account/list";
@@ -57,24 +57,44 @@ public class ManageAppAdminAccountController {
 	}
 	
 	@GetMapping("/update/{appAdminAccId}")
-	public String UpdateAppAdminAccountForm(Model model, @PathVariable("appAdminAccId") Long appAdminAccId) {
-		model.addAttribute("appAdminAcc", accountService.findUserById(appAdminAccId));
+	public String UpdateAppAdminAccountForm(Model model, @PathVariable("appAdminAccId") Long appAdminAccId, RedirectAttributes redirAttr) {
+		var appAdmin = accountService.findUserById(appAdminAccId);
+		if (appAdmin.isEmpty()) {
+			alertService.createAlert(AlertColour.YELLOW, "App Admin Account not found", redirAttr);
+			return "redirect:/manage/app-admin-account/list";
+		} else {
+			model.addAttribute("appAdminAcc", accountService.findUserById(appAdminAccId));
+		}
+		
 		return "manage/app-admin-account/update";
 	}
 	
 	@PostMapping("/update")
 	public String updateVendor(@ModelAttribute @Valid User appAdminAcc, BindingResult bindingResult, RedirectAttributes redirAttr) {
+        if (accountService.usernameExists(appAdminAcc.getUsername())) {
+            bindingResult.rejectValue("username", "error.username", "Username exists.");
+        }
+        if (accountService.emailExists(appAdminAcc.getEmail())) {
+            bindingResult.rejectValue("email", "error.email", "Email exists.");
+        }		
 		if (bindingResult.hasErrors()) {
 			return "manage/app-admin-account/update";
 		} else {
 			accountService.updateUser(appAdminAcc);
-		}alertService.createAlert(AlertColour.GREEN, "App Admin Account successfully updated", redirAttr);
+		}
+		alertService.createAlert(AlertColour.GREEN, "App Admin Account successfully updated", redirAttr);
 		return "redirect:/manage/app-admin-account/list"; 
 	} 
 	
 	@GetMapping("/delete/{appAdminAccId}")
 	public String deleteVendor(@PathVariable("appAdminAccId") Long appAdminAccId, RedirectAttributes redirAttr) {
-		accountService.deleteUserById(appAdminAccId);
+		var appAdminAcc = accountService.findUserById(appAdminAccId);
+
+		if (appAdminAcc.isEmpty()) {
+			alertService.createAlert(AlertColour.YELLOW, "App Admin Account not found", redirAttr);
+			return "redirect:/manage/app-admin-account/list";			
+		}
+		
 		alertService.createAlert(AlertColour.GREEN, "App Admin Account successfully deleted", redirAttr);
 		return "redirect:/manage/app-admin-account/list";
 	}

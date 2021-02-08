@@ -44,6 +44,10 @@ public class BranchService {
 	
 	public boolean branchNameExistsForVendor(String branchName, Long vendorId) {
 		return branchRepo.findAllByVendor_IdAndName(vendorId, branchName).size() > 0;
+	}
+
+	public void deleteBranch(Branch branch) {
+		branchRepo.delete(branch);
 	}	
 	
 }

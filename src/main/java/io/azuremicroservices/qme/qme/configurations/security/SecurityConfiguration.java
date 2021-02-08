@@ -75,7 +75,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     };
 
     private final String[] BRANCH_OPERATOR_URLS = {
-            "/BranchOperator"
+            "/OperateQueue/ViewQueue"
 
     };
 

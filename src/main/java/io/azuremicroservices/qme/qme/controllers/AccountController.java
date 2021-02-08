@@ -1,6 +1,7 @@
 package io.azuremicroservices.qme.qme.controllers;
 
 import io.azuremicroservices.qme.qme.models.User;
+import io.azuremicroservices.qme.qme.models.User.Role;
 import io.azuremicroservices.qme.qme.services.AccountService;
 import io.azuremicroservices.qme.qme.services.AlertService;
 import org.springframework.stereotype.Controller;
@@ -104,7 +105,7 @@ public class AccountController {
         if (bindingResult.hasErrors()) {
             return "account/register-client";
         }
-        accountService.createClient(user);
+        accountService.createUser(user, Role.CLIENT);
         return "account/temp-register-success"; // TODO: Proper landing page
     }
 

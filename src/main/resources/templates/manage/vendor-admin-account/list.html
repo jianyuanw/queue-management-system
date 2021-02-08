@@ -26,24 +26,24 @@
 				<th class="col">Actions</th>
 			</tr>
 		</thead>
-		<tbody th:each="vendor : ${vendorAccounts}" th:remove="tag">
+		<tbody th:each="vendorAdmin : ${vendorAdminAccounts}" th:remove="tag">
 			<tr class="row">
-				<td class="col" th:text="${vendor.firstName}"></td>
-				<td class="col" th:text="${vendor.lastName}"></td>
-				<td class="col" th:text="${vendor.handphoneNo}"></td>
-				<td class="col" th:text="${vendor.username}"></td>
-				<td class="col" th:text="${vendor.role.getDisplayValue()}"></td>
+				<td class="col" th:text="${vendorAdmin.firstName}"></td>
+				<td class="col" th:text="${vendorAdmin.lastName}"></td>
+				<td class="col" th:text="${vendorAdmin.handphoneNo}"></td>
+				<td class="col" th:text="${vendorAdmin.username}"></td>
+				<td class="col" th:text="${vendorAdmin.role.getDisplayValue()}"></td>
 				<td class="col">
 					
-					<a th:href="@{/manage/vendor-account/update/__${vendor.id}__}">
-						<i class="fas fa-edit fa-lg" title="Edit Vendor Account"></i>
+					<a th:href="@{/manage/vendor-admin-account/update/__${vendorAdmin.id}__}">
+						<i class="fas fa-edit fa-lg" title="Edit Vendor Admin Account"></i>
 					</a>
 					
-      				<a href="#"><i class="fas fa-trash-alt fa-lg" data-toggle="modal" th:data-target="${'#deleteConfirm' + vendor.id}" title="Delete Vendor Account"></i></a>
+      				<a href="#"><i class="fas fa-trash-alt fa-lg" data-toggle="modal" th:data-target="${'#deleteConfirm' + vendorAdmin.id}" title="Delete Vendor Account"></i></a>
       				
 					<th:block th:insert="fragments/support-elements.html :: modalbox-red"
-						th:with="modalId=${'deleteConfirm' + vendor.id},modalTitle=${'Confirm Deletion'},modalBody=${'Are you sure you want to delete ' + vendor.username + '?'},
-							modalConfirm=${'Delete'},confirmUrl=${'/manage/vendor-account/delete/' + vendor.id}">
+						th:with="modalId=${'deleteConfirm' + vendorAdmin.id},modalTitle=${'Confirm Deletion'},modalBody=${'Are you sure you want to delete ' + vendorAdmin.username + '?'},
+							modalConfirm=${'Delete'},confirmUrl=${'/manage/vendor-admin-account/delete/' + vendorAdmin.id}">
 					</th:block>
 				</td>
 			</tr>

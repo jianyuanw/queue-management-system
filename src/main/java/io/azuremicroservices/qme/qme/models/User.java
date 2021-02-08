@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -20,9 +19,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
+import io.azuremicroservices.qme.qme.annotations.UniqueEmail;
+import io.azuremicroservices.qme.qme.annotations.UniqueUsername;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -37,6 +35,7 @@ public class User {
 
     @NotEmpty(message = "Username must not be empty")
     @Pattern(regexp = "[A-Za-z0-9.]+", message = "Username must only contain alphanumeric characters and period")
+    @UniqueUsername
     private String username;
 
     @NotEmpty(message = "Password must not be empty")
@@ -44,6 +43,7 @@ public class User {
 
     @Email(message = "Email must be valid")
     @NotEmpty(message = "Email must not be empty")
+    @UniqueEmail
     private String email;
 
     private String handphoneNo;

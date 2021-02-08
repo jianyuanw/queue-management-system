@@ -64,9 +64,6 @@ public class ManageBranchController {
 	
 	@PostMapping("/create")
 	public String createBranch(@ModelAttribute @Valid Branch branch, BindingResult bindingResult, RedirectAttributes redirAttr) {
-		if (branchService.branchNameExistsForVendor(branch.getName(), branch.getVendor().getId())) {
-			bindingResult.rejectValue("name", "error.name", "Branch name already exists");
-		}
 		if (bindingResult.hasErrors()) {
 			return "manage/branch/create";
 		} else {

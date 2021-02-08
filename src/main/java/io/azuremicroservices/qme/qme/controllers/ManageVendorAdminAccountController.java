@@ -53,6 +53,7 @@ public class ManageVendorAdminAccountController {
 		}
 		model.addAttribute("vendor", vendorService.findVendorById(vendorId));
 		model.addAttribute("user", new User());
+		
 		return "manage/vendor-admin-account/create";
 	}
 	

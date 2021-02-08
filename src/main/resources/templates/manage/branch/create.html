@@ -22,7 +22,7 @@
 	    <div class="form-row mb-4">
 	        <div class="col form-group">
 	        	<label class="form-label" for="branchName">Branch name</label>
-	            <input type="text" id="branchName" class="form-control" th:field="*{name}" >
+	            <input type="text" id="branchName" class="form-control" th:field="*{name}" required>
 	            <p class="text-danger text-left" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>            
 	        </div>
 	        

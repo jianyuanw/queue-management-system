@@ -64,30 +64,30 @@ public class ManageBranchController {
 	
 	@PostMapping("/create")
 	public String createBranch(@ModelAttribute @Valid Branch branch, BindingResult bindingResult, RedirectAttributes redirAttr) {
+		if (branchService.branchNameExistsForVendor(branch.getName(), branch.getVendor().getId())) {
+			bindingResult.rejectValue("name", "error.name", "Branch name already exists");
+		}
 		if (bindingResult.hasErrors()) {
 			return "manage/branch/create";
 		} else {
 			branchService.createBranch(branch);
 		}
+		
 		alertService.createAlert(AlertColour.GREEN, "Branch successfully created", redirAttr);
 		return "redirect:/manage/branch/list";
 	}
 	
 	@GetMapping("/update/{branchId}")
 	public String initUpdateBranchForm(Model model, @PathVariable("branchId") Long branchId, Authentication authentication, RedirectAttributes redirAttr) {
-		try {
-			var branch = branchService.findBranchById(branchId);
-			
-			MyUserDetails user = (MyUserDetails) authentication.getPrincipal();
-			
-			if (!permissionService.authenticateBranch(accountService.findUserByUsername(user.getUsername()), branch.get())) {
-				alertService.createAlert(AlertColour.RED, "You do not have permission to access this branch", redirAttr);
-				return "redirect:/manage/branch/list";
-			}
-			model.addAttribute("branch", branch.get());
-		} catch (NoSuchElementException e) {
-			alertService.createAlert(AlertColour.YELLOW, "Branch could not be found", redirAttr);
+		var branch = branchService.findBranchById(branchId);
+		
+		MyUserDetails user = (MyUserDetails) authentication.getPrincipal();
+		
+		if (branch.isEmpty() || !permissionService.authenticateBranch(accountService.findUserByUsername(user.getUsername()), branch.get())) {
+			alertService.createAlert(AlertColour.YELLOW, "Branch could not be found", redirAttr);			
 			return "redirect:/manage/branch/list";
+		} else {
+			model.addAttribute("branch", branch.get());
 		}
 		
 		return "manage/branch/update";
@@ -95,9 +95,6 @@ public class ManageBranchController {
 
 	@PostMapping("/update")
 	public String updateBranch(@ModelAttribute @Valid Branch branch, BindingResult bindingResult, @PathParam("branchId") Long branchId, RedirectAttributes redirAttr) {
-		if (branchService.branchNameExistsForVendor(branch.getName(), branch.getVendor().getId())) {
-			bindingResult.rejectValue("name", "error.name", "Branch name already exists");
-		}
 		if (bindingResult.hasErrors()) {
 			return "manage/branch/update";
 		} else {

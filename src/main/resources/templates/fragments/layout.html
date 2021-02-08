@@ -54,36 +54,52 @@
 					<th:block th:switch="${#strings.toLowerCase(#strings.replace(user.getPerspective(), ' ', ''))}">
 						<ul th:case="appadmin" class="navbar-nav mr-auto">
 						    <li class="nav-item">
-						        <a class="nav-link" href="#">Manage Vendors
-						        </a>
-						    </li>
-						    <li class="nav-item">
 						        <a class="nav-link" href="#">Support Tickets</a>
 						    </li>
+		                	<li class="nav-item dropdown">
+		                        <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle"
+		                           data-toggle="dropdown" id="navbarDropdownMenuLink-333">
+		                           Manage
+		                        </a>
+		                        <div aria-labelledby="navbarDropdownMenuLink-333"
+		                             class="dropdown-menu dropdown-menu-right dropdown-default">
+		                        	<a class="dropdown-item" th:href="@{/manage/vendor/list}">Vendors</a>
+		                        	<a class="dropdown-item" th:href="@{/manage/app-admin-account/list}">App Admins</a>
+		                        </div>
+		                    </li>						    
+						    
 						</ul>
 		                <ul th:case="vendoradmin" class="navbar-nav mr-auto">
-		                    <li class="nav-item">
-		                        <a class="nav-link" href="#">Manage Branches
+		                	<li class="nav-item dropdown">
+		                        <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle"
+		                           data-toggle="dropdown" id="navbarDropdownMenuLink-333">
+		                           Manage
 		                        </a>
-		                    </li>
-		                    <li class="nav-item">
-		                        <a class="nav-link" href="#">Manage Branch Admin Accounts</a>
-		                    </li>
+		                        <div aria-labelledby="navbarDropdownMenuLink-333"
+		                             class="dropdown-menu dropdown-menu-right dropdown-default">
+		                        	<a class="dropdown-item" th:href="@{/manage/branch/list}">Branches</a>
+		                        	<a class="dropdown-item" th:href="@{/manage/branch-admin-account/list}">Branch Admins</a>
+		                        </div>
+		                    </li>			                
 		                </ul>
 		                <ul th:case="branchadmin" class="navbar-nav mr-auto">
 		                    <li class="nav-item">
 		                        <a class="nav-link" href="#">Dashboard	                            
 		                        </a>
 		                    </li>
-		                    <li class="nav-item">
-		                        <a class="nav-link" href="#">Manage Queues</a>
-		                    </li>
-		                    <li class="nav-item">
-		                        <a class="nav-link" href="#">Manage Operator Accounts</a>
-		                    </li>
-		                    <li class="nav-item">
-		                        <a class="nav-link" href="#">Manage Counters</a>
-		                    </li>
+		                    
+		                	<li class="nav-item dropdown">
+		                        <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle"
+		                           data-toggle="dropdown" id="navbarDropdownMenuLink-333">
+		                           Manage
+		                        </a>
+		                        <div aria-labelledby="navbarDropdownMenuLink-333"
+		                             class="dropdown-menu dropdown-menu-right dropdown-default">
+		                        	<a class="dropdown-item" href="#">Queues</a>
+		                        	<a class="dropdown-item" href="#">Branch Operators</a>
+		                        	<a class="dropdown-item" href="#">Counters</a>
+		                        </div>
+		                    </li>			                    
 		                </ul>
 		                <ul th:case="branchoperator" class="navbar-nav mr-auto">
 		                    <li class="nav-item">

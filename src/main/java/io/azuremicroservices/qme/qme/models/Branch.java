@@ -33,7 +33,7 @@ public class Branch {
     private Vendor vendor;
 
     @NotEmpty(message = "Branch name must not be empty")
-    @Pattern(regexp = "[A-Za-z0-9']+", message = "Branch name must only contain alphanumeric characters, spaces and single quotes")    
+    @Pattern(regexp = "[A-Za-z0-9' ]+", message = "Branch name must only contain alphanumeric characters, spaces and single quotes")    
     private String name;
 
     @NotEmpty(message = "Branch address must not be empty")

@@ -20,12 +20,14 @@
 	    <div class="form-row mb-4">
 	        <div class="col form-group">
 	        	<label class="form-label" for="appAdminAccountFirstName">First Name</label>
-	            <input type="text" id="appAdminAccountFirstName" class="form-control" th:field="*{firstName}">	            
+	            <input type="text" id="appAdminAccountFirstName" class="form-control" th:field="*{firstName}">
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></p>	            
 	        </div>
 	        
 	        <div class="col form-group">
 	        	<label class="form-label" for="appAdminAccountLastName">Last Name</label>
-	            <input type="text" id="appAdminAccountLastName" class="form-control" th:field="*{lastName}">	            
+	            <input type="text" id="appAdminAccountLastName" class="form-control" th:field="*{lastName}">
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></p>            
 	        </div>
 	        
 	        		        
@@ -34,24 +36,28 @@
 	    <div class="form-row mb-4">
 	        <div class="col form-group">
 	        	<label class="form-label" for="appAdminAccountEmail">Email</label>
-	            <input type="text" id="appAdminAccountEmail" class="form-control" th:field="*{email}" required>	            
+	            <input type="text" id="appAdminAccountEmail" class="form-control" th:field="*{email}" required>	
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>            
 	        </div>
 	        
 	        <div class="col form-group">
 	        	<label class="form-label" for="appAdminAccountHandphoneNo">Handphone Number</label>
-	            <input type="text" id="appAdminAccountHandphoneNo" class="form-control" th:field="*{handphoneNo}">	            
+	            <input type="text" id="appAdminAccountHandphoneNo" class="form-control" th:field="*{handphoneNo}">
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('handphoneNo')}" th:errors="*{handphoneNo}"></p>	            
 	        </div>	        
 	    </div>
 	
 	    <div class="form-row mb-4">
 	        <div class="col form-group">
 	        	<label class="form-label" for="appAdminAccountUsername">Username</label>
-	            <input type="text" id="appAdminAccountUsername" class="form-control" th:field="*{username}" required>	            
+	            <input type="text" id="appAdminAccountUsername" class="form-control" th:field="*{username}" required>
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>            
 	        </div>
 	        
 	        <div class="col form-group">
 	        	<label class="form-label" for="appAdminAccountPassword">Password</label>
-	            <input type="text" id="appAdminAccountPassword" class="form-control" th:field="*{password}" required>	            
+	            <input type="text" id="appAdminAccountPassword" class="form-control" th:field="*{password}" required>
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>         
 	        </div>	        
 	    </div>	    
 	    

@@ -113,4 +113,14 @@ public class QueueService {
             }, AsyncTaskExecutor.TIMEOUT_IMMEDIATE);
         });
     }
+
+    public void updateQueueState(Long queueId) {
+        Queue q = findQueue(queueId);
+        Queue.State currentState = q.getState();
+        if(currentState.equals(Queue.State.CLOSED))
+            q.setState(Queue.State.OPEN);
+        else
+            q.setState(Queue.State.CLOSED);
+        queueRepo.save(q);
+    }
 }

@@ -29,8 +29,17 @@
             <td ><span th:text="${queue.getName()}">QueueName</span></td>
             <td><span th:if="${queue.getState().ordinal()}==0" text="Closed">Closed</span><span th:if="${queue.getState().ordinal()}==1" text="Open">Open</span></td>
             <td><span th:text="${queuesWithPax.get(queue.getId())}">Pax</span></td>
-            <td>ViewQueueButton</td>
-            <td>Open/CloseButton</td>
+            <td>
+                <form method="get" th:action="@{/OperateQueue/ViewSelectedQueue/{qId}(qId=${queue.getId()})}" >
+                    <input type="submit" value="ViewQueue" />
+                </form>
+            </td>
+            <td>
+                <form method="post" th:action="@{/OperateQueue/UpdateQueueState/{qId}(qId=${queue.getId()})}" >
+                    <input th:if="${queue.getState().ordinal()==0}" type="submit" value="Open" />
+                    <input th:if="${queue.getState().ordinal()==1}" type="submit" value="Close" />
+                </form>
+            </td>
         </tr>
     </tbody>
 </table>

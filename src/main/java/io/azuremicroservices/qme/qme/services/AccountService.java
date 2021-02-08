@@ -10,6 +10,7 @@ import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
 import io.azuremicroservices.qme.qme.models.User;
 import io.azuremicroservices.qme.qme.models.User.Role;
 import io.azuremicroservices.qme.qme.models.Vendor;
+import io.azuremicroservices.qme.qme.models.Branch;
 
 import io.azuremicroservices.qme.qme.repositories.UserRepository;
 
@@ -63,5 +64,10 @@ public class AccountService {
     	user.setRole(Role.VENDOR_ADMIN);
     	user.getUserVendorPermissions().add(vendor);
     	userRepo.save(user);
-    }  
+    }
+    public void createBranchAdmin(User user, Branch branch) {
+    	user.setRole(Role.BRANCH_ADMIN);
+//    	user.getUserVendorPermissions().add(vendor);
+    	userRepo.save(user);
+    }
 }

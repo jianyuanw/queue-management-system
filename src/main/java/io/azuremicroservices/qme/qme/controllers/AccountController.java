@@ -96,12 +96,6 @@ public class AccountController {
 
     @PostMapping("/register")
     public String registerClient(@Valid User user, BindingResult bindingResult) {
-        if (accountService.usernameExists(user.getUsername())) {
-            bindingResult.rejectValue("username", "error.username", "Username exists.");
-        }
-        if (accountService.emailExists(user.getEmail())) {
-            bindingResult.rejectValue("email", "error.email", "Email exists.");
-        }
         if (bindingResult.hasErrors()) {
             return "account/register-client";
         }

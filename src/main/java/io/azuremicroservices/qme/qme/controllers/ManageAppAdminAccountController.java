@@ -70,13 +70,7 @@ public class ManageAppAdminAccountController {
 	}
 	
 	@PostMapping("/update")
-	public String updateVendor(@ModelAttribute @Valid User appAdminAcc, BindingResult bindingResult, RedirectAttributes redirAttr) {
-        if (accountService.usernameExists(appAdminAcc.getUsername())) {
-            bindingResult.rejectValue("username", "error.username", "Username exists.");
-        }
-        if (accountService.emailExists(appAdminAcc.getEmail())) {
-            bindingResult.rejectValue("email", "error.email", "Email exists.");
-        }		
+	public String updateVendor(@ModelAttribute @Valid User appAdminAcc, BindingResult bindingResult, RedirectAttributes redirAttr) {	
 		if (bindingResult.hasErrors()) {
 			return "manage/app-admin-account/update";
 		} else {

@@ -3,9 +3,8 @@ package io.azuremicroservices.qme.qme.services;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.transaction.Transactional;
-
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.azuremicroservices.qme.qme.models.Branch;
 import io.azuremicroservices.qme.qme.models.Queue;
@@ -38,7 +37,7 @@ public class PermissionService {
 		return vendors.get(0);
 	}
 	
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<Branch> getBranchPermissions(Long userId) {
 		List<Branch> branchPermissions = userRepo.findById(userId).get().getUserBranchPermissions();
 		
@@ -51,7 +50,7 @@ public class PermissionService {
 		return branchPermissions;
 	}
 	
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<Queue> getQueuePermissions(Long userId) {
 		List<Queue> queuePermissions = userRepo.findById(userId).get().getUserQueuePermissions();
 		
@@ -64,7 +63,7 @@ public class PermissionService {
 		return queuePermissions;
 	}	
 	
-	@Transactional
+	@Transactional(readOnly = true)
 	public boolean authenticateVendor(User user, Vendor vendor) {
 		boolean authenticated = false;
 		if (this.getVendorPermission(user.getId()).equals(vendor)) {
@@ -74,7 +73,7 @@ public class PermissionService {
 		return authenticated;
 	}
 	
-	@Transactional
+	@Transactional(readOnly = true)
 	public boolean authenticateBranch(User user, Branch branch) {
 		boolean authenticated = false;
 		if (this.getBranchPermissions(user.getId()).contains(branch)) {
@@ -84,7 +83,7 @@ public class PermissionService {
 		return authenticated;
 	}
 	
-	@Transactional
+	@Transactional(readOnly = true)
 	public boolean authenticateQueue(User user, Queue queue) {
 		boolean authenticated = false;
 		if (this.getQueuePermissions(user.getId()).contains(queue)) {

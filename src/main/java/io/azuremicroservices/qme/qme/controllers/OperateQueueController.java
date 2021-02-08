@@ -31,11 +31,25 @@ public class OperateQueueController {
     @Autowired
     private QueueService queueService;
 
+    private User cUser;
+    private Vendor cVendor;
+    private List<Branch> cBranches;
+    private HashSet<Branch> cUniqueBranches;
+    private List<Queue> cQueues;
+
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
         User user = myUserDetails.getUser();
         return user;
+    }
+
+    public void pullUpdatedUserVendorBranchesQueues() {
+        cUser = getCurrentUser();
+        cVendor = null;    // currently not figure out how to find vendor for non vendoradmin user
+        cBranches = permissionService.getBranchPermissions(cUser.getId());
+        cQueues = permissionService.getQueuePermissions(cUser.getId());
+        cUniqueBranches = new HashSet<>(cBranches);
     }
 
     public String redirectToNoOperatePermissionPage() {
@@ -53,21 +67,19 @@ public class OperateQueueController {
 
     @GetMapping("/ViewQueue")
     public String operatorViewQueue(Model model) {
-        User user = getCurrentUser();
-        List<Queue> queues = permissionService.getQueuePermissions(user.getId());
+        pullUpdatedUserVendorBranchesQueues();
+
         HashMap<Long, Integer> queueIdWithCurrentPax = new HashMap<>();
-        HashSet<Branch> branches = new HashSet<>();
-        for (Queue queue: queues) {
+        for (Queue queue: cQueues) {
             List<QueuePosition> queuePositions = queueService.findActiveQueuePositionsForPrototype(queue.getId());
             int pax = queuePositions.size();
             queueIdWithCurrentPax.put(queue.getId(),pax);
-            branches.add(queue.getBranch());
         }
-        Vendor cVendor = permissionService.getVendorPermission(user.getId());
-        model.addAttribute("vendor",cVendor);
+
+        model.addAttribute("vendor","cVendor.getName()");
         model.addAttribute("queuesWithPax", queueIdWithCurrentPax);
-        model.addAttribute("queues",queues);
-        model.addAttribute("branches",branches);
+        model.addAttribute("queues",cQueues);
+        model.addAttribute("branches",cUniqueBranches);
         return "branch-operator/viewQueuePage";
     }
 
@@ -78,7 +90,17 @@ public class OperateQueueController {
     }
 
     @GetMapping("/ViewSelectedQueue/{queueId}")
-    public String viewSelectedQueue(@PathVariable("queueId") Long queueId) {
-        return redirectTo404Page();
+    public String viewSelectedQueue(@PathVariable("queueId") Long queueId,Model model) {
+        pullUpdatedUserVendorBranchesQueues();
+
+        Queue queue = queueService.findQueue(queueId);
+        List<QueuePosition> queuePositions = queueService.findActiveQueuePositionsForPrototype(queueId);
+
+        model.addAttribute("vendor","cVendor.getName()");
+        model.addAttribute("state",queue.getState().getDisplayValue());
+        model.addAttribute("queue",queue);
+        model.addAttribute("positions",queuePositions);
+
+        return "branch-operator/viewSelectedQueuePage";
     }
 }

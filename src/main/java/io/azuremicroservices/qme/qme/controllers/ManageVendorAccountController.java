@@ -56,7 +56,7 @@ public class ManageVendorAccountController {
 		if(bindingResult.hasErrors()) {
 			return "manage/vendor-account/create";
 		}
-		accountService.createVendorAdmin(user, vendor);
+		accountService.createUser(user, vendor);
 		alertService.createAlert(AlertColour.GREEN, "Vendor Account successfully created", redirAttr);
 		
 		return "redirect:/manage/vendor-account/list";

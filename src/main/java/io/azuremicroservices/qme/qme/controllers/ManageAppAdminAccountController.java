@@ -49,7 +49,7 @@ public class ManageAppAdminAccountController {
 		if(bindingResult.hasErrors()) {
 			return "manage/app-admin-account/create";
 		}
-		accountService.createAppAdmin(user);
+		accountService.createUser(user, Role.APP_ADMIN);
 		alertService.createAlert(AlertColour.GREEN, "App Admin Account successfully created", redirAttr);
 		
 		return "redirect:/manage/app-admin-account/list";

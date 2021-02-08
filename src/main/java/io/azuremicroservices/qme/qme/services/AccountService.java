@@ -30,19 +30,11 @@ public class AccountService {
     }
 
     public boolean usernameExists(String username) {
-        if (userRepo.findByUsername(username) != null) {
-            return true;
-        } else {
-            return false;
-        }
+    	return userRepo.findByUsername(username) != null;
     }
 
     public boolean emailExists(String email) {
-        if (userRepo.findByEmail(email) != null) {
-            return true;
-        } else {
-            return false;
-        }
+        return userRepo.findByEmail(email) != null;
     }
 
     public User findUserByUsername(String username) {
@@ -57,10 +49,21 @@ public class AccountService {
     	return userRepo.findByRole(role);
     }
 
-    public void createClient(User user) {
-        user.setRole(Role.CLIENT);
+    @Transactional
+    public void createUser(User user, Role role) {
+        user.setRole(role);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepo.save(user);
+    }
+    
+    public void createUser(User user, Vendor vendor) {
+    	user.getUserVendorPermissions().add(vendor);
+    	this.createUser(user, Role.VENDOR_ADMIN);
+    }
+    
+    public void createUser(User user, Branch branch) {
+    	user.getUserBranchPermissions().add(branch);
+    	this.createUser(user, Role.BRANCH_ADMIN);
     }
     
     @Transactional
@@ -71,12 +74,6 @@ public class AccountService {
 //    		user.setPerspective(perspective);
 //    	}
     	// userRepo.save(user);    	    	
-    }
-
-    public void createVendorAdmin(User user, Vendor vendor) {
-    	user.setRole(Role.VENDOR_ADMIN);
-    	user.getUserVendorPermissions().add(vendor);
-    	userRepo.save(user);
     }
 
 	public User findUserById(Long userId) {
@@ -92,11 +89,6 @@ public class AccountService {
 		if (user.isPresent()) {
 			userRepo.delete(user.get());
 		}
-	}
-	
-	public void createAppAdmin(User user) {
-		user.setRole(Role.APP_ADMIN);
-		userRepo.save(user);
 	}
 
 }

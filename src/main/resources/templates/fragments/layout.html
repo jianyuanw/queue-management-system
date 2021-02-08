@@ -106,7 +106,7 @@
 		                            	th:text="${perspective.key}"></a>
 		                        </div>
 		                    </li>
-		                	<li class="nav-item"><a th:href="@{/logout}" th:text="#{navbar.logout}" class="nav-link waves-effect waves-light border-left">Logout</a></li>
+                            <li class="nav-item"><a data-toggle="modal" data-target="#logoutModal" th:text="#{navbar.logout}" class="nav-link waves-effect waves-light border-left">Logout</a></li>
 		                </ul>	                              					
 					</th:block>
 				</th:block>
@@ -114,12 +114,38 @@
 					<ul class="navbar-nav ml-auto nav-flex-icons">
 						<li class="nav-item"><span class="nav-link">Welcome to qMe+<sup>+</sup>, please login to begin</span></li>
 						<li class="nav-item"><a th:href="@{/login}" th:text="#{navbar.login}" class="nav-link waves-effect waves-light border-left">Login</a></li>
-					</ul>				
+					</ul>
 				</th:block>
 				
 			</div>            
         </nav>
+		<div th:if="${alert} != null" th:class="'alert alert-' + ${alert.type} + ' alert-dismissible fade show'" role="alert" th:inline="text">
+		  [[${alert.message}]]
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+		    <span aria-hidden="true">&times;</span>
+		  </button>
+		</div>        
         <!--/.Navbar -->
+
+        <!-- Modal for logout -->
+        <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Are you sure you want to logout?</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-footer">
+                        <form th:action="@{/logout}" method="post">
+                            <button type="submit" class="btn btn-danger">Yes</button>
+                        </form>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     
   <div th:fragment="prototype-navbar">

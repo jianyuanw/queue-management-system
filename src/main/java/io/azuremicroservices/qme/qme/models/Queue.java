@@ -2,10 +2,12 @@ package io.azuremicroservices.qme.qme.models;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -40,9 +42,17 @@ public class Queue {
 
     private Double notificationDelay;
 
-    @OneToMany(mappedBy = "queue")
+    @OneToMany(mappedBy = "queue", cascade =CascadeType.ALL)
     @Exclude
     private List<QueuePosition> queuePositions;
+    
+    @ManyToMany(mappedBy = "userBranchPermissions", cascade=CascadeType.ALL)
+    @Exclude
+    private List<User> userBranchPermissions;   
+    
+    @ManyToMany(mappedBy = "userQueuePermissions", cascade=CascadeType.ALL)
+    @Exclude
+    private List<User> userQueuePermissions;    
 
     public enum State {
         OPEN,
@@ -76,6 +86,5 @@ public class Queue {
 		this.notificationPosition = notificationPosition;
 		this.notificationDelay = notificationDelay;
 	}
-    
 
 }

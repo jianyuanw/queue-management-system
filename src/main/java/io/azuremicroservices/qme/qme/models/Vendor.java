@@ -35,7 +35,7 @@ public class Vendor {
     private List<Branch> branches;
     
     @ManyToMany(mappedBy = "userVendorPermissions")
+    @Exclude
     private List<User> userVendorPermissions;
     
-
 }

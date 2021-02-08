@@ -3,16 +3,24 @@ package io.azuremicroservices.qme.qme.repositories;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import io.azuremicroservices.qme.qme.models.User;
+import io.azuremicroservices.qme.qme.models.User.Role;
+import org.springframework.data.repository.query.Param;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    User findByUsername(String username);
-    User findByEmail(String email);
-    @Query("SELECT u FROM User u WHERE u.role = 2")
-    List<User> findVendorAdmin();
-    @Query("SELECT u FROM User u WHERE u.role = 3")
-    List<User> findBranchAdmin();
+	User findByUsername(String username);
+
+	User findByEmail(String email);
+
+	List<User> findAllByRole(Role role);
+
+	User findByRole(Role role);
+
+	@Modifying
+	@Query("update User u set u.perspective = :target where u.id = :userid")
+	void updateUserPerspective(@Param("userid") Long userId, @Param("target") Role role);
 }

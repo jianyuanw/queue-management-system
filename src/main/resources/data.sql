@@ -167,6 +167,10 @@ VALUES
     ( "SELLS COMPUTERS",  "SPLASH COMPUTERS BRANCH 3 QUEUE 2", "0", "1", "0", "30", "24"),
     ( "SELLS COMPUTERS",  "SPLASH COMPUTERS BRANCH 3 QUEUE 3", "0", "1", "1", "30", "24");
 
+INSERT INTO user_vendor_permission (user_id, vendor_id)
+VALUES
+    ("11", "1");
+
 INSERT INTO user_branch_permission (user_id, branch_id)
 VALUES
     ("12", "1"),

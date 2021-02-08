@@ -1,5 +1,7 @@
 package io.azuremicroservices.qme.qme.services;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +18,8 @@ public class VendorService {
 		this.vendorRepo = vendorRepo;
 	}
 
-	public Vendor findVendorById(Long vendorId) {
-		return vendorRepo.findById(vendorId).get();
+	public Optional<Vendor> findVendorById(Long vendorId) {
+		return vendorRepo.findById(vendorId);
 	}
 	
 	

@@ -39,20 +39,25 @@ public class ManageVendorAccountController {
 	}
 	
 	@GetMapping("/list")
-	public String ManageVendorAccountList(Model model) {
+	public String manageVendorAccountList(Model model) {
 		model.addAttribute("vendorAccounts", accountService.findAllUsersByRole(Role.VENDOR_ADMIN));
 		return "manage/vendor-account/list";
 	}
 	
 	@GetMapping("/create/{vendorId}")
-	public String CreateVendorAccountForm(Model model, @PathVariable("vendorId") Long vendorId) {
+	public String createVendorAccountForm(Model model, @PathVariable("vendorId") Long vendorId, RedirectAttributes redirAttr) {
+		var vendor = vendorService.findVendorById(vendorId);
+		if (vendor.isEmpty()) {
+			alertService.createAlert(AlertColour.YELLOW, "Vendor id not found", redirAttr);
+			return "redirect:/manage/vendor-account/list";
+		}
 		model.addAttribute("vendor", vendorService.findVendorById(vendorId));
 		model.addAttribute("user", new User());
 		return "manage/vendor-account/create";
 	}
 	
 	@PostMapping("/create")
-	public String CreateVendorAccount(@Valid @ModelAttribute User user, @Valid @ModelAttribute Vendor vendor, BindingResult bindingResult, RedirectAttributes redirAttr) {
+	public String createVendorAccount(@Valid @ModelAttribute User user, @Valid @ModelAttribute Vendor vendor, BindingResult bindingResult, RedirectAttributes redirAttr) {
 		if(bindingResult.hasErrors()) {
 			return "manage/vendor-account/create";
 		}
@@ -64,7 +69,13 @@ public class ManageVendorAccountController {
 	}
 	
 	@GetMapping("/update/{vendorAccId}")
-	public String UpdateVendorAccountForm(Model model, @PathVariable("vendorAccId") Long vendorAccId) {
+	public String updateVendorAccountForm(Model model, @PathVariable("vendorAccId") Long vendorAccId, RedirectAttributes redirAttr) {
+		var vendorAcc = accountService.findUserById(vendorAccId);
+		
+		if (vendorAcc.isEmpty()) {
+			alertService.createAlert(AlertColour.YELLOW, "Vendor id not found", redirAttr);
+			return "redirect:/manage/vendor-account/list";			
+		}
 		model.addAttribute("vendorAcc", accountService.findUserById(vendorAccId));
 		return "manage/vendor-account/update";
 	}
@@ -75,14 +86,23 @@ public class ManageVendorAccountController {
 			return "manage/vendor-account/update";
 		} else {
 			accountService.updateUser(vendorAcc);
-		}alertService.createAlert(AlertColour.GREEN, "Vendor Account successfully updated", redirAttr);
+		}
+		alertService.createAlert(AlertColour.GREEN, "Vendor Account successfully updated", redirAttr);
 		return "redirect:/manage/vendor-account/list"; 
 	} 
 	
 	@GetMapping("/delete/{vendorAccId}")
 	public String deleteVendor(@PathVariable("vendorAccId") Long vendorAccId, RedirectAttributes redirAttr) {
-		accountService.deleteUserById(vendorAccId);
-		alertService.createAlert(AlertColour.GREEN, "Vendor Account successfully deleted", redirAttr);
+		var user = accountService.findUserById(vendorAccId);
+		
+		if (user.isEmpty()) {
+			alertService.createAlert(AlertColour.YELLOW, "Vendor id not found", redirAttr);
+		} else {
+			accountService.deleteUser(user.get());
+			alertService.createAlert(AlertColour.GREEN, "Vendor Account successfully deleted", redirAttr);
+		}
+		
+		
 		return "redirect:/manage/vendor-account/list";
 	}
 	

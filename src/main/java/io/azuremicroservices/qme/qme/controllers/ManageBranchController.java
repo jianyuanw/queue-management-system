@@ -112,19 +112,17 @@ public class ManageBranchController {
 	
 	@GetMapping("/delete/{branchId}")
 	public String deleteBranch(@PathVariable("branchId") Long branchId, Authentication authentication, RedirectAttributes redirAttr) {
-		try {
-			var branch = branchService.findBranchById(branchId);
-			
-			MyUserDetails user = (MyUserDetails) authentication.getPrincipal();
-			
-			if (!permissionService.authenticateBranch(accountService.findUserByUsername(user.getUsername()), branch.get())) {
-				alertService.createAlert(AlertColour.RED, "You do not have permission to access this branch", redirAttr);
-			}			
-		} catch (NoSuchElementException e) {
+		var branch = branchService.findBranchById(branchId);
+		
+		MyUserDetails user = (MyUserDetails) authentication.getPrincipal();
+		
+		if (branch.isEmpty() || !permissionService.authenticateBranch(accountService.findUserByUsername(user.getUsername()), branch.get())) {
 			alertService.createAlert(AlertColour.YELLOW, "Branch could not be found", redirAttr);
+		} else {
+			branchService.deleteBranch(branch.get());
+			alertService.createAlert(AlertColour.GREEN, "Branch successfully deleted", redirAttr);			
 		}
 		
-		alertService.createAlert(AlertColour.GREEN, "Branch successfully deleted", redirAttr);
 		return "redirect:/manage/branch/list";
 	}
 }

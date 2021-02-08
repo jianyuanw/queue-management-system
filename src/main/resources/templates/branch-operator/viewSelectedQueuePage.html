@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>qMe - Branch Operator</title>
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+</head>
+<body>
+<div th:replace="fragments/layout.html :: navbar"></div>
+
+<p><b>Vendor: </b><span th:text="${vendor}">VENDOR</span></p>
+
+<!--Not implement drop down branch list-->
+<!--Not implement drop down queue list-->
+
+<p><b>Status: </b><span th:text="${state}">Closed</span></p>
+
+<!--Not implement attend to counter go button-->
+
+<form method="get" th:action="@{/OperateQueue/ViewNoShowList/{qId}(qId=${queue.getId()})}" >
+    <input type="submit" value="View No-show List" />
+</form>
+
+<table>
+    <thead>
+    <tr>
+        <td>Queue Number</td>
+        <td>Position</td>
+        <td>Duration In Queue</td>
+        <td>Rejoined?</td>
+        <td></td>
+    </tr>
+    </thead>
+    <tbody th:each="position:${positions}">
+    <tr>
+        <td ><span th:text="${position.getQueueNumber()}">QueueNumber</span></td>
+        <td><span >postion</span></td>
+        <td><span >duration</span></td>
+        <td><span th:if="${position.getState().ordinal()==1}" text="Yes">Yes</span><span th:if="${position.getState().ordinal()!=1}" text="No">No</span></td>
+        <td>
+<!--            <form method="get" th:action="@{/OperateQueue/ViewSelectedQueue/{qId}(qId=${queue.getId()})}" >-->
+<!--                <input type="submit" value="Reassign Position" />-->
+<!--            </form>-->
+        </td>
+    </tr>
+    </tbody>
+</table>
+<div th:replace="fragments/layout.html :: footer"></div>
+</body>
+</html>

@@ -26,11 +26,19 @@ public class AccountController {
     }
 
     @GetMapping("/login")
-    public String login(@ModelAttribute("error") String error, Model model) {
+    public String loginClient(@ModelAttribute("error") String error, Model model) {
         if (!error.equals("")) {
             model.addAttribute("error", error);
         }
-        return "account/login";
+        return "account/login-client";
+    }
+
+    @GetMapping("/login-admin")
+    public String loginAdmin(@ModelAttribute("error") String error, Model model) {
+        if (!error.equals("")) {
+            model.addAttribute("error", error);
+        }
+        return "account/login-admin";
     }
 
     @GetMapping("/login/success")
@@ -50,7 +58,7 @@ public class AccountController {
                 return "redirect:/client";
             }
         } else {
-            return "redirect:/login";
+            return "redirect:/login/error";
         }
     }
 

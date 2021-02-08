@@ -20,8 +20,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     public SecurityConfiguration(UserDetailsServiceImpl userDetailsServiceImpl) {
         userDetailsService = userDetailsServiceImpl;
-    }
-
+    }    
+    
     @Bean
     public PasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
@@ -46,7 +46,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(BRANCH_OPERATOR_URLS).hasAnyAuthority("APP_ADMIN", "VENDOR_ADMIN", "BRANCH_ADMIN", "BRANCH_OPERATOR")
                 .antMatchers(CLIENT_URLS).hasAnyAuthority("CLIENT")
                 .antMatchers(PUBLIC_URLS).permitAll()
-                .antMatchers("/**").permitAll() // To be removed. This line allows everyone to access any page.
             .and()
                 .formLogin()
                 .loginPage("/login")
@@ -64,26 +63,27 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     private final String[] APP_ADMIN_URLS = {
-
+            "/app-admin/**"
     };
 
     private final String[] VENDOR_ADMIN_URLS = {
-
+            "/vendor-admin/**"
     };
 
     private final String[] BRANCH_ADMIN_URLS = {
-
+            "/branch-admin/**"
     };
 
     private final String[] BRANCH_OPERATOR_URLS = {
+            "/OperateQueue/ViewQueue"
 
     };
 
     private final String[] CLIENT_URLS = {
-
+            "/client/**"
     };
 
     private final String[] PUBLIC_URLS = {
-
+            "/**"
     };
 }

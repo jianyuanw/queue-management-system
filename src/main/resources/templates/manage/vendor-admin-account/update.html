@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <title>Update Vendor Account</title>
+    <meta charset="UTF-8">
+
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+</head>
+<body>
+    <div th:replace="fragments/layout.html :: navbar"></div>
+	
+	<form class="text-center border border-light p-5" method="post" th:action="@{/manage/vendor-admin-account/update}" th:object="${vendorAdminAcc}">
+	
+	    <p class="h4 mb-4">Vendor Account</p>
+	    
+	    <input type="hidden" th:field="*{id}">
+	    
+	    <div class="form-row mb-4">
+	        <div class="col form-group">
+	        	<label class="form-label" for="vendorAdminAccountFirstName">First Name</label>
+	            <input type="text" id="vendorAdminAccountFirstName" class="form-control" th:field="*{firstName}">	            
+	        </div>
+	        
+	        <div class="col form-group">
+	        	<label class="form-label" for="vendorAdminAccountLastName">Last Name</label>
+	            <input type="text" id="vendorAdminAccountLastName" class="form-control" th:field="*{lastName}">	            
+	        </div>
+	        
+	        		        
+	    </div>
+	    
+	    <div class="form-row mb-4">
+	        <div class="col form-group">
+	        	<label class="form-label" for="vendorAdminAccountEmail">Email</label>
+	            <input type="text" id="vendorAdminAccountEmail" class="form-control" th:field="*{email}" required>	            
+	        </div>
+	        
+	        <div class="col form-group">
+	        	<label class="form-label" for="vendorAdminAccountHandphoneNo">Handphone Number</label>
+	            <input type="text" id="vendorAdminAccountHandphoneNo" class="form-control" th:field="*{handphoneNo}">	            
+	        </div>	        
+	    </div>
+	
+	    <div class="form-row mb-4">
+	        <div class="col form-group">
+	        	<label class="form-label" for="vendorAdminAccountUsername">Username</label>
+	            <input type="text" id="vendorAdminAccountUsername" class="form-control" th:field="*{username}" required>	            
+	        </div>
+	        
+	        <div class="col form-group">
+	        	<label class="form-label" for="vendorAdminAccountPassword">Password</label>
+	            <input type="text" id="vendorAdminAccountPassword" class="form-control" th:field="*{password}" required>	            
+	        </div>	        
+	    </div>	    
+	     
+	    <input type="hidden" th:field="*{role}">
+	    
+	    <button class="btn btn-info my-4 btn-block" type="submit">Submit</button>
+	
+	</form>	
+
+    <div th:replace="fragments/layout.html :: footer"></div>
+</body>
+</html>

@@ -35,9 +35,10 @@
         </nav>
     </div>
 
-    <div th:fragment="navbar">
+    <div th:fragment="navbar"> 
         <!--Navbar -->
         <nav class="mb-1 navbar navbar-expand-lg light-blue navbar-dark">
+        	<!--  Navbar Logo -->
             <a class="navbar-brand" th:href="@{/}">
                 <img width="85" th:src="@{/images/logos/qMe_logo.png}">
             </a>
@@ -46,38 +47,122 @@
                     data-target="#navbarSupportedContent-333" data-toggle="collapse" type="button">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent-333">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="#">Manage Vendor
-                            <span class="sr-only">(current)</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Support Tickets</a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav ml-auto nav-flex-icons">
-                    <li class="nav-item dropdown">
-                        <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle"
-                           data-toggle="dropdown" id="navbarDropdownMenuLink-333">
-                            <i class="fas fa-user"></i>
-                        </a>
-                        <div aria-labelledby="navbarDropdownMenuLink-333"
-                             class="dropdown-menu dropdown-menu-right dropdown-default">
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <a class="dropdown-item" href="#">Something else here</a>
-                        </div>
-                    </li>
-
-                    <li class="nav-item"><span th:text="'Username [Role] '" class="nav-link py-0 px-3 m-2 border-right"></span></li>
-                    <li class="nav-item"><a th:href="@{/login}" th:text="#{navbar.login}" class="nav-link waves-effect waves-light">Login</a></li>
-                    <li class="nav-item"><a th:href="@{/logout}" th:text="#{navbar.logout}" class="nav-link waves-effect waves-light">Logout</a></li>
-                </ul>
-            </div>
+            <!--  End of Navbar Logo -->
+            <!--  Navbar Left-aligned Items -->
+            
+			<div class="collapse navbar-collapse" id="navbarSupportedContent-333">
+				<th:block th:if="${#request.remoteUser} != null" th:with="user=${#authentication.getPrincipal()}">
+					<th:block th:switch="${#strings.toLowerCase(#strings.replace(user.getPerspective(), ' ', ''))}">
+						<ul th:case="appadmin" class="navbar-nav mr-auto">
+						    <li class="nav-item">
+						        <a class="nav-link" href="#">Support Tickets</a>
+						    </li>
+		                	<li class="nav-item dropdown">
+		                        <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle"
+		                           data-toggle="dropdown" id="navbarDropdownMenuLink-333">
+		                           Manage
+		                        </a>
+		                        <div aria-labelledby="navbarDropdownMenuLink-333"
+		                             class="dropdown-menu dropdown-menu-right dropdown-default">
+		                        	<a class="dropdown-item" th:href="@{/manage/vendor/list}">Vendors</a>
+		                        	<a class="dropdown-item" th:href="@{/manage/app-admin-account/list}">App Admins</a>
+		                        </div>
+		                    </li>						    
+						    
+						</ul>
+		                <ul th:case="vendoradmin" class="navbar-nav mr-auto">
+		                	<li class="nav-item dropdown">
+		                        <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle"
+		                           data-toggle="dropdown" id="navbarDropdownMenuLink-333">
+		                           Manage
+		                        </a>
+		                        <div aria-labelledby="navbarDropdownMenuLink-333"
+		                             class="dropdown-menu dropdown-menu-right dropdown-default">
+		                        	<a class="dropdown-item" th:href="@{/manage/branch/list}">Branches</a>
+		                        	<a class="dropdown-item" th:href="@{/manage/branch-admin-account/list}">Branch Admins</a>
+		                        </div>
+		                    </li>			                
+		                </ul>
+		                <ul th:case="branchadmin" class="navbar-nav mr-auto">
+		                    <li class="nav-item">
+		                        <a class="nav-link" href="#">Dashboard	                            
+		                        </a>
+		                    </li>
+		                    
+		                	<li class="nav-item dropdown">
+		                        <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle"
+		                           data-toggle="dropdown" id="navbarDropdownMenuLink-333">
+		                           Manage
+		                        </a>
+		                        <div aria-labelledby="navbarDropdownMenuLink-333"
+		                             class="dropdown-menu dropdown-menu-right dropdown-default">
+		                        	<a class="dropdown-item" href="#">Queues</a>
+		                        	<a class="dropdown-item" href="#">Branch Operators</a>
+		                        	<a class="dropdown-item" href="#">Counters</a>
+		                        </div>
+		                    </li>			                    
+		                </ul>
+		                <ul th:case="branchoperator" class="navbar-nav mr-auto">
+		                    <li class="nav-item">
+		                        <a class="nav-link" href="/OperateQueue/ViewQueue">Queues
+		                        </a>
+		                    </li>
+		                    <li class="nav-item">
+		                        <a class="nav-link" href="#">Current Counter</a>
+		                    </li>
+		                </ul>
+		                <ul class="navbar-nav ml-auto nav-flex-icons">
+		                	<li class="nav-item"><span th:text="${user.getFullName() + ' [' + user.getRole() + ']'}" class="nav-link py-0 px-3 m-2"></span></li>
+		                	<li th:if="${user.getRolePerspectives() != null}" class="nav-item dropdown">
+		                        <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle"
+		                           data-toggle="dropdown" id="navbarDropdownMenuLink-333" th:text="'Current perspective: ' + ${user.getPerspective()}">
+		                        </a>
+		                        <div aria-labelledby="navbarDropdownMenuLink-333"
+		                             class="dropdown-menu dropdown-menu-right dropdown-default">
+		                            <a class="dropdown-item" th:each="perspective : ${user.getRolePerspectives()}"  th:href="@{/perspective/{perspectiveId}(perspectiveId=${perspective.value})}"
+		                            	th:text="${perspective.key}"></a>
+		                        </div>
+		                    </li>
+                            <li class="nav-item"><a data-toggle="modal" data-target="#logoutModal" th:text="#{navbar.logout}" class="nav-link waves-effect waves-light border-left">Logout</a></li>
+		                </ul>	                              					
+					</th:block>
+				</th:block>
+				<th:block th:if="${#request.remoteUser} == null">
+					<ul class="navbar-nav ml-auto nav-flex-icons">
+						<li class="nav-item"><span class="nav-link">Welcome to qMe+<sup>+</sup>, please login to begin</span></li>
+						<li class="nav-item"><a th:href="@{/login-admin}" th:text="#{navbar.login}" class="nav-link waves-effect waves-light border-left">Login</a></li>
+					</ul>
+				</th:block>
+				
+			</div>            
         </nav>
+		<div th:if="${alert} != null" th:class="'alert alert-' + ${alert.type} + ' alert-dismissible fade show'" role="alert" th:inline="text">
+		  [[${alert.message}]]
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+		    <span aria-hidden="true">&times;</span>
+		  </button>
+		</div>        
         <!--/.Navbar -->
+
+        <!-- Modal for logout -->
+        <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Are you sure you want to logout?</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-footer">
+                        <form th:action="@{/logout}" method="post">
+                            <button type="submit" class="btn btn-danger">Yes</button>
+                        </form>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     
   <div th:fragment="prototype-navbar">
@@ -125,192 +210,6 @@
         </nav>
         <!--/.Navbar -->
     </div>    
-
-    <div th:fragment="appadmin-navbar">
-        <!--Navbar -->
-        <nav class="mb-1 navbar navbar-expand-lg light-blue navbar-dark">
-            <a class="navbar-brand" th:href="@{/}">
-                <img width="85" th:src="@{/images/logos/qMe_logo.png}">
-            </a>
-            <button aria-controls="navbarSupportedContent-333" aria-expanded="false" aria-label="Toggle navigation"
-                    class="navbar-toggler"
-                    data-target="#navbarSupportedContent-333" data-toggle="collapse" type="button">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent-333">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="#">Manage Vendors
-                            <span class="sr-only">(current)</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Support Tickets</a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav ml-auto nav-flex-icons">
-                    <li class="nav-item dropdown">
-                        <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle"
-                           data-toggle="dropdown" id="navbarDropdownMenuLink-333">
-                            <i class="fas fa-user"></i>
-                        </a>
-                        <div aria-labelledby="navbarDropdownMenuLink-333"
-                             class="dropdown-menu dropdown-menu-right dropdown-default">
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <a class="dropdown-item" href="#">Something else here</a>
-                        </div>
-                    </li>
-
-                    <li class="nav-item"><span th:text="'Username [App Admin] '" class="nav-link py-0 px-3 m-2 border-right"></span></li>
-                    <li class="nav-item"><a th:href="@{/login}" th:text="#{navbar.login}" class="nav-link waves-effect waves-light">Login</a></li>
-                    <li class="nav-item"><a th:href="@{/logout}" th:text="#{navbar.logout}" class="nav-link waves-effect waves-light">Logout</a></li>
-                </ul>
-            </div>
-        </nav>
-        <!--/.Navbar -->
-    </div>
-
-    <div th:fragment="vendoradmin-navbar">
-        <!--Navbar -->
-        <nav class="mb-1 navbar navbar-expand-lg light-blue navbar-dark">
-            <a class="navbar-brand" th:href="@{/}">
-                <img width="85" th:src="@{/images/logos/qMe_logo.png}">
-            </a>
-            <button aria-controls="navbarSupportedContent-333" aria-expanded="false" aria-label="Toggle navigation"
-                    class="navbar-toggler"
-                    data-target="#navbarSupportedContent-333" data-toggle="collapse" type="button">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent-333">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="#">Manage Branches
-                            <span class="sr-only">(current)</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Manage Branch Admin Accounts</a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav ml-auto nav-flex-icons">
-                    <li class="nav-item dropdown">
-                        <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle"
-                           data-toggle="dropdown" id="navbarDropdownMenuLink-333">
-                            <i class="fas fa-user"></i>
-                        </a>
-                        <div aria-labelledby="navbarDropdownMenuLink-333"
-                             class="dropdown-menu dropdown-menu-right dropdown-default">
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <a class="dropdown-item" href="#">Something else here</a>
-                        </div>
-                    </li>
-
-                    <li class="nav-item"><span th:text="'Username [Vendor Admin] '" class="nav-link py-0 px-3 m-2 border-right"></span></li>
-                    <li class="nav-item"><a th:href="@{/login}" th:text="#{navbar.login}" class="nav-link waves-effect waves-light">Login</a></li>
-                    <li class="nav-item"><a th:href="@{/logout}" th:text="#{navbar.logout}" class="nav-link waves-effect waves-light">Logout</a></li>
-                </ul>
-            </div>
-        </nav>
-        <!--/.Navbar -->
-    </div>
-
-    <div th:fragment="branchadmin-navbar">
-        <!--Navbar -->
-        <nav class="mb-1 navbar navbar-expand-lg light-blue navbar-dark">
-            <a class="navbar-brand" th:href="@{/}">
-                <img width="85" th:src="@{/images/logos/qMe_logo.png}">
-            </a>
-            <button aria-controls="navbarSupportedContent-333" aria-expanded="false" aria-label="Toggle navigation"
-                    class="navbar-toggler"
-                    data-target="#navbarSupportedContent-333" data-toggle="collapse" type="button">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent-333">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="#">Dashboard
-                            <span class="sr-only">(current)</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Manage Queues</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Manage Operator Accounts</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Manage Counters</a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav ml-auto nav-flex-icons">
-                    <li class="nav-item dropdown">
-                        <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle"
-                           data-toggle="dropdown" id="navbarDropdownMenuLink-333">
-                            <i class="fas fa-user"></i>
-                        </a>
-                        <div aria-labelledby="navbarDropdownMenuLink-333"
-                             class="dropdown-menu dropdown-menu-right dropdown-default">
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <a class="dropdown-item" href="#">Something else here</a>
-                        </div>
-                    </li>
-
-                    <li class="nav-item"><span th:text="'Username [Branch Admin] '" class="nav-link py-0 px-3 m-2 border-right"></span></li>
-                    <li class="nav-item"><a th:href="@{/login}" th:text="#{navbar.login}" class="nav-link waves-effect waves-light">Login</a></li>
-                    <li class="nav-item"><a th:href="@{/logout}" th:text="#{navbar.logout}" class="nav-link waves-effect waves-light">Logout</a></li>
-                </ul>
-            </div>
-        </nav>
-        <!--/.Navbar -->
-    </div>
-
-    <div th:fragment="branchoperator-navbar">
-        <!--Navbar -->
-        <nav class="mb-1 navbar navbar-expand-lg light-blue navbar-dark">
-            <a class="navbar-brand" th:href="@{/}">
-                <img width="85" th:src="@{/images/logos/qMe_logo.png}">
-            </a>
-            <button aria-controls="navbarSupportedContent-333" aria-expanded="false" aria-label="Toggle navigation"
-                    class="navbar-toggler"
-                    data-target="#navbarSupportedContent-333" data-toggle="collapse" type="button">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent-333">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="#">Queues
-                            <span class="sr-only">(current)</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Current Counter</a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav ml-auto nav-flex-icons">
-                    <li class="nav-item dropdown">
-                        <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle"
-                           data-toggle="dropdown" id="navbarDropdownMenuLink-333">
-                            <i class="fas fa-user"></i>
-                        </a>
-                        <div aria-labelledby="navbarDropdownMenuLink-333"
-                             class="dropdown-menu dropdown-menu-right dropdown-default">
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <a class="dropdown-item" href="#">Something else here</a>
-                        </div>
-                    </li>
-
-                    <li class="nav-item"><span th:text="'Username [Branch Operator] '" class="nav-link py-0 px-3 m-2 border-right"></span></li>
-                    <li class="nav-item"><a th:href="@{/login}" th:text="#{navbar.login}" class="nav-link waves-effect waves-light">Login</a></li>
-                    <li class="nav-item"><a th:href="@{/logout}" th:text="#{navbar.logout}" class="nav-link waves-effect waves-light">Logout</a></li>
-                </ul>
-            </div>
-        </nav>
-        <!--/.Navbar -->
-    </div>
 
     <div class="bg-light text-center" th:fragment="footer">
     <small class="align-items-center"

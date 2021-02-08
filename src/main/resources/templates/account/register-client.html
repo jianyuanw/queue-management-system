@@ -18,8 +18,10 @@
             <h2 class="font-weight-bold mb-4"><img width="65" th:src="@{/images/logos/qMe_logo.png}"> qMe+<sup>+</sup></h2>
             <h3 class="mb-4">Sign up with us to start queueing!</h3>
             <form th:action="@{/register}" method="post" th:object="${user}" id="form">
-                <input type="text" class="form-control form-control-lg mb-3" placeholder="Full Name" th:field="*{firstName}" autofocus>
+                <input type="text" class="form-control form-control-lg mb-3" placeholder="First Name" th:field="*{firstName}" autofocus>
                 <p class="text-danger text-left" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></p>
+                <input type="text" class="form-control form-control-lg mb-3" placeholder="Last Name" th:field="*{lastName}" autofocus>
+                <p class="text-danger text-left" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></p>
                 <input type="text" class="form-control form-control-lg mb-3" placeholder="E-mail" th:field="*{email}">
                 <p class="text-danger text-left" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
                 <input type="number" class="form-control form-control-lg mb-3" placeholder="Mobile Number" th:field="*{handphoneNo}">
@@ -34,6 +36,6 @@
             </form>
         </div>
     </div>
-<script type="text/javascript" th:src="@{/js/account/create-client.js}"></script>
+<script type="text/javascript" th:src="@{/js/account/register-client.js}"></script>
 </body>
 </html>

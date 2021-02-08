@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <title>Create App Admin Account</title>
+    <meta charset="UTF-8">
+
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+</head>
+<body>
+    <div th:replace="fragments/layout.html :: navbar"></div>
+	
+	<form class="text-center border border-light p-5" method="post" th:action="@{/manage/app-admin-account/create}" th:object = "${user}">
+	
+	    <p class="h4 mb-4">New App Admin Account</p>
+	    
+	    <div class="form-row mb-4">
+	        <div class="col form-group">
+	        	<label class="form-label" for="appAdminAccountFirstName">First Name</label>
+	            <input type="text" id="appAdminAccountFirstName" class="form-control" th:field="*{firstName}">
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></p>	            
+	        </div>
+	        
+	        <div class="col form-group">
+	        	<label class="form-label" for="appAdminAccountLastName">Last Name</label>
+	            <input type="text" id="appAdminAccountLastName" class="form-control" th:field="*{lastName}">
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></p>            
+	        </div>
+	        
+	        		        
+	    </div>
+	    
+	    <div class="form-row mb-4">
+	        <div class="col form-group">
+	        	<label class="form-label" for="appAdminAccountEmail">Email</label>
+	            <input type="text" id="appAdminAccountEmail" class="form-control" th:field="*{email}" required>	
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>            
+	        </div>
+	        
+	        <div class="col form-group">
+	        	<label class="form-label" for="appAdminAccountHandphoneNo">Handphone Number</label>
+	            <input type="text" id="appAdminAccountHandphoneNo" class="form-control" th:field="*{handphoneNo}">
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('handphoneNo')}" th:errors="*{handphoneNo}"></p>	            
+	        </div>	        
+	    </div>
+	
+	    <div class="form-row mb-4">
+	        <div class="col form-group">
+	        	<label class="form-label" for="appAdminAccountUsername">Username</label>
+	            <input type="text" id="appAdminAccountUsername" class="form-control" th:field="*{username}" required>
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>            
+	        </div>
+	        
+	        <div class="col form-group">
+	        	<label class="form-label" for="appAdminAccountPassword">Password</label>
+	            <input type="text" id="appAdminAccountPassword" class="form-control" th:field="*{password}" required>
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>         
+	        </div>	        
+	    </div>	    
+	    
+	    <button class="btn btn-info my-4 btn-block" type="submit">Submit</button>
+	
+	</form>	
+
+    <div th:replace="fragments/layout.html :: footer"></div>
+</body>
+</html>

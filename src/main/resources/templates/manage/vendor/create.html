@@ -18,20 +18,23 @@
 	    <p class="h4 mb-4">New Vendor</p>
 	
 	    <div class="form-row mb-4">
-	        <div class="col">
-	            <input type="text" id="vendorName" class="form-control" th:field="*{name}" placeholder="Vendor name">
+	        <div class="col form-group">
+	        	<label class="form-label" for="vendorName">Vendor name</label>
+	            <input type="text" id="vendorName" class="form-control" th:field="*{name}" required>
 	        </div>
 	        
-	        <div class="col">
+	        <div class="col form-group">
 	        	<div class="col">
-	            <input type="text" id="vendorCompanyUid" class="form-control" th:field="*{companyUid}" placeholder="Company Uid">
+	        	<label class="form-label" for="vendorCompanyUid">Company Uid</label>
+	            <input type="text" id="vendorCompanyUid" class="form-control" th:field="*{companyUid}" required>
 	        </div>            
 	        </div>	        
 	    </div>
 	    
 	    <div class="form-row mb-4">
-	        <div class="col">
-	            <input type="text" id="vendorDescription" class="form-control" th:field="*{description}" placeholder="Description">
+	        <div class="col form-group">
+	        	<label class="form-label" for="vendorDescription">Description</label>
+	            <input type="text" id="vendorDescription" class="form-control" th:field="*{description}" required>
 	        </div>
 	    </div> 	    	    
 	

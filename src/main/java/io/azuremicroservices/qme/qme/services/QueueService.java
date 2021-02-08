@@ -1,7 +1,10 @@
 package io.azuremicroservices.qme.qme.services;
 
+import io.azuremicroservices.qme.qme.models.Branch;
 import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.models.QueuePosition;
+import io.azuremicroservices.qme.qme.models.QueuePosition.State;
+import io.azuremicroservices.qme.qme.models.Vendor;
 import io.azuremicroservices.qme.qme.repositories.QueuePositionRepository;
 import io.azuremicroservices.qme.qme.repositories.QueueRepository;
 import org.springframework.core.task.AsyncTaskExecutor;
@@ -44,13 +47,31 @@ public class QueueService {
         return queueRepo.findById(queueId).get();
     }
     
-// Temporarily commented out to state error
-//    public void createNewQueue(String name, String description,State state,
-//    		Double timePerClient,Integer notificationPosition, Double notificationDelay) {
-//    	 
-//    	 queueRepo.save(new Queue(name,description, state,timePerClient, 
-//    			notificationPosition,notificationDelay));
-//    }
+
+    public void createNewQueue(Vendor vendor, Branch branch,String name, String description,
+    							Double timePerClient,Integer notificationPosition, 
+    							Double notificationDelay) {
+    	queueRepo.save(new Queue(vendor,branch,name,description,
+				Queue.State.CLOSED,timePerClient,
+				notificationPosition,notificationDelay));
+    	}
+    
+    
+    public void editQueue(Long id,String name, String description, Double timePerClient,
+    		Integer notificationPosition,Double notificationDelay) {
+    	Queue queue= queueRepo.findById(id).get();
+    	queue.setName(name);
+    	queue.setDescription(description);
+    	queue.setTimePerClient(timePerClient);
+    	queue.setNotificationPosition(notificationPosition);
+    	queue.setNotificationDelay(notificationDelay);
+    	queueRepo.save(queue);   	
+    }
+    
+    public void deleteQueue(Long id) {
+    	Queue queue= queueRepo.findById(id).get();
+    	queueRepo.delete(queue);
+    }
 
     public void addRandomQueueNumber(Long queueId) {
         Queue queue = queueRepo.findById(queueId).get();
@@ -91,5 +112,15 @@ public class QueueService {
                 }
             }, AsyncTaskExecutor.TIMEOUT_IMMEDIATE);
         });
+    }
+
+    public void updateQueueState(Long queueId) {
+        Queue q = findQueue(queueId);
+        Queue.State currentState = q.getState();
+        if(currentState.equals(Queue.State.CLOSED))
+            q.setState(Queue.State.OPEN);
+        else
+            q.setState(Queue.State.CLOSED);
+        queueRepo.save(q);
     }
 }

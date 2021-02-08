@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+    <title>403 - Forbidden Request</title>
+</head>
+<body>
+    <div th:replace="fragments/layout.html :: navbar"></div>
+
+    <p class="text-center h2 mt-4">403 - FORBIDDEN REQUEST</p>
+    <p class="text-center">Your client has issued a forbidden request to the server</p>
+    <div class="text-center mb-4">
+        <a th:href="@{/}">
+            <button class="btn btn-primary">Go to homepage</button>
+        </a>
+    </div>
+
+    <div th:replace="fragments/layout.html :: footer"></div>
+</body>
+</html>

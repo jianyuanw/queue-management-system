@@ -46,7 +46,9 @@ public class ManageBranchController {
 	
 	@GetMapping("/list")
 	public String initManageBranchList(Model model, Authentication authentication) {
-		model.addAttribute("branches", permissionService.getBranchPermissions(((MyUserDetails) authentication.getPrincipal()).getId()));
+		Vendor vendor = permissionService.getVendorPermission(((MyUserDetails) authentication.getPrincipal()).getId());
+		
+		model.addAttribute("branches", branchService.findAllBranchesByVendorId(vendor.getId()));
 		
 		return "manage/branch/list";
 	}
@@ -83,7 +85,7 @@ public class ManageBranchController {
 		
 		MyUserDetails user = (MyUserDetails) authentication.getPrincipal();
 		
-		if (branch.isEmpty() || !permissionService.authenticateBranch(accountService.findUserByUsername(user.getUsername()), branch.get())) {
+		if (branch.isEmpty() || !permissionService.authenticateVendor(accountService.findUserByUsername(user.getUsername()), branch.get().getVendor())) {
 			alertService.createAlert(AlertColour.YELLOW, "Branch could not be found", redirAttr);			
 			return "redirect:/manage/branch/list";
 		} else {
@@ -110,7 +112,7 @@ public class ManageBranchController {
 		
 		MyUserDetails user = (MyUserDetails) authentication.getPrincipal();
 		
-		if (branch.isEmpty() || !permissionService.authenticateBranch(accountService.findUserByUsername(user.getUsername()), branch.get())) {
+		if (branch.isEmpty() || !permissionService.authenticateVendor(accountService.findUserByUsername(user.getUsername()), branch.get().getVendor())) {
 			alertService.createAlert(AlertColour.YELLOW, "Branch could not be found", redirAttr);
 		} else {
 			branchService.deleteBranch(branch.get());

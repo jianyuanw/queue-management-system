@@ -73,7 +73,7 @@ public class ManageBranchAdminAccountController {
         if (bindingResult.hasErrors()) {
             return "/manage/branch-admin-account/create";
         }
-        accountService.createUser(user, branch);
+//        accountService.createUser(user, branch);
 
         return "redirect:/manage/branch-admin-account/list";
 

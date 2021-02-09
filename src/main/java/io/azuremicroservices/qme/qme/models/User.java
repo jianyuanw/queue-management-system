@@ -62,40 +62,14 @@ public class User {
     @OneToMany(mappedBy = "user", cascade=CascadeType.ALL)
     private List<QueuePosition> queuePositions;
 
-    @ManyToMany(cascade=CascadeType.ALL)
-    @JoinTable(
-    		name = "user_vendor_permission",
-    		joinColumns = { @JoinColumn(name = "user_id") },
-    		inverseJoinColumns = { @JoinColumn(name = "vendor_id") }
-    )
-    private List<Vendor> userVendorPermissions = new ArrayList<Vendor>();    
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<UserVendorPermission> userVendorPermissions = new ArrayList<>();    
     
-    @ManyToMany(cascade=CascadeType.ALL)
-    @JoinTable(
-    		name = "user_branch_permission",
-    		joinColumns = { @JoinColumn(name = "user_id") },
-    		inverseJoinColumns = { @JoinColumn(name = "branch_id") }
-    )
-    private List<Branch> userBranchPermissions;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<UserBranchPermission> userBranchPermissions = new ArrayList<>();
 
-    @ManyToMany(cascade=CascadeType.ALL)
-    @JoinTable(
-    		name = "user_queue_permission",
-    		joinColumns = { @JoinColumn(name = "user_id") },
-    		inverseJoinColumns = { @JoinColumn(name = "queue_id") }
-    )
-    private List<Queue> userQueuePermissions;
-    
-    public List<Vendor> getVendorPermissions() {    	
-    	List<Vendor> vendorPermissions = this.getUserVendorPermissions();
-    	// Set to ensure only one vendor permission without changing db design for future proofing
-    	if (vendorPermissions.size() != 1) {
-    		// Intentionally return empty list
-    		vendorPermissions = new ArrayList<>();
-    	} 
-    	
-    	return vendorPermissions;
-    }     
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<UserQueuePermission> userQueuePermissions = new ArrayList<>();  
     
     public LinkedHashMap<String, Integer> getRolePerspectives() {
     	HashMap<Role, Role[]> allowedPerspectives = new HashMap<>();

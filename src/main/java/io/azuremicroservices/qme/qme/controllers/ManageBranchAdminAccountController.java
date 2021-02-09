@@ -45,7 +45,7 @@ public class ManageBranchAdminAccountController {
      * @return the webpage of list all of branch admin account
      */
     @GetMapping("/list")
-    public String manageBranchAdminList(Model model, Authentication authentication) {
+    public String initManageBranchAdminList(Model model, Authentication authentication) {
     	MyUserDetails user = (MyUserDetails) authentication.getPrincipal();
     	
     	Vendor vendor = permissionService.getVendorPermission(user.getId());
@@ -59,29 +59,32 @@ public class ManageBranchAdminAccountController {
      * @return the form of create branch admin account
      */
     @GetMapping("/create/{branchId}")
-    public String createBranchAdminAccountForm(Model model, @PathVariable("branchId") Long branchId, Authentication authentication, RedirectAttributes redirAttr) {
+    public String initCreateBranchAdminAccountForm(Model model, @PathVariable("branchId") Long branchId, Authentication authentication, RedirectAttributes redirAttr) {
     	var branch = branchService.findBranchById(branchId);
     	
     	User user = ((MyUserDetails) authentication.getPrincipal()).getUser();
     	
-    	if (branch.isEmpty() || !permissionService.authenticateBranch(user, branch.get())) {
-    		alertService.createAlert(AlertColour.YELLOW, "Vendor id not found", redirAttr);
+    	if (branch.isEmpty() || !permissionService.authenticateVendor(user, branch.get().getVendor())) {
+    		alertService.createAlert(AlertColour.YELLOW, "Branch id not found", redirAttr);
     		return "redirect:/manage/branch-admin-account/list";
     	}
+    	
         model.addAttribute("branch", branch.get());
         model.addAttribute("user", new User());
         return "manage/branch-admin-account/create";
     }
 
     @PostMapping("/create")
-    public String createBranchAdminAccount( @Valid @ModelAttribute Branch branch, @Valid @ModelAttribute User user, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
+    public String createBranchAdminAccount(@ModelAttribute Branch branch, @Valid @ModelAttribute User user, BindingResult bindingResult, RedirectAttributes redirAttr) {
+        bindingResult = accountService.verifyUser(user, bindingResult);
+    	
+    	if (bindingResult.hasErrors()) {
             return "/manage/branch-admin-account/create";
         }
-//        accountService.createUser(user, branch);
-
+    	
+        accountService.createUser(user, branch);
+        alertService.createAlert(AlertColour.GREEN, "Branch admin successfully created", redirAttr);
         return "redirect:/manage/branch-admin-account/list";
-
     }
 
     /**
@@ -89,42 +92,43 @@ public class ManageBranchAdminAccountController {
      * @return the form of selected branch admin account information
      */
     @GetMapping("/update/{branchAccId}")
-    public String updateBranchAdminForm(Model model, @PathVariable("branchAccId") Long branchAccId, RedirectAttributes redirAttr) {
-    	var user = accountService.findUserById(branchAccId);
+    public String initUpdateBranchAdminForm(Model model, @PathVariable("branchAccId") Long branchAccId, Authentication authentication, RedirectAttributes redirAttr) {
+    	User user = ((MyUserDetails) authentication.getPrincipal()).getUser();
+    	var branchAdmin = accountService.findUserById(branchAccId);
     	
-    	if (user.isEmpty()) {
-    		// TODO: Also check that he has sufficient authority to update this account
+    	if (branchAdmin.isEmpty() || !permissionService.authenticateVendor(user, branchAdmin.get().getUserBranchPermissions().get(0).getBranch().getVendor())) {
     		alertService.createAlert(AlertColour.YELLOW, "User id not found", redirAttr);
     		return "redirect:/manage/branch-admin-account/list";
     	}    	
     	        
-        model.addAttribute("branchAdminAcc", user.get());
+        model.addAttribute("user", branchAdmin.get());
         return "manage/branch-admin-account/update";
     }
 
     @PostMapping("/update")
-    public String updateBranchAdmin(Model model, @ModelAttribute @Valid User branchAdminAcc, BindingResult bindingResult) {
+    public String updateBranchAdmin(Model model, @ModelAttribute @Valid User user, BindingResult bindingResult) {
+    	bindingResult = accountService.verifyUser(user, bindingResult);
+    	
         if (bindingResult.hasErrors()) {
-            model.addAttribute("branchAdminAcc", branchAdminAcc);
             return "manage/branch-admin-account/update";
-        } else {
-            accountService.updateUser(branchAdminAcc);
-        }
+        } 
+            
+    	accountService.updateUser(user);
         return "redirect:/manage/branch-admin-account/list";
     }
 
     @GetMapping("/delete/{branchAdminAccId}")
-    public String deleteBranchAdminAcc(@PathVariable("branchAdminAccId") Long branchAdminAccId, RedirectAttributes redirAttr) {
-        var user = accountService.findUserById(branchAdminAccId);
-
-       	if (user.isEmpty()) {
-    		// TODO: Also check that he has sufficient authority to update this account
+    public String deleteBranchAdmin(@PathVariable("branchAdminAccId") Long branchAccId, Authentication authentication, RedirectAttributes redirAttr) {
+    	User user = ((MyUserDetails) authentication.getPrincipal()).getUser();
+    	var branchAdmin = accountService.findUserById(branchAccId);
+    	
+    	if (branchAdmin.isEmpty() || !permissionService.authenticateVendor(user, branchAdmin.get().getUserBranchPermissions().get(0).getBranch().getVendor())) {
     		alertService.createAlert(AlertColour.YELLOW, "User id not found", redirAttr);
     		return "redirect:/manage/branch-admin-account/list";
-    	} else {
-    		accountService.deleteUser(user.get());
-    		alertService.createAlert(AlertColour.GREEN, "Branch Admin successfully deleted", redirAttr);
-    	}
+    	}   
+
+		accountService.deleteUser(branchAdmin.get());
+		alertService.createAlert(AlertColour.GREEN, "Branch Admin successfully deleted", redirAttr);
         
         return "redirect:/manage/branch-admin-account/list";
     }

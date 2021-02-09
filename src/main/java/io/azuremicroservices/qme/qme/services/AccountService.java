@@ -144,8 +144,8 @@ public class AccountService {
 				.map(Branch::getId)
 				.collect(Collectors.toList());
 		
-		// TODO: Work in progress
-		return null;
-		// return userRepo.findAllByUserBranchPermission_branchIdIn(branches);
+		return ubpRepo.findAllByBranchIdIn(branches).stream()
+				.map(UserBranchPermission::getUser).distinct()
+				.collect(Collectors.toList());
 	}
 }

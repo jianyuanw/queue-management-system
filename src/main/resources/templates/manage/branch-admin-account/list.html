@@ -36,10 +36,10 @@
 				<td class="col">
 					
 					<a th:href="@{/manage/branch-admin-account/update/__${user.id}__}">
-						<i class="fas fa-edit fa-lg" title="Edit Vendor Account"></i>
+						<i class="fas fa-edit fa-lg" title="Edit Branch Admin Account"></i>
 					</a>
 					
-      				<a href="#"><i class="fas fa-trash-alt fa-lg" data-toggle="modal" th:data-target="${'#deleteConfirm' + user.id}" title="Delete Vendor Account"></i></a>
+      				<a href="#"><i class="fas fa-trash-alt fa-lg" data-toggle="modal" th:data-target="${'#deleteConfirm' + user.id}" title="Delete Branch Admin Account"></i></a>
       				
 					<th:block th:insert="fragments/support-elements.html :: modalbox-red"
 						th:with="modalId=${'deleteConfirm' + user.id},modalTitle=${'Confirm Deletion'},modalBody=${'Are you sure you want to delete ' + user.username + '?'},

@@ -35,6 +35,36 @@
         </nav>
     </div>
 
+    <div th:fragment="mobile-navbar-modal">
+        <nav class="navbar navbar-expand-md navbar-dark blue mb-3">
+            <div class="container-fluid">
+                <button type="button" class="navbar-toggler" data-toggle="modal" data-target="#modalMenu">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <span class="navbar-brand mr-3 font-weight-bold"><img width="40" th:src="@{/images/logos/qMe_logo.png}"> qMe+<sup>+</sup></span>
+
+                <div class="modal fade" id="modalMenu" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog cascading-modal" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header light-blue darken-3 white-text d-flex align-items-center">
+                                <h2 class="m-0">Select Menu</h2>
+                                <button type="button" class="close m-0" data-dismiss="modal" aria-label="Close"><span
+                                        aria-hidden="true">&times;</span></button>
+                            </div>
+                            <div class="modal-body mb-0 text-center">
+                                <a href="#"><h2>Home</h2></a>
+                                <a href="#"><h2>My Queues</h2></a>
+                                <a href="#"><h2>Messages</h2></a>
+                                <a href="#"><h2>Contact Us</h2></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </nav>
+    </div>
+
     <div th:fragment="navbar"> 
         <!--Navbar -->
         <nav class="mb-1 navbar navbar-expand-lg light-blue navbar-dark">

@@ -106,7 +106,7 @@ public class ManageBranchOperatorAccountController {
 		MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();	
 		
 		if (branchOperator.isEmpty() || ! permissionService.checkAuthorityOver(userDetails.getUser(), branchOperator.get())) {
-			alertService.createAlert(AlertColour.YELLOW, "App Admin Account not found", redirAttr);
+			alertService.createAlert(AlertColour.YELLOW, "Branch Operator Account not found", redirAttr);
 			return "redirect:/manage/branch-operator-account/list";
 		}
 		
@@ -116,8 +116,6 @@ public class ManageBranchOperatorAccountController {
 	
 	@PostMapping("/update")
 	public String updateBranchOperator(Model model, @ModelAttribute @Valid User user, BindingResult bindingResult, Authentication authentication, RedirectAttributes redirAttr) {
-		bindingResult = accountService.verifyUser(user, bindingResult);
-		
 		if (bindingResult.hasErrors()) {
 			return "manage/branch-operator-account/update";
 		} 
@@ -135,16 +133,18 @@ public class ManageBranchOperatorAccountController {
 	} 
 	
 	@GetMapping("/delete/{branchOperatorAccId}")
-	public String deleteBranchOperator(@PathVariable("branchOperatorAccId") Long branchOperatorAccId, RedirectAttributes redirAttr) {
+	public String deleteBranchOperator(@PathVariable("branchOperatorAccId") Long branchOperatorAccId, Authentication authentication, RedirectAttributes redirAttr) {
 		var branchOperatorAcc = accountService.findUserById(branchOperatorAccId);
 
-		if (branchOperatorAcc.isEmpty()) {
-			alertService.createAlert(AlertColour.YELLOW, "App Admin Account not found", redirAttr);
+		MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
+		
+		if (branchOperatorAcc.isEmpty() || !permissionService.checkAuthorityOver(userDetails.getUser(), branchOperatorAcc.get())) {
+			alertService.createAlert(AlertColour.YELLOW, "Branch Operator Account not found", redirAttr);
 			return "redirect:/manage/branch-operator-account/list";			
 		}
 		
 		accountService.deleteUser(branchOperatorAcc.get());
-		alertService.createAlert(AlertColour.GREEN, "App Admin Account successfully deleted", redirAttr);
+		alertService.createAlert(AlertColour.GREEN, "Branch Operator Account successfully deleted", redirAttr);
 		return "redirect:/manage/branch-operator-account/list";
 	}
 	

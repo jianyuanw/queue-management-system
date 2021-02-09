@@ -12,13 +12,17 @@ import org.springframework.validation.BindingResult;
 
 import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
 import io.azuremicroservices.qme.qme.models.Branch;
+import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.models.User;
 import io.azuremicroservices.qme.qme.models.User.Role;
 import io.azuremicroservices.qme.qme.models.UserBranchPermission;
+import io.azuremicroservices.qme.qme.models.UserQueuePermission;
 import io.azuremicroservices.qme.qme.models.UserVendorPermission;
 import io.azuremicroservices.qme.qme.models.Vendor;
 import io.azuremicroservices.qme.qme.repositories.BranchRepository;
+import io.azuremicroservices.qme.qme.repositories.QueueRepository;
 import io.azuremicroservices.qme.qme.repositories.UserBranchPermissionRepository;
+import io.azuremicroservices.qme.qme.repositories.UserQueuePermissionRepository;
 import io.azuremicroservices.qme.qme.repositories.UserRepository;
 import io.azuremicroservices.qme.qme.repositories.UserVendorPermissionRepository;
 import io.azuremicroservices.qme.qme.repositories.VendorRepository;
@@ -29,22 +33,30 @@ public class AccountService {
     private final UserRepository userRepo;
     private final PermissionService permissionService;
     private final PasswordEncoder passwordEncoder;
-    private final UserVendorPermissionRepository uvpRepo;
+    
     private final VendorRepository vendorRepo;
     private final BranchRepository branchRepo;
+    private final QueueRepository queueRepo;
+    
+    private final UserVendorPermissionRepository uvpRepo;
     private final UserBranchPermissionRepository ubpRepo;
+    private final UserQueuePermissionRepository uqpRepo;
 
     public AccountService(UserRepository userRepo, PermissionService permissionService, 
     		PasswordEncoder passwordEncoder, UserVendorPermissionRepository uvpRepo, VendorRepository vendorRepo,
-    		BranchRepository branchRepo, UserBranchPermissionRepository ubpRepo) {
+    		BranchRepository branchRepo, UserBranchPermissionRepository ubpRepo, QueueRepository queueRepo,
+    		UserQueuePermissionRepository uqpRepo) {
         this.userRepo = userRepo;
         this.permissionService = permissionService;
         this.passwordEncoder = passwordEncoder;
         
+        this.queueRepo = queueRepo;
         this.vendorRepo = vendorRepo;
         this.branchRepo = branchRepo;
+        
         this.uvpRepo = uvpRepo;
         this.ubpRepo = ubpRepo;
+        this.uqpRepo = uqpRepo;
     }
 
     public boolean usernameExists(String username) {
@@ -146,6 +158,16 @@ public class AccountService {
 		
 		return ubpRepo.findAllByBranchIdIn(branches).stream()
 				.map(UserBranchPermission::getUser).distinct()
+				.collect(Collectors.toList());
+	}
+
+	public List<User> findAllUsersByRoleAndBranchIn(Role branchOperator, List<Branch> branches) {
+		List<Long> queues = queueRepo.findAllByBranch_IdIn(branches.stream().map(Branch::getId).collect(Collectors.toList())).stream()
+				.map(Queue::getId)
+				.collect(Collectors.toList());
+
+		return uqpRepo.findAllByQueueIdIn(queues).stream()
+				.map(UserQueuePermission::getUser).distinct()
 				.collect(Collectors.toList());
 	}
 }

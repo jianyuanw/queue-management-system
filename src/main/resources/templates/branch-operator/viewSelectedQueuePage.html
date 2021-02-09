@@ -23,7 +23,7 @@
     <input type="submit" value="View No-show List" />
 </form>
 
-<table>
+<table id="selectedQueuePageTable">
     <thead>
     <tr>
         <td>Queue Number</td>
@@ -40,13 +40,27 @@
         <td><span >duration</span></td>
         <td><span th:if="${position.getState().ordinal()==1}" text="Yes">Yes</span><span th:if="${position.getState().ordinal()!=1}" text="No">No</span></td>
         <td>
-<!--            <form method="get" th:action="@{/OperateQueue/ViewSelectedQueue/{qId}(qId=${queue.getId()})}" >-->
-<!--                <input type="submit" value="Reassign Position" />-->
-<!--            </form>-->
+            <form method="get" th:action="@{/OperateQueue/ViewSelectedQueue/{qId}/{rId}(qId=${queue.getId()},rId=${position.getId()})}" >
+                <input type="submit" value="Reassign Position" />
+            </form>
         </td>
     </tr>
     </tbody>
 </table>
+<script type="text/javascript">
+    var obj = document.getElementById("selectedQueuePageTable");
+    var rowNum = obj.rows.length;
+
+    try{
+        for(var i=1;i<rowNum;i++){
+            obj.rows[i].cells[1].innerHTML = (i).toString();
+        }
+    }
+    catch(e)
+    {
+        alert(e.description);
+    }
+</script>
 <div th:replace="fragments/layout.html :: footer"></div>
 </body>
 </html>

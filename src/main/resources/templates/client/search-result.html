@@ -12,7 +12,7 @@
 
     <div class="m-4">
 
-        <h5 class="font-weight-bold mb-4">Showing results for: 'splash'</h5>
+        <h5 class="font-weight-bold mb-4">Showing results for: '<span th:text="${query}">query</span>'</h5>
 
         <div class="row row-cols-1">
             <div class="col border border-info" th:each="branch : ${branches}">
@@ -32,6 +32,8 @@
                 </div>
             </div>
         </div>
+
+        <h5 th:text="${error}"></h5>
 
     </div>
 </body>

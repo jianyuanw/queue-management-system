@@ -19,10 +19,10 @@ public class ClientService {
         this.queueRepo = queueRepo;
     }
 
-    public List<Branch> findBranchesBySearchTerm(String searchTerm) {
+    public List<Branch> findBranchesByQuery(String query) {
         return branchRepo.findAll()
                 .stream()
-                .filter(x -> x.getName().toLowerCase().contains(searchTerm.toLowerCase()))
+                .filter(x -> x.getName().toLowerCase().contains(query.toLowerCase()))
                 .collect(Collectors.toList());
     }
 }

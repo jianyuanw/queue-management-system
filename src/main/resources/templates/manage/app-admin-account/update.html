@@ -13,51 +13,54 @@
 <body>
     <div th:replace="fragments/layout.html :: navbar"></div>
 	
-	<form class="text-center border border-light p-5" method="post" th:action="@{/manage/app-admin-account/update}" th:object ="${appAdminAcc}">
+	<form class="text-center border border-light p-5" method="post" th:action="@{/manage/app-admin-account/update}" th:object="${user}">
 	
-	    <p class="h4 mb-4">App Admin Account</p>
+	    <p class="h4 mb-4">Update App Admin Account</p>
 	    
 	    <input type="hidden" th:field="*{id}">
+	    <input type="hidden" th:field="*{role}">
 	    
 	    <div class="form-row mb-4">
 	        <div class="col form-group">
 	        	<label class="form-label" for="appAdminAccountFirstName">First Name</label>
-	            <input type="text" id="appAdminAccountFirstName" class="form-control" th:field="*{firstName}">	            
+	            <input type="text" id="appAdminAccountFirstName" class="form-control" th:field="*{firstName}">
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></p>	            
 	        </div>
 	        
 	        <div class="col form-group">
 	        	<label class="form-label" for="appAdminAccountLastName">Last Name</label>
-	            <input type="text" id="appAdminAccountLastName" class="form-control" th:field="*{lastName}">	            
-	        </div>
-	        
-	        		        
+	            <input type="text" id="appAdminAccountLastName" class="form-control" th:field="*{lastName}">
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></p>            
+	        </div>	        	        		       
 	    </div>
 	    
 	    <div class="form-row mb-4">
 	        <div class="col form-group">
-	        	<label class="form-label" for="vendorAccountEmail">Email</label>
-	            <input type="text" id="vendorAccountEmail" class="form-control" th:field="*{email}" required>	            
+	        	<label class="form-label" for="appAdminAccountEmail">Email</label>
+	            <input type="text" id="appAdminAccountEmail" class="form-control" th:field="*{email}" required>	
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>            
 	        </div>
 	        
 	        <div class="col form-group">
-	        	<label class="form-label" for="vendorAccountHandphoneNo">Handphone Number</label>
-	            <input type="text" id="vendorAccountHandphoneNo" class="form-control" th:field="*{handphoneNo}">	            
+	        	<label class="form-label" for="appAdminAccountHandphoneNo">Handphone Number</label>
+	            <input type="text" id="appAdminAccountHandphoneNo" class="form-control" th:field="*{handphoneNo}">
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('handphoneNo')}" th:errors="*{handphoneNo}"></p>	            
 	        </div>	        
 	    </div>
 	
 	    <div class="form-row mb-4">
 	        <div class="col form-group">
-	        	<label class="form-label" for="vendorAccountUsername">Username</label>
-	            <input type="text" id="vendorAccountUsername" class="form-control" th:field="*{username}" required>	            
+	        	<label class="form-label" for="appAdminAccountUsername">Username</label>
+	            <input type="text" id="appAdminAccountUsername" class="form-control" th:field="*{username}" required>
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>            
 	        </div>
 	        
 	        <div class="col form-group">
 	        	<label class="form-label" for="appAdminAccountPassword">Password</label>
-	            <input type="text" id="appAdminAccountPassword" class="form-control" th:field="*{password}" required>	            
+	            <input type="password" id="appAdminAccountPassword" class="form-control" th:field="*{password}" required>
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>         
 	        </div>	        
-	    </div>	    
-	     
-	    <input type="hidden" th:field="*{role}">
+	    </div>	    	     	   
 	    
 	    <button class="btn btn-info my-4 btn-block" type="submit">Submit</button>
 	

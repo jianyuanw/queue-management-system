@@ -1,11 +1,8 @@
 package io.azuremicroservices.qme.qme.controllers;
 
-import java.util.NoSuchElementException;
-
 import javax.validation.Valid;
 import javax.websocket.server.PathParam;
 
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -71,10 +68,9 @@ public class ManageBranchController {
 		}
 		if (bindingResult.hasErrors()) {
 			return "manage/branch/create";
-		} else {
-			branchService.createBranch(branch);
-		}
+		} 
 		
+		branchService.createBranch(branch);
 		alertService.createAlert(AlertColour.GREEN, "Branch successfully created", redirAttr);
 		return "redirect:/manage/branch/list";
 	}
@@ -88,10 +84,9 @@ public class ManageBranchController {
 		if (branch.isEmpty() || !permissionService.authenticateVendor(accountService.findUserByUsername(user.getUsername()), branch.get().getVendor())) {
 			alertService.createAlert(AlertColour.YELLOW, "Branch could not be found", redirAttr);			
 			return "redirect:/manage/branch/list";
-		} else {
-			model.addAttribute("branch", branch.get());
 		}
 		
+		model.addAttribute("branch", branch.get());
 		return "manage/branch/update";
 	}
 
@@ -99,9 +94,9 @@ public class ManageBranchController {
 	public String updateBranch(@ModelAttribute @Valid Branch branch, BindingResult bindingResult, @PathParam("branchId") Long branchId, RedirectAttributes redirAttr) {
 		if (bindingResult.hasErrors()) {
 			return "manage/branch/update";
-		} else {
-			branchService.updateBranch(branch);
-		}
+		} 
+
+		branchService.updateBranch(branch);
 		alertService.createAlert(AlertColour.GREEN, "Branch successfully updated", redirAttr);
 		return "redirect:/manage/branch/list";
 	}

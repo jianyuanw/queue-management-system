@@ -23,4 +23,9 @@ public class UserBranchPermission {
     
     @ManyToOne    
     private User user;
+    
+    public UserBranchPermission(User user, Branch branch) {
+    	this.branch = branch;
+    	this.user = user;
+    }
 }

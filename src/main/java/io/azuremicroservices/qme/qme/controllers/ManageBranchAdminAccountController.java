@@ -18,6 +18,7 @@ import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
 import io.azuremicroservices.qme.qme.models.Branch;
 import io.azuremicroservices.qme.qme.models.User;
 import io.azuremicroservices.qme.qme.models.User.Role;
+import io.azuremicroservices.qme.qme.models.Vendor;
 import io.azuremicroservices.qme.qme.services.AccountService;
 import io.azuremicroservices.qme.qme.services.AlertService;
 import io.azuremicroservices.qme.qme.services.AlertService.AlertColour;
@@ -44,8 +45,12 @@ public class ManageBranchAdminAccountController {
      * @return the webpage of list all of branch admin account
      */
     @GetMapping("/list")
-    public String manageBranchAdminList(Model model) {
-        model.addAttribute("branchAdminAccounts", accountService.findAllUsersByRole(Role.BRANCH_ADMIN));
+    public String manageBranchAdminList(Model model, Authentication authentication) {
+    	MyUserDetails user = (MyUserDetails) authentication.getPrincipal();
+    	
+    	Vendor vendor = permissionService.getVendorPermission(user.getId());
+    	
+        model.addAttribute("branchAdminAccounts", accountService.findAllUsersByRoleAndVendor(Role.BRANCH_ADMIN, vendor));
         return "manage/branch-admin-account/list";
     }
 

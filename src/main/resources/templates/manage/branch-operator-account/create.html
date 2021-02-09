@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <title>Create Branch Operator Account</title>
+    <meta charset="UTF-8">
+
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+</head>
+<body>
+    <div th:replace="fragments/layout.html :: navbar"></div>
+	<form class="text-center border border-light p-5" method="post" th:action="@{/manage/branch-operator-account/create}">
+	
+	    <p class="h4 mb-4">New Branch Operator Account</p>
+	    
+	    <div class="form-row mb-4">
+	        <div class="col form-group">
+	        	<label class="form-label" for="branchOperatorAccountFirstName">First Name</label>
+	            <input type="text" id="branchOperatorAccountFirstName" class="form-control" th:field="${user.firstName}">
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('${user.firstName}')}" th:errors="${user.firstName}"></p>	            
+	        </div>
+	        
+	        <div class="col form-group">
+	        	<label class="form-label" for="branchOperatorAccountLastName">Last Name</label>
+	            <input type="text" id="branchOperatorAccountLastName" class="form-control" th:field="${user.lastName}">
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('${user.lastName}')}" th:errors="${user.lastName}"></p>            
+	        </div>
+	        
+	        		        
+	    </div>
+	    
+	    <div class="form-row mb-4">
+	        <div class="col form-group">
+	        	<label class="form-label" for="branchOperatorAccountEmail">Email</label>
+	            <input type="text" id="branchOperatorAccountEmail" class="form-control" th:field="${user.email}" required>	
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('${user.email}')}" th:errors="${user.email}"></p>            
+	        </div>
+	        
+	        <div class="col form-group">
+	        	<label class="form-label" for="branchOperatorAccountHandphoneNo">Handphone Number</label>
+	            <input type="text" id="branchOperatorAccountHandphoneNo" class="form-control" th:field="${user.handphoneNo}">
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('${user.handphoneNo}')}" th:errors="${user.handphoneNo}"></p>	            
+	        </div>	        
+	    </div>
+	
+	    <div class="form-row mb-4">
+	        <div class="col form-group">
+	        	<label class="form-label" for="branchOperatorAccountUsername">Username</label>
+	            <input type="text" id="branchOperatorAccountUsername" class="form-control" th:field="${user.username}" required>
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('${user.username}')}" th:errors="${user.username}"></p>            
+	        </div>
+	        
+	        <div class="col form-group">
+	        	<label class="form-label" for="branchOperatorAccountPassword">Password</label>
+	            <input type="password" id="branchOperatorAccountPassword" class="form-control" th:field="${user.password}" required>
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('${user.password}')}" th:errors="${user.password}"></p>         
+	        </div>	        
+	    </div>
+	    
+	    <div class="form-row mb-4">
+	    	<div class="col form-group">
+	        	<select class="form-select form-control" name="brandId" required>
+	        		<option value="" selected>Select Branch</option>
+	        		<option th:each="branch : ${branches}"
+	        			th:value="${branch.id}" th:text="${branch.name}"></option>
+	        	</select>  			    		   	    	
+			</div>
+			
+			<div class="col form-group">
+				<div class="custom-control custom-checkbox">
+					<input type="checkbox" name="test">
+				</div>
+			</div>
+			
+			<div class="col form-group">
+				<div class="custom-control custom-checkbox" th:each="queue, stat : ${queues}">
+					<input type="checkbox" class="custom-control-input" th:id="${'checkbox' + queue.id}" name="checkboxes"
+						th:value="${queue.id}">
+					<label class="custom-control-label" th:text="${queue.name}"></label>
+				</div>
+			</div>
+	    </div>	    
+	    
+	    <button class="btn btn-info my-4 btn-block" type="submit">Submit</button>
+	
+	</form>
+
+    <div th:replace="fragments/layout.html :: footer"></div>
+</body>
+</html>

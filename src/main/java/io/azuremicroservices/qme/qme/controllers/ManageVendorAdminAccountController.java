@@ -39,30 +39,36 @@ public class ManageVendorAdminAccountController {
 	}
 	
 	@GetMapping("/list")
-	public String manageVendorAdminAccountList(Model model) {
+	public String initManageVendorAdminAccountList(Model model) {
 		model.addAttribute("vendorAdminAccounts", accountService.findAllUsersByRole(Role.VENDOR_ADMIN));
 		return "manage/vendor-admin-account/list";
 	}
 	
 	@GetMapping("/create/{vendorId}")
-	public String createVendorAdminAccountForm(Model model, @PathVariable("vendorId") Long vendorId, RedirectAttributes redirAttr) {
+	public String initCreateVendorAdminAccountForm(Model model, @PathVariable("vendorId") Long vendorId, RedirectAttributes redirAttr) {
 		var vendor = vendorService.findVendorById(vendorId);
+		
 		if (vendor.isEmpty()) {
 			alertService.createAlert(AlertColour.YELLOW, "Vendor id not found", redirAttr);
 			return "redirect:/manage/vendor-admin-account/list";
 		}
-		model.addAttribute("vendor", vendorService.findVendorById(vendorId));
+		
+		model.addAttribute("vendor", vendorService.findVendorById(vendorId).get());
+					
 		model.addAttribute("user", new User());
 		
 		return "manage/vendor-admin-account/create";
 	}
 	
 	@PostMapping("/create")
-	public String createVendorAdminAccount(@Valid @ModelAttribute User user, @Valid @ModelAttribute Vendor vendor, BindingResult bindingResult, RedirectAttributes redirAttr) {
+	public String createVendorAdminAccount(@ModelAttribute @Valid User user, BindingResult bindingResult, @ModelAttribute Vendor vendor, RedirectAttributes redirAttr) {
+		bindingResult = accountService.verifyUser(user, bindingResult);
+		
 		if(bindingResult.hasErrors()) {
 			return "manage/vendor-admin-account/create";
 		}
-//		accountService.createUser(user, vendor);
+		
+		accountService.createUser(user, vendor);
 		alertService.createAlert(AlertColour.GREEN, "Vendor Admin Account successfully created", redirAttr);
 		
 		return "redirect:/manage/vendor-admin-account/list";
@@ -70,23 +76,26 @@ public class ManageVendorAdminAccountController {
 	}
 	
 	@GetMapping("/update/{vendorAdminAccId}")
-	public String updateVendorAdminAccountForm(Model model, @PathVariable("vendorAdminAccId") Long vendorAdminAccId, RedirectAttributes redirAttr) {
+	public String initUpdateVendorAdminAccountForm(Model model, @PathVariable("vendorAdminAccId") Long vendorAdminAccId, RedirectAttributes redirAttr) {
 		var vendorAdminAcc = accountService.findUserById(vendorAdminAccId);
 		
 		if (vendorAdminAcc.isEmpty()) {
 			alertService.createAlert(AlertColour.YELLOW, "Vendor id not found", redirAttr);
 			return "redirect:/manage/vendor-account/list";			
 		}
-		model.addAttribute("vendorAdminAcc", accountService.findUserById(vendorAdminAccId));
+		
+		model.addAttribute("user", accountService.findUserById(vendorAdminAccId));
 		return "manage/vendor-admin-account/update";
 	}
 	
 	@PostMapping("/update")
-	public String updateVendorAdminAccount(@ModelAttribute @Valid User vendorAdminAcc, BindingResult bindingResult, RedirectAttributes redirAttr) {
+	public String updateVendorAdminAccount(@ModelAttribute @Valid User user, BindingResult bindingResult, RedirectAttributes redirAttr) {
+		bindingResult = accountService.verifyUser(user, bindingResult);
+		
 		if (bindingResult.hasErrors()) {
 			return "manage/vendor-admin-account/update";
 		} else {
-			accountService.updateUser(vendorAdminAcc);
+			accountService.updateUser(user);
 		}
 		alertService.createAlert(AlertColour.GREEN, "Vendor Admin Account successfully updated", redirAttr);
 		return "redirect:/manage/vendor-admin-account/list"; 

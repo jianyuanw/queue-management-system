@@ -25,4 +25,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	@Modifying
 	@Query("update User u set u.perspective = :target where u.id = :userid")
 	void updateUserPerspective(@Param("userid") Long userId, @Param("target") Role role);
+
+	User findByUsernameAndIdNot(String username, Long id);
+	User findByEmailAndIdNot(String email, Long id);
+	
 }

@@ -1,6 +1,9 @@
 package io.azuremicroservices.qme.qme.services;
 
+import java.util.List;
 import java.util.Optional;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,5 +25,24 @@ public class VendorService {
 		return vendorRepo.findById(vendorId);
 	}
 	
+	public List<Vendor> findAllVendors() {
+		return vendorRepo.findAll();
+	}
+	
+	public boolean companyUidExists(String companyUid) {
+		return vendorRepo.findByCompanyUid(companyUid) != null;
+	}
+
+	public void createVendor(Vendor vendor) {
+		vendorRepo.save(vendor);		
+	}
+
+	public void updateVendor(Vendor vendor) {
+		vendorRepo.save(vendor);
+	}
+
+	public void deleteVendor(Vendor vendor) {
+		vendorRepo.delete(vendor);
+	}
 	
 }

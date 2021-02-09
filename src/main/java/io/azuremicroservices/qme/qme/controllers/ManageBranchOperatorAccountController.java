@@ -1,8 +1,11 @@
 package io.azuremicroservices.qme.qme.controllers;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -13,39 +16,58 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
+import io.azuremicroservices.qme.qme.models.Branch;
 import io.azuremicroservices.qme.qme.models.User;
 import io.azuremicroservices.qme.qme.models.User.Role;
 import io.azuremicroservices.qme.qme.services.AccountService;
 import io.azuremicroservices.qme.qme.services.AlertService;
 import io.azuremicroservices.qme.qme.services.AlertService.AlertColour;
+import io.azuremicroservices.qme.qme.services.PermissionService;
+import io.azuremicroservices.qme.qme.services.QueueService;
 
 @Controller
-@RequestMapping("manage/app-admin-account")
-public class ManageAppAdminAccountController {
+@RequestMapping("manage/branch-operator-account")
+public class ManageBranchOperatorAccountController {
 	
 	private final AccountService accountService;
 	private final AlertService alertService;
+	private final PermissionService permissionService;
+	private final QueueService queueService;
 	
 	@Autowired
-	public ManageAppAdminAccountController(AccountService accountService, AlertService alertService) {
+	public ManageBranchOperatorAccountController(AccountService accountService, AlertService alertService, 
+			PermissionService permissionService, QueueService queueService) {
 		this.accountService = accountService;
 		this.alertService = alertService;
+		this.permissionService = permissionService;
+		this.queueService = queueService;
 	}
 	
 	@GetMapping("/list")
-	public String initManageAppAdminAccountList(Model model) {
-		model.addAttribute("appAdminAccounts", accountService.findAllUsersByRole(Role.APP_ADMIN));
-		return "manage/app-admin-account/list";
+	public String initManageBranchOperatorAccountList(Model model, Authentication authentication) {
+    	MyUserDetails user = (MyUserDetails) authentication.getPrincipal();
+    	
+    	List<Branch> branches = permissionService.getBranchPermissions(user.getId());		
+		
+		model.addAttribute("branchOperators", accountService.findAllUsersByRoleAndBranchIn(Role.BRANCH_OPERATOR, branches));
+		return "manage/branch-operator-account/list";
 	}
 	
 	@GetMapping("/create")
-	public String initCreateAppAdminAccountForm(Model model) {
+	public String initCreateBranchOperatorAccountForm(Model model, Authentication authentication) {
+		MyUserDetails user = (MyUserDetails) authentication.getPrincipal();
+		
+		List<Branch> branches = permissionService.getBranchPermissions(user.getId());
+		
 		model.addAttribute("user", new User());
-		return "manage/app-admin-account/create";
+		model.addAttribute("branches", branches);
+		model.addAttribute("queues", queueService.findAllQueuesInBranches(branches));
+		return "manage/branch-operator-account/create";
 	}
 	
 	@PostMapping("/create")
-	public String createAppAdminAccount(@Valid @ModelAttribute User user, BindingResult bindingResult, RedirectAttributes redirAttr) {
+	public String createBranchOperatorAccount(@Valid @ModelAttribute User user, BindingResult bindingResult, RedirectAttributes redirAttr) {
 		bindingResult = accountService.verifyUser(user, bindingResult);
 
 		if (bindingResult.hasErrors()) {
@@ -60,7 +82,7 @@ public class ManageAppAdminAccountController {
 	}
 	
 	@GetMapping("/update/{userId}")
-	public String initUpdateAppAdminAccountForm(Model model, @PathVariable("userId") Long userId, RedirectAttributes redirAttr) {
+	public String initUpdateBranchOperatorAccountForm(Model model, @PathVariable("userId") Long userId, RedirectAttributes redirAttr) {
 		var appAdmin = accountService.findUserById(userId);
 		
 		if (appAdmin.isEmpty()) {
@@ -73,7 +95,7 @@ public class ManageAppAdminAccountController {
 	}
 	
 	@PostMapping("/update")
-	public String updateAppAdmin(Model model, @ModelAttribute @Valid User user, BindingResult bindingResult, RedirectAttributes redirAttr) {
+	public String updateBranchOperator(Model model, @ModelAttribute @Valid User user, BindingResult bindingResult, RedirectAttributes redirAttr) {
 		bindingResult = accountService.verifyUser(user, bindingResult);
 		
 		if (bindingResult.hasErrors()) {
@@ -86,7 +108,7 @@ public class ManageAppAdminAccountController {
 	} 
 	
 	@GetMapping("/delete/{appAdminAccId}")
-	public String deleteAppAdmin(@PathVariable("appAdminAccId") Long appAdminAccId, RedirectAttributes redirAttr) {
+	public String deleteBranchOperator(@PathVariable("appAdminAccId") Long appAdminAccId, RedirectAttributes redirAttr) {
 		var appAdminAcc = accountService.findUserById(appAdminAccId);
 
 		if (appAdminAcc.isEmpty()) {

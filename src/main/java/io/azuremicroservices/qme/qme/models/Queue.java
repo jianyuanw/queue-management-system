@@ -21,55 +21,55 @@ import lombok.ToString.Exclude;
 @Data
 @Table
 public class Queue {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @ManyToOne
-    private Branch branch;
+	@ManyToOne
+	private Branch branch;
 
-    private String name;
+	private String name;
 
-    private String description;
+	private String description;
 
-    private State state;
+	private State state;
 
-    private Double timePerClient;
+	private Double timePerClient;
 
-    private Integer notificationPosition;
+	private Integer notificationPosition;
 
-    private Double notificationDelay;
+	private Double notificationDelay;
 
-    @OneToMany(mappedBy = "queue", cascade =CascadeType.ALL)
-    @Exclude
-    private List<QueuePosition> queuePositions;
-    
-    @OneToMany(mappedBy = "queue", cascade = CascadeType.ALL)
-    @Exclude
-    private List<UserQueuePermission> userQueuePermissions;    
+	@OneToMany(mappedBy = "queue", cascade = CascadeType.ALL)
+	@Exclude
+	private List<QueuePosition> queuePositions;
 
-    public enum State {
-        OPEN,
-        CLOSED,
-        UNKNOWN;
+	@OneToMany(mappedBy = "queue", cascade = CascadeType.ALL)
+	@Exclude
+	private List<UserQueuePermission> userQueuePermissions;
 
-        private final String displayValue;
+	public enum State {
+		OPEN, CLOSED, UNKNOWN;
 
-        State() {
-            // Generalized constructor that converts capitalized enum values to TitleCase
-            StringBuilder sb = new StringBuilder();
+		private final String displayValue;
 
-            for (String word : this.name().split("_")) {
-                sb.append(word.charAt(0)).append(word.substring(1).toLowerCase()).append(" ");
-            }
+		State() {
+			// Generalized constructor that converts capitalized enum values to TitleCase
+			StringBuilder sb = new StringBuilder();
 
-            this.displayValue = sb.toString().trim();
-        }
+			for (String word : this.name().split("_")) {
+				sb.append(word.charAt(0)).append(word.substring(1).toLowerCase()).append(" ");
+			}
 
-        public String getDisplayValue() { return displayValue; }
-    }
+			this.displayValue = sb.toString().trim();
+		}
 
-	public Queue(Vendor vendor,Branch branch, String name, String description, State state, Double timePerClient,
+		public String getDisplayValue() {
+			return displayValue;
+		}
+	}
+
+	public Queue(Vendor vendor, Branch branch, String name, String description, State state, Double timePerClient,
 			Integer notificationPosition, Double notificationDelay) {
 		super();
 		this.branch = branch;

@@ -56,7 +56,7 @@
 	        
 	        <div class="col form-group">
 	        	<label class="form-label" for="appAdminAccountPassword">Password</label>
-	            <input type="text" id="appAdminAccountPassword" class="form-control" th:field="*{password}" required>
+	            <input type="password" id="appAdminAccountPassword" class="form-control" th:field="*{password}" required>
 	            <p class="text-danger text-left" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>         
 	        </div>	        
 	    </div>	    

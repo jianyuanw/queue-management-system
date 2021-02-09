@@ -108,6 +108,22 @@ public class AccountService {
     	Branch dbBranch = branchRepo.findById(branch.getId()).get();
     	user.getUserBranchPermissions().add(new UserBranchPermission(user, dbBranch));	
     }
+    
+    @Transactional
+    public void createUser(User user, List<String> queues) {
+    	user.setRole(Role.BRANCH_OPERATOR);
+    	user.setPerspective(Role.BRANCH_OPERATOR);
+    	user.setPassword(passwordEncoder.encode(user.getPassword()));
+    	user.setId(null);
+    	userRepo.saveAndFlush(user);
+    	for (String q : queues) {
+    		var queue = queueRepo.findById(Long.parseLong(q));
+    		
+    		if (queue.isPresent()) {
+    			user.getUserQueuePermissions().add(new UserQueuePermission(user, queue.get()));
+    		}
+    	}
+    }    
 
     @Transactional
     public void changePerspective(MyUserDetails currentDetails, Role perspective) {

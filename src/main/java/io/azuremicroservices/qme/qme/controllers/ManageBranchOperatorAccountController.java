@@ -1,5 +1,6 @@
 package io.azuremicroservices.qme.qme.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
@@ -67,58 +69,83 @@ public class ManageBranchOperatorAccountController {
 	}
 	
 	@PostMapping("/create")
-	public String createBranchOperatorAccount(@Valid @ModelAttribute User user, BindingResult bindingResult, RedirectAttributes redirAttr) {
+	public String createBranchOperatorAccount(Model model, @Valid @ModelAttribute User user, BindingResult bindingResult, Authentication authentication,
+			@RequestParam(name = "checkboxes", required = false) List<String> checkboxes, @RequestParam("branchId") String branchId, RedirectAttributes redirAttr) {
 		bindingResult = accountService.verifyUser(user, bindingResult);
 
-		if (bindingResult.hasErrors()) {
-			return "manage/app-admin-account/create";
+		
+		if (branchId == null) {
+			model.addAttribute("branchIdError", "Branch needs to be selected");
 		}
 		
-		accountService.createUser(user, Role.APP_ADMIN);
-		alertService.createAlert(AlertColour.GREEN, "App Admin Account successfully created", redirAttr);
+		if (checkboxes == null) {
+			model.addAttribute("queueIdError", "At least one queue permission needs to be given");
+		}
+
+		if (bindingResult.hasErrors()) {
+			MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
+			
+			List<Branch> branches = permissionService.getBranchPermissions(userDetails.getId());
+			
+			model.addAttribute("branches", branches);
+			model.addAttribute("queues", queueService.findAllQueuesInBranches(branches));			
+			return "manage/branch-operator-account/create";
+		}
 		
-		return "redirect:/manage/app-admin-account/list";
+		accountService.createUser(user, checkboxes);
+		alertService.createAlert(AlertColour.GREEN, "Branch Operator Account successfully created", redirAttr);
+		
+		return "redirect:/manage/branch-operator-account/list";
 		
 	}
-	
+//	
 	@GetMapping("/update/{userId}")
-	public String initUpdateBranchOperatorAccountForm(Model model, @PathVariable("userId") Long userId, RedirectAttributes redirAttr) {
-		var appAdmin = accountService.findUserById(userId);
+	public String initUpdateBranchOperatorAccountForm(Model model, @PathVariable("userId") Long userId, Authentication authentication, RedirectAttributes redirAttr) {
+		var branchOperator = accountService.findUserById(userId);
 		
-		if (appAdmin.isEmpty()) {
+		MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();	
+		
+		if (branchOperator.isEmpty() || ! permissionService.checkAuthorityOver(userDetails.getUser(), branchOperator.get())) {
 			alertService.createAlert(AlertColour.YELLOW, "App Admin Account not found", redirAttr);
-			return "redirect:/manage/app-admin-account/list";
+			return "redirect:/manage/branch-operator-account/list";
 		}
 		
-		model.addAttribute("user", appAdmin.get());
-		return "manage/app-admin-account/update";
+		model.addAttribute("user", branchOperator.get());
+		return "manage/branch-operator-account/update";
 	}
 	
 	@PostMapping("/update")
-	public String updateBranchOperator(Model model, @ModelAttribute @Valid User user, BindingResult bindingResult, RedirectAttributes redirAttr) {
+	public String updateBranchOperator(Model model, @ModelAttribute @Valid User user, BindingResult bindingResult, Authentication authentication, RedirectAttributes redirAttr) {
 		bindingResult = accountService.verifyUser(user, bindingResult);
 		
 		if (bindingResult.hasErrors()) {
-			return "manage/app-admin-account/update";
+			return "manage/branch-operator-account/update";
 		} 
-			
+		
+		MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();	
+		
+		if (!permissionService.checkAuthorityOver(userDetails.getUser(), user)) {
+			alertService.createAlert(AlertColour.YELLOW, "Branch Operator Account not found", redirAttr);
+			return "redirect:/manage/branch-operator-account/list";
+		}		
+		
 		accountService.updateUser(user);
-		alertService.createAlert(AlertColour.GREEN, "App Admin Account successfully updated", redirAttr);
-		return "redirect:/manage/app-admin-account/list"; 
+		alertService.createAlert(AlertColour.GREEN, "Branch Operator Account successfully updated", redirAttr);
+		return "redirect:/manage/branch-operator-account/list"; 
 	} 
 	
-	@GetMapping("/delete/{appAdminAccId}")
-	public String deleteBranchOperator(@PathVariable("appAdminAccId") Long appAdminAccId, RedirectAttributes redirAttr) {
-		var appAdminAcc = accountService.findUserById(appAdminAccId);
+	@GetMapping("/delete/{branchOperatorAccId}")
+	public String deleteBranchOperator(@PathVariable("branchOperatorAccId") Long branchOperatorAccId, RedirectAttributes redirAttr) {
+		var branchOperatorAcc = accountService.findUserById(branchOperatorAccId);
 
-		if (appAdminAcc.isEmpty()) {
+		if (branchOperatorAcc.isEmpty()) {
 			alertService.createAlert(AlertColour.YELLOW, "App Admin Account not found", redirAttr);
-			return "redirect:/manage/app-admin-account/list";			
+			return "redirect:/manage/branch-operator-account/list";			
 		}
 		
-		accountService.deleteUser(appAdminAcc.get());
+		accountService.deleteUser(branchOperatorAcc.get());
 		alertService.createAlert(AlertColour.GREEN, "App Admin Account successfully deleted", redirAttr);
-		return "redirect:/manage/app-admin-account/list";
+		return "redirect:/manage/branch-operator-account/list";
 	}
 	
 }

@@ -93,15 +93,16 @@ public class User {
     }
     
     public enum Role {
-        CLIENT,
-        APP_ADMIN,
-        VENDOR_ADMIN,
-        BRANCH_ADMIN,
-        BRANCH_OPERATOR;
+        CLIENT(0),
+        APP_ADMIN(4),
+        VENDOR_ADMIN(3),
+        BRANCH_ADMIN(2),
+        BRANCH_OPERATOR(1);
 
         private final String displayValue;
+        private final Integer authority;
 
-        Role() {
+        Role(Integer authority) {
             // Generalized constructor that converts capitalized enum values to TitleCase
             StringBuilder sb = new StringBuilder();
 
@@ -110,9 +111,11 @@ public class User {
             }
 
             this.displayValue = sb.toString().trim();
+            this.authority = authority;
         }
 
         public String getDisplayValue() { return displayValue; }
+        public Integer getAuthority() { return authority; }
     }
 }
 

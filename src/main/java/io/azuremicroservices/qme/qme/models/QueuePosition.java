@@ -30,6 +30,8 @@ public class QueuePosition {
     private String queueNumber;
     
     private Integer position;
+    
+    private Integer priority;
 
     @Enumerated
     private State state;

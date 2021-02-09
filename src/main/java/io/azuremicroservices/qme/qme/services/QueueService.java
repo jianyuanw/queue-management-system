@@ -129,4 +129,14 @@ public class QueueService {
 				.map(Branch::getId)
 				.collect(Collectors.toList()));
 	}
+	
+	public boolean queueNameExistsForBranch(String queueName, Long branchId) {
+		return queueRepo.findAllByBranch_IdAndName(branchId, queueName).size() > 0;
+	}
+	
+	public void createQueue(Queue queue) {
+		queue.setNotificationPosition(0);
+		queue.setState(Queue.State.UNKNOWN);
+		queueRepo.save(queue);
+	}
 }

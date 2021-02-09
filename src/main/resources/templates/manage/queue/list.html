@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+	<title>Queue List</title>
+	<meta charset="UTF-8">
+	
+	<th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+
+	<th:block th:replace="fragments/sourcebundle.html :: mdbootstrap-table" />
+
+</head>
+<body>
+	<div th:replace="fragments/layout.html :: navbar"></div>
+
+	<table id="dataTable" class="table table-striped table-bordered">
+		<thead>
+			<tr class="row">
+				<th class="col">Branch Name</th>
+				<th class="col">Name</th>
+				<th class="col">Description</th>
+				<th class="col">State</th>
+				<th class="col">Time Per Client</th>
+				<th class="col">Notification Position</th>
+				<th class="col">Notification Delay</th>
+				<th class="col">Actions</th>
+			</tr>
+		</thead>
+		<tbody th:each="queue : ${queues}" th:remove="tag">
+			<tr class="row">
+				<td class="col" th:text="${queue.branch.name}"></td>
+				<td class="col" th:text="${queue.name}"></td>
+				<td class="col" th:text="${queue.description}"></td>
+				<td class="col" th:text="${queue.state.getDisplayValue()}"></td>
+				<td class="col" th:text="${queue.timePerClient}"></td>
+				<td class="col" th:text="${queue.notificationPosition}"></td>
+				<td class="col" th:text="${queue.notificationDelay}"></td>
+				<td class="col" >
+					
+					<a th:href="@{/manage/vendor-admin-account/update/__${queue.id}__}">
+						<i class="fas fa-edit fa-lg" title="Edit Vendor Admin Account"></i>
+					</a>
+					
+      				<a href="#"><i class="fas fa-trash-alt fa-lg" data-toggle="modal" th:data-target="${'#deleteConfirm' + queue.id}" title="Delete Vendor Account"></i></a>
+      				
+					<th:block th:insert="fragments/support-elements.html :: modalbox-red"
+						th:with="modalId=${'deleteConfirm' + queue.id},modalTitle=${'Confirm Deletion'},modalBody=${'Are you sure you want to delete ' + queue.name + '?'},
+							modalConfirm=${'Delete'},confirmUrl=${'/manage/vendor-admin-account/delete/' + queue.id}">
+					</th:block>
+				</td>
+			</tr>
+		</tbody>
+		<tfoot>
+			<tr class="row">
+				<td class="col">
+					<a th:href="@{/manage/queue/create}"><button class="btn btn-info btn-block">Create New Queue</button></a>
+				</td>
+			</tr>
+		</tfoot>
+	</table>	
+
+	<div th:replace="fragments/layout.html :: footer"></div>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <title>Create Support Ticket</title>
+    <meta charset="UTF-8">
+
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+</head>
+<body>
+    <div th:replace="fragments/layout.html :: navbar"></div>
+	
+	<p class="h4 mb-4" th:text ="${supportTicket.title}"></p>
+	
+	<!-- Need to beautify -->
+	<div><p th:text ="${supportTicket.description}"></p></div>
+	
+	<form class="text-center border border-light p-5" method="post" th:action="@{/manage/support-ticket/reply}" th:object = "${supportTicket}">    
+	    	<input type="hidden" th:field="*{id}">
+			<input type="hidden" th:field="*{title}">
+			<input type="hidden" th:field="*{description}">
+			<input type="hidden" th:field="*{user}">
+			
+	        <div class="form-group">
+	        	<label class="form-label" for="reply">Reply</label>
+	            <textarea name="description" id="reply" class="form-control" placeholder="Reply..." style="width:100%;height:150px;" th:field="*{response}" required></textarea>	         
+	        </div>          
+	    
+	    <button class="btn btn-info my-4 btn-block" type="submit">Submit</button>
+	
+	</form>	
+
+    <div th:replace="fragments/layout.html :: footer"></div>
+</body>
+</html>

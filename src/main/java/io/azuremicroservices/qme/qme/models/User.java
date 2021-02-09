@@ -35,7 +35,7 @@ public class User {
 
     @NotEmpty(message = "Username must not be empty")
     @Pattern(regexp = "[A-Za-z0-9.]+", message = "Username must only contain alphanumeric characters and period")
-    @UniqueUsername
+    //@UniqueUsername
     private String username;
 
     @NotEmpty(message = "Password must not be empty")
@@ -43,7 +43,7 @@ public class User {
 
     @Email(message = "Email must be valid")
     @NotEmpty(message = "Email must not be empty")
-    @UniqueEmail
+    //@UniqueEmail
     private String email;
 
     private String handphoneNo;
@@ -56,7 +56,7 @@ public class User {
     
     private Role perspective;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade=CascadeType.ALL)
     private List<SupportTicket> supportTickets;
     
     @OneToMany(mappedBy = "user", cascade=CascadeType.ALL)

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <title th:text ="${supportTicket.title}"></title>
+    <meta charset="UTF-8">
+
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+</head>
+<body>
+	
+    <div th:replace="fragments/layout.html :: navbar"></div>
+    
+    <p class="h4 mb-4" th:text ="${supportTicket.title}"></p>
+	
+	<!-- Need to beautify -->
+	<div><p th:text ="${supportTicket.description}"></p></div>
+	
+	<div><p th:text = "${supportTicket.response}"></p></div>
+
+    <div th:replace="fragments/layout.html :: footer"></div>
+</body>
+</html>

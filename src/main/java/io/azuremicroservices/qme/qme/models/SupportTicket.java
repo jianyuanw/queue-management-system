@@ -9,6 +9,7 @@ import javax.persistence.Table;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString.Exclude;
 
 @Entity
 @NoArgsConstructor
@@ -20,21 +21,24 @@ public class SupportTicket {
     private Long id;
 
     @ManyToOne
+    @Exclude
     private User user;
 
     private String title;
 
     private String description;
 
-    private State state;
+    private TicketState ticketState;
+    
+    private String response;
 
-    enum State {
+    public enum TicketState {
         OPEN,
         CLOSED;
 
         private final String displayValue;
 
-        State() {
+        TicketState() {
             // Generalized constructor that converts capitalized enum values to TitleCase
             StringBuilder sb = new StringBuilder();
 

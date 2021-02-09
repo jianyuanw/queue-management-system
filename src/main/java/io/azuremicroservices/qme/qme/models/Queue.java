@@ -27,8 +27,6 @@ public class Queue {
 
     @ManyToOne
     private Branch branch;
-    @ManyToOne
-    private Vendor vendor;
 
     private String name;
 
@@ -46,13 +44,9 @@ public class Queue {
     @Exclude
     private List<QueuePosition> queuePositions;
     
-    @ManyToMany(mappedBy = "userBranchPermissions", cascade=CascadeType.ALL)
+    @OneToMany(mappedBy = "queue", cascade = CascadeType.ALL)
     @Exclude
-    private List<User> userBranchPermissions;   
-    
-    @ManyToMany(mappedBy = "userQueuePermissions", cascade=CascadeType.ALL)
-    @Exclude
-    private List<User> userQueuePermissions;    
+    private List<UserQueuePermission> userQueuePermissions;    
 
     public enum State {
         OPEN,
@@ -78,7 +72,6 @@ public class Queue {
 	public Queue(Vendor vendor,Branch branch, String name, String description, State state, Double timePerClient,
 			Integer notificationPosition, Double notificationDelay) {
 		super();
-    	this.vendor=vendor;
 		this.branch = branch;
 		this.name = name;
 		this.description = description;

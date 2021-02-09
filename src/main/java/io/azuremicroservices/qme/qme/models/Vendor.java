@@ -20,22 +20,22 @@ import lombok.ToString.Exclude;
 @Data
 @Table
 public class Vendor {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private String companyUid;
+	private String companyUid;
 
-    private String name;
+	private String name;
 
-    private String description;
-    
-    @OneToMany (mappedBy="vendor", cascade=CascadeType.ALL)
-    @Exclude
-    private List<Branch> branches;
-    
-    @ManyToMany(mappedBy = "userVendorPermissions")
-    @Exclude
-    private List<User> userVendorPermissions;
-    
+	private String description;
+
+	@OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL)
+	@Exclude
+	private List<Branch> branches;
+
+	@OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL)
+	@Exclude
+	private List<UserVendorPermission> userVendorPermissions;
+
 }

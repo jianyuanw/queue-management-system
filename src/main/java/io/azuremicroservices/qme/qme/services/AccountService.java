@@ -55,15 +55,15 @@ public class AccountService {
         userRepo.save(user);
     }
     
-    public void createUser(User user, Vendor vendor) {
-    	user.getUserVendorPermissions().add(vendor);
-    	this.createUser(user, Role.VENDOR_ADMIN);
-    }
-
-    public void createUser(User user, Branch branch) {
-    	user.getUserBranchPermissions().add(branch);
-    	this.createUser(user, Role.BRANCH_ADMIN);
-    }
+//    public void createUser(User user, Vendor vendor) {
+//    	user.getUserVendorPermissions().add(vendor);
+//    	this.createUser(user, Role.VENDOR_ADMIN);
+//    }
+//
+//    public void createUser(User user, Branch branch) {
+//    	user.getUserBranchPermissions().add(branch);
+//    	this.createUser(user, Role.BRANCH_ADMIN);
+//    }
 
     @Transactional
     public void changePerspective(MyUserDetails currentDetails, Role perspective) {

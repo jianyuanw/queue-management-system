@@ -28,6 +28,8 @@ public class QueuePosition {
     private User user;
 
     private String queueNumber;
+    
+    private Integer position;
 
     @Enumerated
     private State state;

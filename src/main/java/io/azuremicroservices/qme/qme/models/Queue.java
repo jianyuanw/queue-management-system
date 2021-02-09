@@ -56,7 +56,8 @@ public class Queue {
 
     public enum State {
         OPEN,
-        CLOSED;
+        CLOSED,
+        UNKNOWN;
 
         private final String displayValue;
 

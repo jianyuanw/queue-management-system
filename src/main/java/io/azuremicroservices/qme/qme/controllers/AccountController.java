@@ -117,9 +117,4 @@ public class AccountController {
     public String landingPageBranchAdmin() {
         return "branch-admin/landing-page";
     }
-
-    @GetMapping("/client")
-    public String landingPageClient() {
-        return "client/landing-page";
-    }
 }

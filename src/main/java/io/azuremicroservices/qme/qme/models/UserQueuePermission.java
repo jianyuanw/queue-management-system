@@ -19,10 +19,8 @@ public class UserQueuePermission {
     private Long id;
     
     @ManyToOne
-    @JoinColumn(name = "queue_id")
     private Queue queue;
     
     @ManyToOne
-    @JoinColumn(name = "user_id")
     private User user;
 }

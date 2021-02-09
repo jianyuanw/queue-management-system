@@ -19,10 +19,8 @@ public class UserBranchPermission {
     private Long id;
     
     @ManyToOne
-    @JoinColumn(name = "branch_id")
     private Branch branch;
     
-    @ManyToOne
-    @JoinColumn(name = "user_id")    
+    @ManyToOne    
     private User user;
 }

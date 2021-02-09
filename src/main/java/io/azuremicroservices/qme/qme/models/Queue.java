@@ -44,7 +44,7 @@ public class Queue {
     @Exclude
     private List<QueuePosition> queuePositions;
     
-    @ManyToMany(mappedBy = "queue", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "queue", cascade = CascadeType.ALL)
     @Exclude
     private List<UserQueuePermission> userQueuePermissions;    
 

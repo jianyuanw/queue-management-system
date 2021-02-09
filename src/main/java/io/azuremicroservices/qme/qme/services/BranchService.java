@@ -48,17 +48,7 @@ public class BranchService {
 
 	@Transactional
 	public void deleteBranch(Branch branch) {
-		var dbBranch = this.findBranchById(branch.getId());
-		
-		if (dbBranch.isPresent()) {
-			var dbBranchNew = dbBranch.get(); 
-			dbBranchNew.getUserBranchPermissions().clear();	
-			for (Queue queue : dbBranchNew.getQueues()) {
-				queue.getUserQueuePermissions().clear();
-			}
-			dbBranchNew.getQueues().clear();
-			branchRepo.delete(dbBranchNew);
-		}
+		branchRepo.delete(branch);
 	}	
 	
 }

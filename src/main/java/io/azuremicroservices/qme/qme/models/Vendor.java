@@ -34,7 +34,7 @@ public class Vendor {
 	@Exclude
 	private List<Branch> branches;
 
-	@ManyToMany(mappedBy = "vendor", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL)
 	@Exclude
 	private List<UserVendorPermission> userVendorPermissions;
 

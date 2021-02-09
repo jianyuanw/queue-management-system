@@ -19,10 +19,8 @@ public class UserVendorPermission {
     private Long id;
     
     @ManyToOne
-    @JoinColumn(name = "vendor_id")
     private Vendor vendor;
     
     @ManyToOne
-    @JoinColumn(name = "user_id")
     private User user;
 }

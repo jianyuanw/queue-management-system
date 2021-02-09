@@ -1,4 +1,4 @@
-package io.azuremicroservices.qme.qme.controllers;
+package io.azuremicroservices.qme.qme.controllers.prototype;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

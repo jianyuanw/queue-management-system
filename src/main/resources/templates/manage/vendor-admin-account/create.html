@@ -5,27 +5,33 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
-    <title>Create Vendor Account</title>
+    <title>Create Vendor Admin Account</title>
     <meta charset="UTF-8">
 
     <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
 </head>
 <body>
     <div th:replace="fragments/layout.html :: navbar"></div>
+	<form class="text-center border border-light p-5" method="post" th:action="@{/manage/vendor-admin-account/create}">
 	
-	<form class="text-center border border-light p-5" method="post" th:action="@{/manage/vendor-admin-account/create}" th:object = "${user}">
-	
-	    <p class="h4 mb-4">New Vendor Account</p>
+	    <p class="h4 mb-4">New Vendor Admin Account</p>
+	    
+	    <input type="hidden" th:field="${vendor.id}">
+	    <input type="hidden" th:field="${vendor.name}">
+	    <input type="hidden" th:field="${vendor.description}">
+	    <input type="hidden" th:field="${vendor.companyUid}">
 	    
 	    <div class="form-row mb-4">
 	        <div class="col form-group">
 	        	<label class="form-label" for="vendorAdminAccountFirstName">First Name</label>
-	            <input type="text" id="vendorAdminAccountFirstName" class="form-control" th:field="*{firstName}">	            
+	            <input type="text" id="vendorAdminAccountFirstName" class="form-control" th:field="${user.firstName}">
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('${user.firstName}')}" th:errors="${user.firstName}"></p>	            
 	        </div>
 	        
 	        <div class="col form-group">
 	        	<label class="form-label" for="vendorAdminAccountLastName">Last Name</label>
-	            <input type="text" id="vendorAdminAccountLastName" class="form-control" th:field="*{lastName}">	            
+	            <input type="text" id="vendorAdminAccountLastName" class="form-control" th:field="${user.lastName}">
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('${user.lastName}')}" th:errors="${user.lastName}"></p>            
 	        </div>
 	        
 	        		        
@@ -34,32 +40,34 @@
 	    <div class="form-row mb-4">
 	        <div class="col form-group">
 	        	<label class="form-label" for="vendorAdminAccountEmail">Email</label>
-	            <input type="text" id="vendorAdminAccountEmail" class="form-control" th:field="*{email}" required>	            
+	            <input type="text" id="vendorAdminAccountEmail" class="form-control" th:field="${user.email}" required>	
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('${user.email}')}" th:errors="${user.email}"></p>            
 	        </div>
 	        
 	        <div class="col form-group">
 	        	<label class="form-label" for="vendorAdminAccountHandphoneNo">Handphone Number</label>
-	            <input type="text" id="vendorAdminAccountHandphoneNo" class="form-control" th:field="*{handphoneNo}">	            
+	            <input type="text" id="vendorAdminAccountHandphoneNo" class="form-control" th:field="${user.handphoneNo}">
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('${user.handphoneNo}')}" th:errors="${user.handphoneNo}"></p>	            
 	        </div>	        
 	    </div>
 	
 	    <div class="form-row mb-4">
 	        <div class="col form-group">
 	        	<label class="form-label" for="vendorAdminAccountUsername">Username</label>
-	            <input type="text" id="vendorAdminAccountUsername" class="form-control" th:field="*{username}" required>	            
+	            <input type="text" id="vendorAdminAccountUsername" class="form-control" th:field="${user.username}" required>
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('${user.username}')}" th:errors="${user.username}"></p>            
 	        </div>
 	        
 	        <div class="col form-group">
 	        	<label class="form-label" for="vendorAdminAccountPassword">Password</label>
-	            <input type="text" id="vendorAdminAccountPassword" class="form-control" th:field="*{password}" required>	            
+	            <input type="password" id="vendorAdminAccountPassword" class="form-control" th:field="${user.password}" required>
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('${user.password}')}" th:errors="${user.password}"></p>         
 	        </div>	        
 	    </div>	    
-	     
-	    <input type="hidden" th:field="${vendor}">
 	    
 	    <button class="btn btn-info my-4 btn-block" type="submit">Submit</button>
 	
-	</form>	
+	</form>
 
     <div th:replace="fragments/layout.html :: footer"></div>
 </body>

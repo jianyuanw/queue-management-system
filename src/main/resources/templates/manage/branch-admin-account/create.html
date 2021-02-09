@@ -5,82 +5,66 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
-    <title>Create Vendor Account</title>
+    <title>Create Branch Admin Account</title>
     <meta charset="UTF-8">
 
     <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
 </head>
 <body>
     <div th:replace="fragments/layout.html :: navbar"></div>
-	<form th:action="@{/manage/branch-admin-account/create}" method="post" th:object="${user}" id="form">
-		<input type="text" class="form-control form-control-lg mb-3" placeholder="First Name" th:field="*{firstName}" autofocus>
-		<p class="text-danger text-left" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></p>
-		<input type="text" class="form-control form-control-lg mb-3" placeholder="Last Name" th:field="*{lastName}" autofocus>
-		<p class="text-danger text-left" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></p>
-		<input type="text" class="form-control form-control-lg mb-3" placeholder="E-mail" th:field="*{email}">
-		<p class="text-danger text-left" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
-		<input type="number" class="form-control form-control-lg mb-3" placeholder="Mobile Number" th:field="*{handphoneNo}">
-		<p class="text-danger text-left" th:if="${#fields.hasErrors('handphoneNo')}" th:errors="*{handphoneNo}"></p>
-		<input type="text" class="form-control form-control-lg mb-3" placeholder="Username" th:field="*{username}">
-		<p class="text-danger text-left" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>
-		<input type="password" class="form-control form-control-lg mb-3" placeholder="Password" th:field="*{password}" id="password">
-		<p class="text-danger text-left" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
-		<input type="password" class="form-control form-control-lg mb-4" placeholder="Confirm Password" id="confirm-password">
-		<p class="text-danger text-left" style="display: none" id="password-error">Passwords do not match</p>
-		<button type="submit" class="btn btn-info btn-block mb-4 p-2"><h5 class="m-0">Sign Up For Branch Admin Account</h5></button>
-	</form>
-	<script type="text/javascript" th:src="@{/js/account/create-client.js}"></script>
-<!--	<form class="text-center border border-light p-5" method="post" th:action="@{/manage/branch-admin-account/create}">-->
-<!--	-->
-<!--	    <p class="h4 mb-4">New Branch Admin Account</p>-->
-<!--	    -->
-<!--	    <div class="form-row mb-4">-->
-<!--	        <div class="col form-group">-->
-<!--	        	<label class="form-label" for="vendorAccountFirstName">First Name</label>-->
-<!--	            <input type="text" id="vendorAccountFirstName" class="form-control" th:field="${user.firstName}">	            -->
-<!--	        </div>-->
-<!--	        -->
-<!--	        <div class="col form-group">-->
-<!--	        	<label class="form-label" for="vendorAccountLastName">Last Name</label>-->
-<!--	            <input type="text" id="vendorAccountLastName" class="form-control" th:field="${user.lastName}">	            -->
-<!--	        </div>-->
-<!--	        -->
-<!--	        		        -->
-<!--	    </div>-->
-<!--	    -->
-<!--	    <div class="form-row mb-4">-->
-<!--	        <div class="col form-group">-->
-<!--	        	<label class="form-label" for="vendorAccountEmail">Email</label>-->
-<!--	            <input type="text" id="vendorAccountEmail" class="form-control" th:field="${user.email}" required>-->
-<!--				<p class="text-danger text-left" th:if="${#fields.hasErrors('email')}" th:errors="${user.email}"></p>-->
-<!--	        </div>-->
-<!--	        -->
-<!--	        <div class="col form-group">-->
-<!--	        	<label class="form-label" for="vendorAccountHandphoneNo">Handphone Number</label>-->
-<!--	            <input type="text" id="vendorAccountHandphoneNo" class="form-control" th:field="${user.handphoneNo}">-->
-<!--				<p class="text-danger text-left" th:if="${#fields.hasErrors('handphoneNo')}" th:errors="${user.handphoneNo}"></p>-->
-<!--	        </div>	        -->
-<!--	    </div>-->
-<!--	-->
-<!--	    <div class="form-row mb-4">-->
-<!--	        <div class="col form-group">-->
-<!--	        	<label class="form-label" for="vendorAccountUsername">Username</label>-->
-<!--	            <input type="text" id="vendorAccountUsername" class="form-control" th:field="${user.username}" required>-->
-<!--				<p class="text-danger text-left" th:if="${#fields.hasErrors('username')}" th:errors="${user.username}"></p>-->
-<!--	        </div>-->
-<!--	        -->
-<!--	        <div class="col form-group">-->
-<!--	        	<label class="form-label" for="vendorAccountPassword">Password</label>-->
-<!--	            <input type="text" id="vendorAccountPassword" class="form-control" th:field="${user.password}" required>-->
-<!--				<p class="text-danger text-left" th:if="${#fields.hasErrors('password')}" th:errors="${user.password}"></p>-->
-<!--	        </div>	        -->
-<!--	    </div>	    -->
-<!--	     -->
-<!--	    <input type="hidden" th:field="${branch}">-->
-<!--	    -->
-<!--	    <button class="btn btn-info my-4 btn-block" type="submit">Submit</button>-->
-<!--	-->
-<!--	</form>	-->
+	<form class="text-center border border-light p-5" method="post" th:action="@{/manage/branch-admin-account/create}" th:object = "${user}">
+	
+	    <p class="h4 mb-4">New Branch Admin Account</p>
+	    
+	    <input type="hidden" th:field="${branch.id}">
+	    
+	    <div class="form-row mb-4">
+	        <div class="col form-group">
+	        	<label class="form-label" for="branchAdminAccountFirstName">First Name</label>
+	            <input type="text" id="branchAdminAccountFirstName" class="form-control" th:field="*{firstName}">
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></p>	            
+	        </div>
+	        
+	        <div class="col form-group">
+	        	<label class="form-label" for="branchAdminAccountLastName">Last Name</label>
+	            <input type="text" id="branchAdminAccountLastName" class="form-control" th:field="*{lastName}">
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></p>            
+	        </div>
+	        
+	        		        
+	    </div>
+	    
+	    <div class="form-row mb-4">
+	        <div class="col form-group">
+	        	<label class="form-label" for="branchAdminAccountEmail">Email</label>
+	            <input type="text" id="branchAdminAccountEmail" class="form-control" th:field="*{email}" required>	
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>            
+	        </div>
+	        
+	        <div class="col form-group">
+	        	<label class="form-label" for="branchAdminAccountHandphoneNo">Handphone Number</label>
+	            <input type="text" id="branchAdminAccountHandphoneNo" class="form-control" th:field="*{handphoneNo}">
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('handphoneNo')}" th:errors="*{handphoneNo}"></p>	            
+	        </div>	        
+	    </div>
+	
+	    <div class="form-row mb-4">
+	        <div class="col form-group">
+	        	<label class="form-label" for="branchAdminAccountUsername">Username</label>
+	            <input type="text" id="branchAdminAccountUsername" class="form-control" th:field="*{username}" required>
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>            
+	        </div>
+	        
+	        <div class="col form-group">
+	        	<label class="form-label" for="branchAdminAccountPassword">Password</label>
+	            <input type="password" id="branchAdminAccountPassword" class="form-control" th:field="*{password}" required>
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>         
+	        </div>	        
+	    </div>	    
+	    
+	    <button class="btn btn-info my-4 btn-block" type="submit">Submit</button>
+	
+	</form>	
 
     <div th:replace="fragments/layout.html :: footer"></div>
 </body>

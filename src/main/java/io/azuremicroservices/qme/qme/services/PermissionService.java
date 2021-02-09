@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import io.azuremicroservices.qme.qme.models.Branch;
 import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.models.User;
+import io.azuremicroservices.qme.qme.models.User.Role;
 import io.azuremicroservices.qme.qme.models.UserBranchPermission;
 import io.azuremicroservices.qme.qme.models.UserQueuePermission;
 import io.azuremicroservices.qme.qme.models.UserVendorPermission;
@@ -101,5 +102,30 @@ public class PermissionService {
 		}
 		
 		return authenticated;
+	}
+	
+	@Transactional(readOnly = true)
+	public boolean checkAuthorityOver(User initiatingUser, User targetUser) {
+		boolean hasAuthority = false;
+		
+		if (initiatingUser.getRole() == Role.APP_ADMIN) {
+			hasAuthority = true;
+		} else if (initiatingUser.getRole() == Role.CLIENT || initiatingUser.getRole() == Role.BRANCH_OPERATOR ||
+				initiatingUser.getRole().getAuthority() <= targetUser.getRole().getAuthority()) {
+			hasAuthority = false;
+		} else if (targetUser.getRole() == Role.BRANCH_OPERATOR) {
+			Branch branch = targetUser.getUserBranchPermissions().get(0).getBranch();
+			if (this.getBranchPermissions(initiatingUser.getId()).contains(branch)) {
+				hasAuthority = true;
+			}			
+		} else if (targetUser.getRole() == Role.BRANCH_ADMIN) {
+			Vendor vendor = targetUser.getUserBranchPermissions().get(0).getBranch().getVendor();
+			if (this.getVendorPermission(initiatingUser.getId()) == vendor) {
+				hasAuthority = true;
+			}
+			
+		}
+		
+		return hasAuthority;
 	}
 }

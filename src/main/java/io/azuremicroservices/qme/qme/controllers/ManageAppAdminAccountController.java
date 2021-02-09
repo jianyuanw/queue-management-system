@@ -33,22 +33,25 @@ public class ManageAppAdminAccountController {
 	}
 	
 	@GetMapping("/list")
-	public String ManageAppAdminAccountList(Model model) {
+	public String initManageAppAdminAccountList(Model model) {
 		model.addAttribute("appAdminAccounts", accountService.findAllUsersByRole(Role.APP_ADMIN));
 		return "manage/app-admin-account/list";
 	}
 	
 	@GetMapping("/create")
-	public String CreateAppAdminAccountForm(Model model) {
+	public String initCreateAppAdminAccountForm(Model model) {
 		model.addAttribute("user", new User());
 		return "manage/app-admin-account/create";
 	}
 	
 	@PostMapping("/create")
-	public String CreateAppAdminAccount(@Valid @ModelAttribute User user, BindingResult bindingResult, RedirectAttributes redirAttr) {
-		if(bindingResult.hasErrors()) {
+	public String createAppAdminAccount(@Valid @ModelAttribute User user, BindingResult bindingResult, RedirectAttributes redirAttr) {
+		bindingResult = accountService.verifyUser(user, bindingResult);
+
+		if (bindingResult.hasErrors()) {
 			return "manage/app-admin-account/create";
 		}
+		
 		accountService.createUser(user, Role.APP_ADMIN);
 		alertService.createAlert(AlertColour.GREEN, "App Admin Account successfully created", redirAttr);
 		
@@ -56,32 +59,34 @@ public class ManageAppAdminAccountController {
 		
 	}
 	
-	@GetMapping("/update/{appAdminAccId}")
-	public String UpdateAppAdminAccountForm(Model model, @PathVariable("appAdminAccId") Long appAdminAccId, RedirectAttributes redirAttr) {
-		var appAdmin = accountService.findUserById(appAdminAccId);
+	@GetMapping("/update/{userId}")
+	public String initUpdateAppAdminAccountForm(Model model, @PathVariable("userId") Long userId, RedirectAttributes redirAttr) {
+		var appAdmin = accountService.findUserById(userId);
+		
 		if (appAdmin.isEmpty()) {
 			alertService.createAlert(AlertColour.YELLOW, "App Admin Account not found", redirAttr);
 			return "redirect:/manage/app-admin-account/list";
-		} else {
-			model.addAttribute("appAdminAcc", accountService.findUserById(appAdminAccId));
 		}
 		
+		model.addAttribute("user", appAdmin.get());
 		return "manage/app-admin-account/update";
 	}
 	
 	@PostMapping("/update")
-	public String updateVendor(@ModelAttribute @Valid User appAdminAcc, BindingResult bindingResult, RedirectAttributes redirAttr) {	
+	public String updateAppAdmin(Model model, @ModelAttribute @Valid User user, BindingResult bindingResult, RedirectAttributes redirAttr) {
+		bindingResult = accountService.verifyUser(user, bindingResult);
+		
 		if (bindingResult.hasErrors()) {
 			return "manage/app-admin-account/update";
-		} else {
-			accountService.updateUser(appAdminAcc);
-		}
+		} 
+			
+		accountService.updateUser(user);
 		alertService.createAlert(AlertColour.GREEN, "App Admin Account successfully updated", redirAttr);
 		return "redirect:/manage/app-admin-account/list"; 
 	} 
 	
 	@GetMapping("/delete/{appAdminAccId}")
-	public String deleteVendor(@PathVariable("appAdminAccId") Long appAdminAccId, RedirectAttributes redirAttr) {
+	public String deleteAppAdmin(@PathVariable("appAdminAccId") Long appAdminAccId, RedirectAttributes redirAttr) {
 		var appAdminAcc = accountService.findUserById(appAdminAccId);
 
 		if (appAdminAcc.isEmpty()) {
@@ -89,6 +94,7 @@ public class ManageAppAdminAccountController {
 			return "redirect:/manage/app-admin-account/list";			
 		}
 		
+		accountService.deleteUser(appAdminAcc.get());
 		alertService.createAlert(AlertColour.GREEN, "App Admin Account successfully deleted", redirAttr);
 		return "redirect:/manage/app-admin-account/list";
 	}

@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class UserQueuePermission {
-    @Id
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
@@ -23,4 +23,9 @@ public class UserQueuePermission {
     
     @ManyToOne
     private User user;
+    
+    public UserQueuePermission(User user, Queue queue) {
+    	this.user = user;
+    	this.queue = queue;
+    }
 }

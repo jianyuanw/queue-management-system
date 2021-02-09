@@ -35,15 +35,13 @@ public class User {
 
     @NotEmpty(message = "Username must not be empty")
     @Pattern(regexp = "[A-Za-z0-9.]+", message = "Username must only contain alphanumeric characters and period")
-    @UniqueUsername
     private String username;
 
     @NotEmpty(message = "Password must not be empty")
     private String password;
 
     @Email(message = "Email must be valid")
-    @NotEmpty(message = "Email must not be empty")
-    @UniqueEmail
+    @NotEmpty(message = "Email must not be empty")    
     private String email;
 
     private String handphoneNo;
@@ -59,7 +57,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<SupportTicket> supportTickets;
     
-    @OneToMany(mappedBy = "user", cascade=CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<QueuePosition> queuePositions;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -95,15 +93,16 @@ public class User {
     }
     
     public enum Role {
-        CLIENT,
-        APP_ADMIN,
-        VENDOR_ADMIN,
-        BRANCH_ADMIN,
-        BRANCH_OPERATOR;
+        CLIENT(0),
+        APP_ADMIN(4),
+        VENDOR_ADMIN(3),
+        BRANCH_ADMIN(2),
+        BRANCH_OPERATOR(1);
 
         private final String displayValue;
+        private final Integer authority;
 
-        Role() {
+        Role(Integer authority) {
             // Generalized constructor that converts capitalized enum values to TitleCase
             StringBuilder sb = new StringBuilder();
 
@@ -112,9 +111,11 @@ public class User {
             }
 
             this.displayValue = sb.toString().trim();
+            this.authority = authority;
         }
 
         public String getDisplayValue() { return displayValue; }
+        public Integer getAuthority() { return authority; }
     }
 }
 

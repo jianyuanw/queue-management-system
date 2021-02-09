@@ -123,4 +123,10 @@ public class QueueService {
             q.setState(Queue.State.CLOSED);
         queueRepo.save(q);
     }
+
+	public List<Queue> findAllQueuesInBranches(List<Branch> branches) {
+		return queueRepo.findAllByBranch_IdIn(branches.stream()
+				.map(Branch::getId)
+				.collect(Collectors.toList()));
+	}
 }

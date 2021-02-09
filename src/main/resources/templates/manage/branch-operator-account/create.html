@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <title>Create Branch Operator Account</title>
+    <meta charset="UTF-8">
+
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+    <script type="text/javascript">
+	    $(document).ready(function() {
+	    	let elements = document.getElementsByClassName("branch-select");
+	    	
+	    	for (let i = 0; i < elements.length; i++) {
+	    		updateQueues(elements[i]);
+	    	}
+	    });
+	    
+	    function updateQueues(element) {
+	    	let elements = document.getElementsByClassName("queue-element");
+	    	
+	    	for (let i = 0; i < elements.length; i++) {
+	    		if (elements[i].getAttribute("data-branch") != element.value) {
+	    			elements[i].classList.add("d-none");
+	    			if (elements[i].getAttribute("type") == "checkbox") {
+	    				elements[i].checked = false;
+	    			}
+	    		} else {
+	    			elements[i].classList.remove("d-none");
+	    		}
+	    	}
+	    }
+    </script>
+</head>
+<body>
+    <div th:replace="fragments/layout.html :: navbar"></div>
+	<form class="text-center border border-light p-5" method="post" th:action="@{/manage/branch-operator-account/create}">
+	
+	    <p class="h4 mb-4">New Branch Operator Account</p>
+	    
+	    <div class="form-row mb-4">
+	        <div class="col form-group">
+	        	<label class="form-label" for="branchOperatorAccountFirstName">First Name</label>
+	            <input type="text" id="branchOperatorAccountFirstName" class="form-control" th:field="${user.firstName}">
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('${user.firstName}')}" th:errors="${user.firstName}"></p>	            
+	        </div>
+	        
+	        <div class="col form-group">
+	        	<label class="form-label" for="branchOperatorAccountLastName">Last Name</label>
+	            <input type="text" id="branchOperatorAccountLastName" class="form-control" th:field="${user.lastName}">
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('${user.lastName}')}" th:errors="${user.lastName}"></p>            
+	        </div>
+	        
+	        		        
+	    </div>
+	    
+	    <div class="form-row mb-4">
+	        <div class="col form-group">
+	        	<label class="form-label" for="branchOperatorAccountEmail">Email</label>
+	            <input type="text" id="branchOperatorAccountEmail" class="form-control" th:field="${user.email}" required>	
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('${user.email}')}" th:errors="${user.email}"></p>            
+	        </div>
+	        
+	        <div class="col form-group">
+	        	<label class="form-label" for="branchOperatorAccountHandphoneNo">Handphone Number</label>
+	            <input type="text" id="branchOperatorAccountHandphoneNo" class="form-control" th:field="${user.handphoneNo}">
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('${user.handphoneNo}')}" th:errors="${user.handphoneNo}"></p>	            
+	        </div>	        
+	    </div>
+	
+	    <div class="form-row mb-4">
+	        <div class="col form-group">
+	        	<label class="form-label" for="branchOperatorAccountUsername">Username</label>
+	            <input type="text" id="branchOperatorAccountUsername" class="form-control" th:field="${user.username}" required>
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('${user.username}')}" th:errors="${user.username}"></p>            
+	        </div>
+	        
+	        <div class="col form-group">
+	        	<label class="form-label" for="branchOperatorAccountPassword">Password</label>
+	            <input type="password" id="branchOperatorAccountPassword" class="form-control" th:field="${user.password}" required>
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('${user.password}')}" th:errors="${user.password}"></p>         
+	        </div>	        
+	    </div>
+	    
+	    <div class="form-row mb-4">
+	    	<div class="col form-group">
+	    		<label class="form-label">Branch</label>
+	        	<select class="form-select form-control branch-select" name="branchId" onchange="updateQueues(this)" required>
+	        		<option value="" selected>Select Branch</option>
+	        		<option th:each="branch : ${branches}"
+	        			th:value="${branch.id}" th:text="${branch.name}"></option>
+	        	</select>
+	        	<p class="text-danger text-left" th:if="${branchIdError != null}" th:errors="${branchIdError}"></p>  			    		   	    	
+			</div>
+			
+			<div class="col form-group">
+				<label class="form-label">Queues allowed in:</label>
+				<div class="form-check" th:each="queue, stat : ${queues}">
+					<input type="checkbox" class="form-check-input queue-element d-none" name="checkboxes" th:attr="data-branch=${queue.branch.id}" th:value="${queue.id}">
+					<label class="form-check-label queue-element d-none" th:text="${queue.name}" th:attr="data-branch=${queue.branch.id}"></label>
+				</div>
+				<p class="text-danger text-left" th:if="${queueIdError != null}" th:text="${queueIdError}"></p>
+			</div>
+	    </div>	    
+	    
+	    <button class="btn btn-info my-4 btn-block" type="submit">Submit</button>
+	
+	</form>
+
+    <div th:replace="fragments/layout.html :: footer"></div>
+</body>
+</html>

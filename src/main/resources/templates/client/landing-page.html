@@ -11,6 +11,7 @@
     <div th:replace="fragments/layout.html :: mobilenavbar"></div>
 
     <div class="m-4">
+
         <div class="input-group form-sm form-1 pl-0 mb-4">
             <input id="search-queue" class="form-control my-0 py-1" type="text" placeholder="Find queue" aria-label="Search">
             <div class="input-group-append">
@@ -19,7 +20,18 @@
                 </span>
             </div>
         </div>
-        <h5 class="text-center font-weight-bold">Can't find your queue? Try these!</h5>
+
+        <h5 class="text-center font-weight-bold mb-4">Can't find your queue? Try these!</h5>
+
+        <div class="row row-cols-3 justify-content-center">
+            <a href="#" th:each="category : ${categories}"> <!--TODO: Add link to search category-->
+                <div class="col px-2 border border-info">
+                    <div class="mt-1"><img class="img-fluid rounded" th:src="@{/images/logos/placeholder_image.png}"></div>
+                    <div class="text-center"><span class="p text-muted" th:text="${category}"></span></div>
+                </div>
+            </a>
+        </div>
+
     </div>
 
     <!-- TODO: Add mobile footer (if any) -->

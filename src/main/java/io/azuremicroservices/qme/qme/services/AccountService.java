@@ -167,7 +167,7 @@ public class AccountService {
 		return bindingResult;		
 	}
 
-	public List<User> findAllUsersByRoleAndVendor(Role branchAdmin, Vendor vendor) {
+	public List<User> findAllUsersByRoleAndVendor(Role role, Vendor vendor) {
 		List<Long> branches = branchRepo.findAllByVendor_Id(vendor.getId()).stream()
 				.map(Branch::getId)
 				.collect(Collectors.toList());
@@ -177,7 +177,7 @@ public class AccountService {
 				.collect(Collectors.toList());
 	}
 
-	public List<User> findAllUsersByRoleAndBranchIn(Role branchOperator, List<Branch> branches) {
+	public List<User> findAllUsersByRoleAndBranchIn(Role role, List<Branch> branches) {
 		List<Long> queues = queueRepo.findAllByBranch_IdIn(branches.stream().map(Branch::getId).collect(Collectors.toList())).stream()
 				.map(Queue::getId)
 				.collect(Collectors.toList());

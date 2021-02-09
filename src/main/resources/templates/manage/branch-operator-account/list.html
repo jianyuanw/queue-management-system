@@ -26,7 +26,7 @@
 				<th class="col">Actions</th>
 			</tr>
 		</thead>
-		<tbody th:each="user : ${branchOperatorAccounts}" th:remove="tag">
+		<tbody th:each="user : ${branchOperators}" th:remove="tag">
 			<tr class="row">
 				<td class="col" th:text="${user.firstName}"></td>
 				<td class="col" th:text="${user.lastName}"></td>
@@ -43,7 +43,7 @@
       				
 					<th:block th:insert="fragments/support-elements.html :: modalbox-red"
 						th:with="modalId=${'deleteConfirm' + user.id},modalTitle=${'Confirm Deletion'},modalBody=${'Are you sure you want to delete ' + user.username + '?'},
-							modalConfirm=${'Delete'},confirmUrl=${'/manage/branch-admin-account/delete/' + user.id}">
+							modalConfirm=${'Delete'},confirmUrl=${'/manage/branch-operator-account/delete/' + user.id}">
 					</th:block>
 				</td>
 			</tr>

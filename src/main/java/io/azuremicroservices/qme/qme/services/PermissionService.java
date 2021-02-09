@@ -114,12 +114,16 @@ public class PermissionService {
 				initiatingUser.getRole().getAuthority() <= targetUser.getRole().getAuthority()) {
 			hasAuthority = false;
 		} else if (targetUser.getRole() == Role.BRANCH_OPERATOR) {
-			Branch branch = targetUser.getUserBranchPermissions().get(0).getBranch();
+			User user = userRepo.findById(targetUser.getId()).get();
+			
+			Branch branch = user.getUserQueuePermissions().get(0).getQueue().getBranch();
 			if (this.getBranchPermissions(initiatingUser.getId()).contains(branch)) {
 				hasAuthority = true;
 			}			
 		} else if (targetUser.getRole() == Role.BRANCH_ADMIN) {
-			Vendor vendor = targetUser.getUserBranchPermissions().get(0).getBranch().getVendor();
+			User user = userRepo.findById(targetUser.getId()).get();
+			
+			Vendor vendor = user.getUserBranchPermissions().get(0).getBranch().getVendor();
 			if (this.getVendorPermission(initiatingUser.getId()) == vendor) {
 				hasAuthority = true;
 			}

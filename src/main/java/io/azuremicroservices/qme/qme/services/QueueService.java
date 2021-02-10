@@ -151,4 +151,10 @@ public class QueueService {
 	public void deleteQueue(Queue queue) {
 		queueRepo.delete(queue);
 	}
+
+	// Note: add for test; currently used in OperateQueueController
+    public List<QueuePosition> findAllQueuePositions(Long queueId) {
+        Queue queue = queueRepo.findById(queueId).get();
+        return queuePositionRepo.findAllByQueue(queue);
+    }
 }

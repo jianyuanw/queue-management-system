@@ -47,6 +47,10 @@ public class Queue {
 	@OneToMany(mappedBy = "queue", cascade = CascadeType.ALL)
 	@Exclude
 	private List<UserQueuePermission> userQueuePermissions;
+	
+	@OneToMany(mappedBy = "queue", cascade = CascadeType.ALL)
+	@Exclude
+	private List<Counter> counters;
 
 	public enum State {
 		OPEN, CLOSED, UNKNOWN;

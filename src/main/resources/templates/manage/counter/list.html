@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+	<title>Counter List</title>
+	<meta charset="UTF-8">
+	
+	<th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+
+	<th:block th:replace="fragments/sourcebundle.html :: mdbootstrap-table" />
+
+</head>
+<body>
+	<div th:replace="fragments/layout.html :: navbar"></div>
+
+	<table id="dataTable" class="table table-striped table-bordered">
+		<thead>
+			<tr class="row">
+				<th class="col">Queue Name</th>
+				<th class="col">Name</th>
+				<th class="col">Display Name</th>
+				<th class="col">Description</th>
+				<th class="col">Actions</th>
+			</tr>
+		</thead>
+		<tbody th:each="counter: ${counters}" th:remove="tag">
+			<tr class="row">
+				<td class="col" th:text="${counter.queue.name}"></td>
+				<td class="col" th:text="${counter.name}"></td>
+				<td class="col" th:text="${counter.displayName}"></td>
+				<td class="col" th:text="${counter.description}"></td>
+				<td class="col" >
+					
+					<a th:href="@{/manage/counter/update/__${counter.id}__}">
+						<i class="fas fa-edit fa-lg" title="Edit Counter"></i>
+					</a>
+					
+      				<a href="#"><i class="fas fa-trash-alt fa-lg" data-toggle="modal" th:data-target="${'#deleteConfirm' + counter.id}" title="Delete Counter"></i></a>
+      				
+					<th:block th:insert="fragments/support-elements.html :: modalbox-red"
+						th:with="modalId=${'deleteConfirm' + counter.id},modalTitle=${'Confirm Deletion'},modalBody=${'Are you sure you want to delete ' + counter.name + '?'},
+							modalConfirm=${'Delete'},confirmUrl=${'/manage/counter/delete/' + counter.id}">
+					</th:block>
+				</td>
+			</tr>
+		</tbody>
+		<tfoot>
+			<tr class="row">
+				<td class="col">
+					<a th:href="@{/manage/counter/create}"><button class="btn btn-info btn-block">Create New Counter</button></a>
+				</td>
+			</tr>
+		</tfoot>
+	</table>	
+
+	<div th:replace="fragments/layout.html :: footer"></div>
+</body>
+</html>

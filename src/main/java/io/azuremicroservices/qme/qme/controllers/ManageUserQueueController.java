@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@RequestMapping ("manage/queue")
+@RequestMapping("manage/queue")
 public class ManageUserQueueController {
 
     private ManageUserQueueService queueService;

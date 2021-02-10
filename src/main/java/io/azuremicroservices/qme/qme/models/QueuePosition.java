@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @Data
-@Table
+@Table(name="queue_position")
 public class QueuePosition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

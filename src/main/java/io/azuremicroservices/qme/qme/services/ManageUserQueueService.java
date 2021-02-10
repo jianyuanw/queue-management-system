@@ -37,13 +37,16 @@ public class ManageUserQueueService {
                 .orElseThrow(() -> new RuntimeException("Invalid queue: " + queueId));
 
         QueuePosition queuePosition = new QueuePosition();
-
+        Integer queueNumber = obtainQueueNumber(queueId);
+        
         // set all attributes including state
         queuePosition.setQueue(queue);
         queuePosition.setQueueStartTime(LocalDateTime.now());
         queuePosition.setQueueEndTime(null);
-        queuePosition.setUser(user);
-        queuePosition.setQueueNumber(obtainQueueNumber(queueId));
+        queuePosition.setUser(user);        
+        queuePosition.setQueueNumber(queue.getName().substring(0, 4) + String.valueOf(obtainQueueNumber(queueId)));
+        queuePosition.setPosition(queueNumber);
+        queuePosition.setPriority(0);
         queuePosition.setState(QueuePosition.State.ACTIVE_QUEUE);
         queuePosRepo.save(queuePosition);
 
@@ -92,14 +95,14 @@ public class ManageUserQueueService {
 //
 
     // This is to restart the Queue Number to 1 every new day
-    private String obtainQueueNumber(Long queueId) {
+    private Integer obtainQueueNumber(Long queueId) {
         int count = queuePosRepo
-                .findTotalNumberofQueueByQueueIdAndDate(
+                .countByQueue_IdAndQueueStartTimeGreaterThanEqual(
                         Long.parseLong(String.valueOf(queueId)),
-                        LocalDate.now());
+                        LocalDate.now().atStartOfDay());
 
         count = count + 1;
-        return String.valueOf(count);
+        return count;
     }
 
 

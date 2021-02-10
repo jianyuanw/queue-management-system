@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>qMe - Client</title>
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+    
+	<style>
+		.linkbox {
+			cursor: pointer;
+		}
+	</style>
+</head>
+<body>
+    <div th:replace="fragments/layout.html :: mobile-navbar-modal"></div>
+
+    <div class="m-4">
+		<div class="row">
+			<div class="col text-center">
+				<img width="200px" class="img-fluid rounded" th:src="@{/images/logos/placeholder_image.png}">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col text-center">
+				<p class="mb-1 font-weight-bold" th:text="${branch.name}"></p>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col text-center">
+				<span th:text="${branch.address}"></span>
+			</div>
+		</div>
+
+        <div class="row row-cols-1">
+            <div class="col border border-light linkbox" th:each="viewQueue : ${viewQueues}" data-toggle="modal" th:data-target="${'#joinQueueConfirm' + viewQueue.queue.id}">
+                <div class="row">
+                    <div class="col-3 p-1">
+                        <img class="img-fluid rounded" th:src="@{/images/logos/placeholder_image.png}">
+                    </div>
+                    <div class="col-8">
+                    	<div class="row">
+                    		<div class="col">                    		
+                 				<p class="mb-1 font-weight-bold" th:text="${viewQueue.queue.name}"></p>
+                 			</div>                 		
+                    	</div>
+                    	<div class="row">
+                    		<div class="col">
+                    			<p class="m-0"><i class="fas fa-users pr-1"></i><span th:text="${viewQueue.inLine + ' in line'}"></span></p>
+                    		</div>
+                    		<div class="col">   
+                    			<p class="m-0"><i class="fas fa-clock pr-1"></i><span th:text="${viewQueue.waitingTime + ' min wait'}"></span></p>
+                    		</div>
+                    	</div>
+      			                    
+
+                    </div>
+                    <div class="col-4 d-flex align-items-center">
+
+                    </div>
+                </div>
+                
+				<div class="modal fade" th:id="${'joinQueueConfirm' + viewQueue.queue.id}" tabindex="-1" role="dialog" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="modalTitle">Confirm Join Queue</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body" th:text="${'Join queue ' + viewQueue.queue.name + ' of ' + viewQueue.queue.branch.name + '?'}"></div>
+							<div class="modal-footer">
+						        <button type="button" class="btn btn-mdb-color btn-sm" data-dismiss="modal">Cancel</button>
+						        <form method="post" th:action="@{/client/join-queue}">
+						        	<input type="hidden" name="queueId" th:value="${viewQueue.queue.id}">
+						        	<button class="btn btn-primary btn-sm" type="submit">Join</button>
+						        </form>					        
+					        				
+							</div>
+						</div>
+					</div>
+				</div>                               
+            </div>
+        </div>
+
+        <h5 th:text="${error}"></h5>
+
+    </div>
+</body>
+</html>

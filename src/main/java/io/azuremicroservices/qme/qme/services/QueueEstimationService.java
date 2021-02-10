@@ -32,8 +32,7 @@ public class QueueEstimationService {
      */
     public int estimateQueueTime(String queueId) {
         List<QueuePosition> lastNQueuePosition =
-                queuePositionRepository.findLastNCompletedQueuePosition(
-                        MOVING_AVERAGE_WINDOW,
+                queuePositionRepository.findTop10ByQueue_IdAndStateEqualsOrderByQueueStartTimeDesc(
                         Long.parseLong(queueId),
                         QueuePosition.State.INACTIVE_COMPLETE
                 );

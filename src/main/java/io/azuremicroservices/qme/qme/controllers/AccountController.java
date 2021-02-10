@@ -4,6 +4,8 @@ import io.azuremicroservices.qme.qme.models.User;
 import io.azuremicroservices.qme.qme.models.User.Role;
 import io.azuremicroservices.qme.qme.services.AccountService;
 import io.azuremicroservices.qme.qme.services.AlertService;
+import io.azuremicroservices.qme.qme.services.AlertService.AlertColour;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -95,10 +97,14 @@ public class AccountController {
     }
 
     @PostMapping("/register")
-    public String registerClient(@Valid User user, BindingResult bindingResult) {
+    public String registerClient(@Valid User user, BindingResult bindingResult, RedirectAttributes redirAttr) {
+    	accountService.verifyUser(user, bindingResult);
+    	
         if (bindingResult.hasErrors()) {
             return "account/register-client";
         }
+        
+        alertService.createAlert(AlertColour.GREEN, "Account successfully created", redirAttr);
         accountService.createUser(user, Role.CLIENT);
         return "account/temp-register-success"; // TODO: Proper landing page
     }

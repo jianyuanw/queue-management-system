@@ -46,7 +46,7 @@ public class ClientController {
     	List<Branch> branches;
     	if (query == null && category == null) {
     		alertService.createAlert(AlertColour.YELLOW, "Needs to have at least one search term", redirAttr);
-    		return "redirect:/client/landing-page";
+    		return "redirect:/client";
     	} else if (category == null) {
     		branches = clientService.findBranchesByQuery(query);
     		messageQuery = "Search: " + query;

@@ -1,6 +1,7 @@
 package io.azuremicroservices.qme.qme.services;
 
 import io.azuremicroservices.qme.qme.models.Branch;
+import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.repositories.BranchRepository;
 import io.azuremicroservices.qme.qme.repositories.QueueRepository;
 import org.springframework.stereotype.Service;
@@ -24,5 +25,13 @@ public class ClientService {
                 .stream()
                 .filter(x -> x.getName().toLowerCase().contains(query.toLowerCase()))
                 .collect(Collectors.toList());
+    }
+
+    public Branch findBranchById(Long id) {
+        return branchRepo.findById(id).get();
+    }
+
+    public List<Queue> findQueuesByBranchId(Long branchId) {
+        return branchRepo.findById(branchId).get().getQueues();
     }
 }

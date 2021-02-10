@@ -5,7 +5,7 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
-    <title>Create Queue</title>
+    <title>Update Branch</title>
     <meta charset="UTF-8">
 
     <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
@@ -13,9 +13,13 @@
 <body>
     <div th:replace="fragments/layout.html :: navbar"></div>
 	
-	<form class="text-center border border-light p-5" method="post" th:action="@{/manage/queue/create}" th:object="${queue}">
+	<form class="text-center border border-light p-5" method="post" th:action="@{/manage/queue/update}" th:object="${queue}">
 	
 	    <p class="h4 mb-4">New Queue</p>
+	    
+	    <input type="hidden" th:field="*{id}">
+		<input type="hidden" th:field="*{notificationPosition}">
+		<input type="hidden" th:field="*{branch}">
 	
 	    <div class="form-row mb-4">
 	        <div class="col form-group">
@@ -25,11 +29,8 @@
 	        </div>
 	        
 	        <div class="col form-group">
-	        	<label class="form-label" for="branchId">Branch</label>
-	        	<select class="form-select form-control" name="branchId" required>
-	        		<option th:each="branch : ${branches}"
-	        			th:value="${branch.id}" th:text="${branch.name}"></option>
-	        	</select>
+	        	<label class="form-label" for="branch">Branch</label>
+	        	<input type="text" id="branch" class="form-control" th:field="*{branch.name}" readonly disabled>
 	        	<p class="text-danger text-left" th:if="${#fields.hasErrors('branch')}" th:errors="*{branch}"></p>            
 	        </div>	        
 	    </div>
@@ -56,8 +57,8 @@
 	            <input type="text" id="notificationDelay" class="form-control" th:field="*{notificationDelay}" required>
 	            <p class="text-danger text-left" th:if="${#fields.hasErrors('notificationDelay')}" th:errors="*{notificationDelay}"></p>
 	        </div>
-	         
-	         <div class="col form-group">
+	        
+	        <div class="col form-group">
 	        	<label class="form-label" for="state">Queue State</label>
 	           <select class="form-select form-control" name="state" required>
 	        		<option th:each="state : ${T(io.azuremicroservices.qme.qme.models.Queue.State).values()}"
@@ -65,11 +66,13 @@
 	        	</select>
 	        	<p class="text-danger text-left" th:if="${#fields.hasErrors('state')}" th:errors="*{state}"></p>            
 	        </div>
+	        
 	    </div>
 	    
 	    <button class="btn btn-info my-4 btn-block" type="submit">Submit</button>
 	
 	</form>	
+
 
     <div th:replace="fragments/layout.html :: footer"></div>
 </body>

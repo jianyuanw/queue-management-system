@@ -1,23 +1,24 @@
 package io.azuremicroservices.qme.qme.services;
 
-import io.azuremicroservices.qme.qme.models.Branch;
-import io.azuremicroservices.qme.qme.models.Queue;
-import io.azuremicroservices.qme.qme.models.QueuePosition;
-import io.azuremicroservices.qme.qme.models.QueuePosition.State;
-import io.azuremicroservices.qme.qme.models.Vendor;
-import io.azuremicroservices.qme.qme.repositories.QueuePositionRepository;
-import io.azuremicroservices.qme.qme.repositories.QueueRepository;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Random;
+import java.util.stream.Collectors;
+
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
-import java.util.stream.Collectors;
+import io.azuremicroservices.qme.qme.models.Branch;
+import io.azuremicroservices.qme.qme.models.Queue;
+import io.azuremicroservices.qme.qme.models.QueuePosition;
+import io.azuremicroservices.qme.qme.models.Vendor;
+import io.azuremicroservices.qme.qme.repositories.QueuePositionRepository;
+import io.azuremicroservices.qme.qme.repositories.QueueRepository;
 
 @Service
 public class QueueService {
@@ -136,7 +137,18 @@ public class QueueService {
 	
 	public void createQueue(Queue queue) {
 		queue.setNotificationPosition(0);
-		queue.setState(Queue.State.UNKNOWN);
 		queueRepo.save(queue);
+	}
+	
+	public Optional<Queue> findQueueById(Long id) {
+		return queueRepo.findById(id);
+	}
+	
+	public void updateQueue(Queue queue) {
+		queueRepo.save(queue);
+	}
+	
+	public void deleteQueue(Queue queue) {
+		queueRepo.delete(queue);
 	}
 }

@@ -39,15 +39,15 @@
 				<td class="col" th:text="${queue.notificationDelay}"></td>
 				<td class="col" >
 					
-					<a th:href="@{/manage/vendor-admin-account/update/__${queue.id}__}">
-						<i class="fas fa-edit fa-lg" title="Edit Vendor Admin Account"></i>
+					<a th:href="@{/manage/queue/update/__${queue.id}__}">
+						<i class="fas fa-edit fa-lg" title="Edit Queue"></i>
 					</a>
 					
-      				<a href="#"><i class="fas fa-trash-alt fa-lg" data-toggle="modal" th:data-target="${'#deleteConfirm' + queue.id}" title="Delete Vendor Account"></i></a>
+      				<a href="#"><i class="fas fa-trash-alt fa-lg" data-toggle="modal" th:data-target="${'#deleteConfirm' + queue.id}" title="Delete Queue"></i></a>
       				
 					<th:block th:insert="fragments/support-elements.html :: modalbox-red"
 						th:with="modalId=${'deleteConfirm' + queue.id},modalTitle=${'Confirm Deletion'},modalBody=${'Are you sure you want to delete ' + queue.name + '?'},
-							modalConfirm=${'Delete'},confirmUrl=${'/manage/vendor-admin-account/delete/' + queue.id}">
+							modalConfirm=${'Delete'},confirmUrl=${'/manage/queue/delete/' + queue.id}">
 					</th:block>
 				</td>
 			</tr>

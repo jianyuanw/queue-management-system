@@ -44,6 +44,22 @@ public class QueueService {
                 .collect(Collectors.toList());
     }
 
+    public List<QueuePosition> findNoShowStatusQueuePositions(Long queueId) {
+        Queue queue = queueRepo.findById(queueId).get();
+        return queuePositionRepo.findAllByQueue(queue)
+                .stream()
+                .filter(x -> x.getState() == QueuePosition.State.INACTIVE_NO_SHOW)
+                .collect(Collectors.toList());
+    }
+
+    public List<QueuePosition> findActiveRejoinStatusQueuePositions(Long queueId) {
+        Queue queue = queueRepo.findById(queueId).get();
+        return queuePositionRepo.findAllByQueue(queue)
+                .stream()
+                .filter(x -> x.getState() == QueuePosition.State.ACTIVE_REQUEUE)
+                .collect(Collectors.toList());
+    }
+
     public Queue findQueue(Long queueId) {
         return queueRepo.findById(queueId).get();
     }

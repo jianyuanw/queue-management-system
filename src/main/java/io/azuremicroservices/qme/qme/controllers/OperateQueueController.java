@@ -101,4 +101,18 @@ public class OperateQueueController {
         return "redirect:/OperateQueue/ViewSelectedQueue/"+queueId;
     }
 
+    @GetMapping("/NoShow/{queueId}")
+    public String viewNoShowList(@PathVariable("queueId")Long queueId, Model model) {
+
+        pullUpdatedUserVendorBranchesQueues();
+        List<QueuePosition> noShowQP = queueService.findNoShowStatusQueuePositions(queueId);
+        Queue queue = queueService.findQueue(queueId);
+        model.addAttribute("noShowList",noShowQP);
+        model.addAttribute("queue",queue);
+        model.addAttribute("vendor","cVendor.getName()");
+        model.addAttribute("branches",cBranches);
+        model.addAttribute("queues",cQueues);
+        return "branch-operator/noShowListPage";
+    }
+
 }

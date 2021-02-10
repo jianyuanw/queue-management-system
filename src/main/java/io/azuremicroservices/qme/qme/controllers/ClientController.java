@@ -3,9 +3,8 @@ package io.azuremicroservices.qme.qme.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.azuremicroservices.qme.qme.models.*;
 import org.springframework.security.core.Authentication;
-import io.azuremicroservices.qme.qme.models.Branch;
-import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.services.ClientService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,9 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
 import io.azuremicroservices.qme.qme.models.Branch;
-import io.azuremicroservices.qme.qme.models.BranchCategory;
 import io.azuremicroservices.qme.qme.models.Queue;
-import io.azuremicroservices.qme.qme.models.ViewQueue;
 import io.azuremicroservices.qme.qme.services.AlertService;
 import io.azuremicroservices.qme.qme.services.AlertService.AlertColour;
 import io.azuremicroservices.qme.qme.services.ClientService;
@@ -111,5 +108,13 @@ public class ClientController {
         model.addAttribute("branch", branch);
         model.addAttribute("queues", queues);
         return "client/branch-queues";
+    }
+
+    @GetMapping("/my-queues")
+    public String myQueues(Authentication authentication, Model model) {
+        Long userId = ((MyUserDetails) authentication.getPrincipal()).getId();
+        List<QueuePosition> queuePositions = clientService.findCurrentQueuePositionsByUserId(userId);
+        model.addAttribute("queuePositions", queuePositions);
+        return "client/my-queues";
     }
 }

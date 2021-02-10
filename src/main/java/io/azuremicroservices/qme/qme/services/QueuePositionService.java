@@ -6,6 +6,7 @@ import io.azuremicroservices.qme.qme.repositories.QueuePositionRepository;
 import io.azuremicroservices.qme.qme.repositories.QueueRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -40,4 +41,35 @@ public class QueuePositionService {
         queuePositionRepo.save(qp);
     }
 
+    public List<QueuePosition> getAllSortedQueuePositions(Long queueId) {
+        List<QueuePosition> qps = queueService.findAllQueuePositions(queueId);
+        sortQueuePositionsByPriorityAndPosition(qps);
+        return qps;
+    }
+
+    public List<QueuePosition> getActiveSortedQueuePositions(Long queueId) {
+        List<QueuePosition> qps = queueService.findActiveQueuePositionsForPrototype(queueId);
+        sortQueuePositionsByPriorityAndPosition(qps);
+        return qps;
+    }
+
+    public void sortQueuePositionsByPriorityAndPosition(List<QueuePosition> qps) {
+        qps.sort(new Comparator<QueuePosition>() {
+            @Override
+            public int compare(QueuePosition o1, QueuePosition o2) {
+                if(o1.getPriority() > o2.getPriority())
+                    return -1;
+                else if (o1.getPriority() < o2.getPriority())
+                    return 1;
+                else {
+                    if(o1.getPosition() < o2.getPosition())
+                        return -1;
+                    else if (o1.getPosition() > o2.getPosition())
+                        return 1;
+                    else
+                        return 0;
+                }
+            }
+        });
+    }
 }

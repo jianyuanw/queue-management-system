@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import io.azuremicroservices.qme.qme.models.Branch;
 import io.azuremicroservices.qme.qme.models.BranchCategory;
+import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.repositories.BranchRepository;
 import io.azuremicroservices.qme.qme.repositories.QueueRepository;
 
@@ -33,7 +34,7 @@ public class ClientService {
 		} catch (IllegalArgumentException e) {
 			return new ArrayList<>();
 		}
-		
+
 	}
 
 	public List<Branch> findBranchesByQueryAndCategory(String query, String category) {
@@ -43,6 +44,14 @@ public class ClientService {
 		} catch (IllegalArgumentException e) {
 			return new ArrayList<>();
 		}
-		
+
 	}
+
+    public Branch findBranchById(Long id) {
+        return branchRepo.findById(id).get();
+    }
+
+    public List<Queue> findQueuesByBranchId(Long branchId) {
+        return branchRepo.findById(branchId).get().getQueues();
+    }
 }

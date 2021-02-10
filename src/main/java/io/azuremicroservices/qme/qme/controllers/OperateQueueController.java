@@ -80,12 +80,12 @@ public class OperateQueueController {
 
     @GetMapping("/ViewSelectedQueue/{queueId}")
     public String viewSelectedQueue(@PathVariable("queueId") Long queueId,Model model) {
-        pullUpdatedUserVendorBranchesQueues();
 
+        pullUpdatedUserVendorBranchesQueues();
         Queue queue = queueService.findQueue(queueId);
-        // List<QueuePosition> qps = queueService.findActiveQueuePositionsForPrototype(queueId);
-        List<QueuePosition> qps = queueService.findAllQueuePositions(queueId);
-        sortQueuePositionsByPriorityAndPosition(qps);
+
+        // List<QueuePosition> qps = queuePositionService.getActiveSortedQueuePositions(queueId);
+        List<QueuePosition> qps = queuePositionService.getAllSortedQueuePositions(queueId);
 
         model.addAttribute("vendor","cVendor.getName()");
         model.addAttribute("state",queue.getState().getDisplayValue());
@@ -99,26 +99,6 @@ public class OperateQueueController {
 
         queuePositionService.updateReassignedIdPriority(reassignedId);
         return "redirect:/OperateQueue/ViewSelectedQueue/"+queueId;
-    }
-
-    public void sortQueuePositionsByPriorityAndPosition(List<QueuePosition> qps) {
-        qps.sort(new Comparator<QueuePosition>() {
-            @Override
-            public int compare(QueuePosition o1, QueuePosition o2) {
-                if(o1.getPriority() > o2.getPriority())
-                    return -1;
-                else if (o1.getPriority() < o2.getPriority())
-                    return 1;
-                else {
-                    if(o1.getPosition() < o2.getPosition())
-                        return -1;
-                    else if (o1.getPosition() > o2.getPosition())
-                        return 1;
-                    else
-                        return 0;
-                }
-            }
-        });
     }
 
 }

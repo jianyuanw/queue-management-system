@@ -45,8 +45,8 @@ public class QueueEstimationService {
                 .stream()
                 .map(queuePosition ->
                         Duration.between(
-                                queuePosition.getQueueStartTime(),
-                                queuePosition.getQueueEndTime()))
+                                queuePosition.getQueueEndTime(),
+                                queuePosition.getQueueStartTime()))
                 .reduce((total, current) -> {
                     return total.plus(current);
                 })

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <title>qMe - Counter</title>
+    <meta charset="UTF-8">
+
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+</head>
+<body>
+    <div th:replace="fragments/layout.html :: navbar"></div>
+
+	<div class="col-6">
+		<span th:text="${'Vendor: '}"></span>
+		<span th:text="${'Branch: '}"></span>
+		<span th:text="${'Queue Name: '}"></span>
+		
+		<span th:text="${'Counter No: '}"></span>
+		<span th:text="${'Served By: '}"></span>
+		<span th:text="${'Current Serving: '}"></span>		
+	</div>
+	<div class="col-6">
+		<table class="table">
+			<tr class="table-primary">
+				<th>Queue Number</th>
+				<th>Position</th>
+				<th>Duration In Queue</th>
+			</tr>
+			<tr class="table-light" th:each="queuePosition : ${queuePositions}">
+				<td th:text="${queuePosition.queuePosition.queueNumber}">
+				<td th:text="${queuePosition.position}">
+				<td th:text="${queuePosition.durationInQueue}">
+			</tr>
+		</table>
+	</div>
+
+    <div th:replace="fragments/layout.html :: footer"></div>
+</body>
+</html>

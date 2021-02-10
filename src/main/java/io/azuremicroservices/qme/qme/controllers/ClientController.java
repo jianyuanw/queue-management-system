@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.security.core.Authentication;
+import io.azuremicroservices.qme.qme.models.Branch;
+import io.azuremicroservices.qme.qme.models.Queue;
+import io.azuremicroservices.qme.qme.services.ClientService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,11 +43,11 @@ public class ClientController {
     @GetMapping
     public String clientLandingPage(Model model) {
     	List<String> categories = new ArrayList<>();
-    	
+
     	for (BranchCategory branchCategory : BranchCategory.values()) {
     		categories.add(branchCategory.getDisplayValue());
     	}
-    			
+
         model.addAttribute("categories", categories);
         return "client/landing-page";
     }
@@ -98,5 +101,15 @@ public class ClientController {
     	
     	alertService.createAlert(AlertColour.GREEN, "Successfully entered queue", redirAttr);
     	return "redirect:/client";
+    }
+
+    @GetMapping("/search/branch")
+    public String viewBranchQueues(@RequestParam String id, Model model) {
+        Long branchId = Long.valueOf(id);
+        Branch branch = clientService.findBranchById(branchId);
+        List<Queue> queues = clientService.findQueuesByBranchId(branchId);
+        model.addAttribute("branch", branch);
+        model.addAttribute("queues", queues);
+        return "client/branch-queues";
     }
 }

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <title>Create Counter</title>
+    <meta charset="UTF-8">
+
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+</head>
+<body>
+    <div th:replace="fragments/layout.html :: navbar"></div>
+	
+	<form class="text-center border border-light p-5" method="post" th:action="@{/manage/counter/create}" th:object="${counter}">
+	
+	    <p class="h4 mb-4">New Counter</p>
+	
+	    <div class="form-row mb-4">
+	        <div class="col form-group">
+	        	<label class="form-label" for="counterName">Counter name</label>
+	            <input type="text" id="counterName" class="form-control" th:field="*{name}" required>
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>            
+	        </div>
+	        
+	        <div class="col form-group">
+	        	<label class="form-label" for="queueId">Queue</label>
+	        	<select class="form-select form-control" name="queueId" required>
+	        		<option th:each="queue : ${queues}"
+	        			th:value="${queue.id}" th:text="${queue.name}"></option>
+	        	</select>
+	        	<p class="text-danger text-left" th:if="${#fields.hasErrors('queue')}" th:errors="*{queue}"></p>            
+	        </div>	        
+	    </div>
+	    
+	    <div class="form-row mb-4">
+	        
+	        <div class="col form-group">
+	        	<label class="form-label" for="description">Description</label>
+	            <input type="text" id="description" class="form-control" th:field="*{description}" required>
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
+	        </div>
+	        
+	        <div class="col form-group">
+	        	<label class="form-label" for="displayName">Display Name</label>
+	            <input type="text" id="displayName" class="form-control" th:field="*{displayName}" required>
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('displayName')}" th:errors="*{displayName}"></p>
+	        </div>
+	        
+	    </div>
+	    <button class="btn btn-info my-4 btn-block" type="submit">Submit</button>
+	
+	</form>	
+
+    <div th:replace="fragments/layout.html :: footer"></div>
+</body>
+</html>

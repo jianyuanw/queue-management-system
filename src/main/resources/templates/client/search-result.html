@@ -22,22 +22,22 @@
 
         <h5 class="font-weight-bold mb-4">Showing results for: '<span th:text="${query}">query</span>'</h5>
 
-        <div class="row row-cols-1">        	
-            <div class="col border border-light linkbox" th:each="branch : ${branches}" th:attr="data-location=@{/client/branch/{branchId}(branchId=${branch.id})}">
-                <div class="row">
-                    <div class="col-3 p-1">
-                        <img class="img-fluid rounded" th:src="@{/images/logos/placeholder_image.png}">
-                    </div>
-                    <div class="col-8 d-flex align-items-center">
-                        <div>
-                            <p class="mb-1 font-weight-bold" th:text="${branch.name}">Branch Name</p>
-                            <p class="m-0"><i class="fas fa-map-marker-alt pr-1"></i><span th:text="${branch.address}">Branch Address</span></p>
+        <div class="row row-cols-1">
+            <div class="col border border-info linkbox" th:each="branch : ${branches}" th:attr="data-location=@{/client/branch/{branchId}(branchId=${branch.id})}">
+                    <div class="row">
+                        <div class="col-3 p-1">
+                            <img class="img-fluid rounded" th:src="@{/images/logos/placeholder_image.png}">
+                        </div>
+                        <div class="col-8 d-flex align-items-center">
+                            <div>
+                                <p class="mb-1 font-weight-bold" th:text="${branch.name}">Branch Name</p>
+                                <p class="m-0"><i class="fas fa-map-marker-alt pr-1"></i><span th:text="${branch.address}">Branch Address</span></p>
+                            </div>
+                        </div>
+                        <div class="col pl-0 pr-2 d-flex align-items-center">
+                            <i class="fas fa-angle-right fa-2x"></i>
                         </div>
                     </div>
-                    <div class="col pl-0 pr-2 d-flex align-items-center">
-                        <i class="fas fa-angle-right fa-2x"></i>
-                    </div>
-                </div>
             </div>
         </div>
 

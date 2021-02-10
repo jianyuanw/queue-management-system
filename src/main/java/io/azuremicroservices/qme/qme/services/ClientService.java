@@ -3,12 +3,14 @@ package io.azuremicroservices.qme.qme.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import io.azuremicroservices.qme.qme.models.Branch;
 import io.azuremicroservices.qme.qme.models.BranchCategory;
 import io.azuremicroservices.qme.qme.models.Queue;
+import io.azuremicroservices.qme.qme.models.QueuePosition;
 import io.azuremicroservices.qme.qme.models.QueuePosition.State;
 import io.azuremicroservices.qme.qme.models.ViewQueue;
 import io.azuremicroservices.qme.qme.repositories.BranchRepository;
@@ -63,14 +65,20 @@ public class ClientService {
 	
 	}
 
-	public List<ViewQueue> generateViewQueues(List<Queue> queues) {
+	public List<ViewQueue> generateViewQueues(Long userId, List<Queue> queues) {
 		List<ViewQueue> viewQueues = new ArrayList<>();
 		State[] activeStates = new State[] { State.ACTIVE_QUEUE, State.ACTIVE_REQUEUE };				
+		List<QueuePosition> userQueues = queuePositionRepo.findAllByUser_Id(userId);		
 		
 		for (Queue queue : queues) {
 			Integer inLine = queuePositionRepo.findAllByQueueAndStateIn(queue, activeStates).size();
 			Integer waitingTime = queueEstimateService.estimateQueueTime(queue.getId().toString());
-			viewQueues.add(new ViewQueue(queue, inLine, waitingTime));
+			boolean userInQueue = userQueues.stream()
+					.map(QueuePosition::getQueue)
+					.collect(Collectors.toList())
+					.contains(queue);
+			
+			viewQueues.add(new ViewQueue(queue, inLine, waitingTime, userInQueue));
 		}
 
 		return viewQueues;

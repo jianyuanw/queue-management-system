@@ -108,4 +108,36 @@ public class ClientService {
 						x.getState() == State.INACTIVE_MISSED)
 				.collect(Collectors.toList());
 	}
+
+	public List<MyQueueDto> generateMyQueueDto(Long userId) {
+    	List<MyQueueDto> list = new ArrayList<>();
+
+    	List<QueuePosition> currentQueuePositions = userRepo.findById(userId)
+				.get()
+				.getQueuePositions()
+				.stream()
+				.filter(x -> x.getState() == State.ACTIVE_QUEUE ||
+						x.getState() == State.ACTIVE_REQUEUE ||
+						x.getState() == State.INACTIVE_MISSED)
+				.collect(Collectors.toList());
+
+    	for (QueuePosition queuePosition : currentQueuePositions) {
+    		int personsInFront = (int) queuePosition.getQueue()
+					.getQueuePositions()
+					.stream()
+					.filter(x -> x.getState() == State.ACTIVE_QUEUE ||
+							x.getState() == State.ACTIVE_REQUEUE)
+					.filter(x -> x.getPosition() < queuePosition.getPosition())
+					.count();
+    		list.add(new MyQueueDto(queuePosition.getQueue().getName(),
+					queuePosition.getQueue().getBranch().getAddress(),
+					personsInFront,
+					personsInFront * 5, // TODO: Proper estimation of wait time
+					queuePosition.getQueueNumber(),
+					queuePosition.getState(),
+					queuePosition.getId().intValue()));
+		}
+
+    	return list;
+	}
 }

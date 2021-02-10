@@ -6,46 +6,41 @@
 <head>
     <title>qMe - Search Results</title>
     <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
-
-	<script>
-		$(function() {
-			$('.linkbox').click(function() { 
-				window.location = $(this).attr("data-location");		    
-			}).css("cursor", "pointer");
-		});
-	</script>
 </head>
 <body>
     <div th:replace="fragments/layout.html :: mobile-navbar-modal"></div>
 
     <div class="m-4">
 
-        <h5 class="font-weight-bold text-center mb-4">Your current queues</h5>
+        <h4 class="font-weight-bold text-center mb-4">Your current queues</h4>
 
         <div class="row row-cols-1">
-            <div class="col border border-info" th:each="queuePosition : ${queuePositions}">
+            <div class="col border border-info" th:each="dto : ${myQueueDtos}">
                 <div class="row">
-                    <div class="col">
+                    <div class="col-4 p-2 d-flex align-items-center">
                         <img class="img-fluid rounded" th:src="@{/images/logos/placeholder_image.png}">
                     </div>
-                    <div class="col">
-                        <p class="font-weight-bold m-0" th:text="${queuePosition.queue.name}"></p>
-                        <p class="m-0"><i class="fas fa-map-marker-alt pr-1"></i><span th:text="${queuePosition.queue.branch.address}"></span></p>
+                    <div class="col-8 p-2 d-flex align-items-center">
+                        <div>
+                            <p class="m-0 font-weight-bold" th:text="${dto.queueName}"></p>
+                            <p class="m-0"><i class="fas fa-map-marker-alt pr-1"></i><span th:text="${dto.branchAddress}"></span></p>
+                            <p class="m-0 font-weight-bold">Queue No.:
+                                <span class="text-danger" th:if="${dto.state == dto.state.INACTIVE_MISSED}">Missed</span>
+                                <span class="text-primary" th:if="${dto.state != dto.state.INACTIVE_MISSED}" th:text="${dto.queueNumber}"></span>
+                            </p>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col">Queue Number:</div>
-                    <div class="col" th:if="${queuePosition.state == queuePosition.state.INACTIVE_MISSED}">Missed</div>
-                    <div class="col" th:if="${queuePosition.state != queuePosition.state.INACTIVE_MISSED}" th:text="${queuePosition.queueNumber}"></div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <p class="m-0"><i class="fas fa-users pr-1"></i><span th:text="${'X people in line'}"></span></p>
-                        <p class="m-0"><i class="far fa-clock pr-1"></i><span th:text="${'about X mins wait'}"></span></p>
+                    <div class="col d-flex align-items-center">
+                        <div>
+                            <p class="m-0"><i class="fas fa-users pr-1"></i><span th:text="|${dto.personsInFront} persons in front|"></span></p>
+                            <p class="m-0"><i class="far fa-clock pr-1"></i><span th:text="|About ${dto.waitTime} mins wait|"></span></p>
+                        </div>
                     </div>
                     <div class="col">
-                        <button type="button" class="btn btn-primary" th:if="${queuePosition.state == queuePosition.state.INACTIVE_MISSED}">Rejoin</button>
-                        <button type="button" class="btn btn-primary" th:if="${queuePosition.state != queuePosition.state.INACTIVE_MISSED}">Leave Queue</button>
+                        <button type="button" class="btn btn-primary rounded" th:if="${dto.state == dto.state.INACTIVE_MISSED}">Rejoin</button>
+                        <button type="button" class="btn btn-primary rounded" th:if="${dto.state != dto.state.INACTIVE_MISSED}">Leave Queue</button>
                     </div>
                 </div>
             </div>

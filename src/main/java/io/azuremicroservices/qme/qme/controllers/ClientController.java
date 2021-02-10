@@ -113,8 +113,8 @@ public class ClientController {
     @GetMapping("/my-queues")
     public String myQueues(Authentication authentication, Model model) {
         Long userId = ((MyUserDetails) authentication.getPrincipal()).getId();
-        List<QueuePosition> queuePositions = clientService.findCurrentQueuePositionsByUserId(userId);
-        model.addAttribute("queuePositions", queuePositions);
+        List<MyQueueDto> myQueueDtos = clientService.generateMyQueueDto(userId);
+        model.addAttribute("myQueueDtos", myQueueDtos);
         return "client/my-queues";
     }
 }

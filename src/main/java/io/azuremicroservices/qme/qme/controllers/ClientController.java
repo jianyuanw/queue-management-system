@@ -99,6 +99,16 @@ public class ClientController {
     	alertService.createAlert(AlertColour.GREEN, "Successfully entered queue", redirAttr);
     	return "redirect:/client";
     }
+    
+    @PostMapping("/leave-queue")
+    public String leaveQueue(@RequestParam("queueId") String queueId, Authentication authentication, RedirectAttributes redirAttr) {
+    	MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+    	    	
+    	manageUserQueueService.leaveQueue(myUserDetails.getId().toString(), queueId);
+    	
+    	alertService.createAlert(AlertColour.GREEN, "Successfully left queue", redirAttr);
+    	return "redirect:/client";
+    }    
 
     @GetMapping("/search/branch")
     public String viewBranchQueues(@RequestParam String id, Model model) {

@@ -4,7 +4,7 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>qMe - Search Results</title>
+    <title>qMe - My Queues</title>
     <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
 </head>
 <body>
@@ -22,8 +22,8 @@
                     </div>
                     <div class="col-8 p-2 d-flex align-items-center">
                         <div>
-                            <p class="m-0 font-weight-bold" th:text="${dto.queueName}"></p>
-                            <p class="m-0"><i class="fas fa-map-marker-alt pr-1"></i><span th:text="${dto.branchAddress}"></span></p>
+                            <p class="m-0 font-weight-bold" th:text="${dto.queue.name}"></p>
+                            <p class="m-0"><i class="fas fa-map-marker-alt pr-1"></i><span th:text="${dto.queue.branch.address}"></span></p>
                             <p class="m-0 font-weight-bold">Queue No.:
                                 <span class="text-danger" th:if="${dto.state == dto.state.INACTIVE_MISSED}">Missed</span>
                                 <span class="text-primary" th:if="${dto.state != dto.state.INACTIVE_MISSED}" th:text="${dto.queueNumber}"></span>
@@ -40,7 +40,33 @@
                     </div>
                     <div class="col">
                         <button type="button" class="btn btn-primary rounded" th:if="${dto.state == dto.state.INACTIVE_MISSED}">Rejoin</button>
-                        <button type="button" class="btn btn-primary rounded" th:if="${dto.state != dto.state.INACTIVE_MISSED}">Leave Queue</button>
+                        <th:block th:if="${dto.state != dto.state.INACTIVE_MISSED}">
+                        	<button type="button" class="btn btn-primary rounded" th:if="${dto.state != dto.state.INACTIVE_MISSED}" data-toggle="modal" 
+                        		th:data-target="${'#leaveQueueConfirm' + dto.queuePositionId}">Leave Queue</button>
+                        	
+							<div class="modal fade" th:id="${'leaveQueueConfirm' + dto.queuePositionId}" tabindex="-1" role="dialog" aria-hidden="true">
+								<div class="modal-dialog" role="document">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="modal-title" id="modalTitle">Confirm Leave Queue</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">&times;</span>
+											</button>
+										</div>
+										<div class="modal-body" th:text="${'Leave ' + dto.queue.name + '?'}"></div>
+										<div class="modal-footer">
+									        <button type="button" class="btn btn-mdb-color btn-sm" data-dismiss="modal">Cancel</button>
+									        <form method="post" th:action="@{/client/leave-queue}">
+									        	<input type="hidden" name="queueId" th:value="${dto.queue.id}">
+									        	<button class="btn btn-primary btn-sm" type="submit">Leave</button>
+									        </form>					        
+								        				
+										</div>
+									</div>
+								</div>
+							</div>                        
+                        </th:block>
+                        
                     </div>
                 </div>
             </div>

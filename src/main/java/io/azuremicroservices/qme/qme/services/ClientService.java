@@ -129,10 +129,10 @@ public class ClientService {
 							x.getState() == State.ACTIVE_REQUEUE)
 					.filter(x -> x.getPosition() < queuePosition.getPosition())
 					.count();
-    		list.add(new MyQueueDto(queuePosition.getQueue().getName(),
-					queuePosition.getQueue().getBranch().getAddress(),
+    		list.add(new MyQueueDto(
+    				queuePosition.getQueue(),
 					personsInFront,
-					personsInFront * 5, // TODO: Proper estimation of wait time
+					queueEstimateService.estimateQueueTime(queuePosition.getQueue().getId().toString()) * personsInFront,
 					queuePosition.getQueueNumber(),
 					queuePosition.getState(),
 					queuePosition.getId().intValue()));

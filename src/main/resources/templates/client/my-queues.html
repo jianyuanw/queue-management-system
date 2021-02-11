@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>qMe - My Queues</title>
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+</head>
+<body>
+    <div th:replace="fragments/layout.html :: mobile-navbar-modal"></div>
+
+    <div class="m-4">
+
+        <h4 class="font-weight-bold text-center mb-4">Your current queues</h4>
+
+        <div class="row row-cols-1">
+            <div class="col border border-info" th:each="dto : ${myQueueDtos}">
+                <div class="row">
+                    <div class="col-4 p-2 d-flex align-items-center">
+                        <img class="img-fluid rounded" th:src="@{/images/logos/placeholder_image.png}">
+                    </div>
+                    <div class="col-8 p-2 d-flex align-items-center">
+                        <div>
+                            <p class="m-0 font-weight-bold" th:text="${dto.queue.name}"></p>
+                            <p class="m-0"><i class="fas fa-map-marker-alt pr-1"></i><span th:text="${dto.queue.branch.address}"></span></p>
+                            <p class="m-0 font-weight-bold">Queue No.:
+                                <span class="text-danger" th:if="${dto.state == dto.state.INACTIVE_MISSED}">Missed</span>
+                                <span class="text-primary" th:if="${dto.state != dto.state.INACTIVE_MISSED}" th:text="${dto.queueNumber}"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex align-items-center">
+                        <div>
+                            <p class="m-0" th:if="${dto.state != dto.state.INACTIVE_MISSED}">
+                                <i class="fas fa-users pr-1"></i><span th:text="|${dto.personsInFront} person(s) in front|"></span>
+                            </p>
+                            <p class="m-0" th:if="${dto.state == dto.state.INACTIVE_MISSED}">
+                                <i class="fas fa-users pr-1"></i><span th:text="|${dto.personsInLine} person(s) in line|"></span>
+                            </p>
+                            <p class="m-0"><i class="far fa-clock pr-1"></i><span th:text="|About ${dto.waitTime} mins wait|"></span></p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <th:block th:if="${dto.state == dto.state.INACTIVE_MISSED}">
+                            <button type="button" class="btn btn-secondary rounded p-3" data-toggle="modal"
+                                    th:data-target="${'#rejoinQueueConfirm' + dto.queuePositionId}">Rejoin Queue</button>
+
+                            <div class="modal fade" th:id="${'rejoinQueueConfirm' + dto.queuePositionId}" tabindex="-1" role="dialog" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Confirm Rejoin Queue</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body" th:text="${'Rejoin ' + dto.queue.name + '?'}"></div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-mdb-color btn-sm" data-dismiss="modal">Cancel</button>
+                                            <form method="post" th:action="@{/client/rejoin-queue}">
+                                                <input type="hidden" name="queuePositionId" th:value="${dto.queuePositionId}">
+                                                <button class="btn btn-primary btn-sm" type="submit">Rejoin</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </th:block>
+                        <th:block th:if="${dto.state != dto.state.INACTIVE_MISSED}">
+                        	<button type="button" class="btn btn-primary rounded p-3" th:if="${dto.state != dto.state.INACTIVE_MISSED}" data-toggle="modal"
+                        		th:data-target="${'#leaveQueueConfirm' + dto.queuePositionId}">Leave Queue</button>
+                        	
+							<div class="modal fade" th:id="${'leaveQueueConfirm' + dto.queuePositionId}" tabindex="-1" role="dialog" aria-hidden="true">
+								<div class="modal-dialog" role="document">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="modal-title" id="modalTitle">Confirm Leave Queue</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">&times;</span>
+											</button>
+										</div>
+										<div class="modal-body" th:text="${'Leave ' + dto.queue.name + '?'}"></div>
+										<div class="modal-footer">
+									        <button type="button" class="btn btn-mdb-color btn-sm" data-dismiss="modal">Cancel</button>
+									        <form method="post" th:action="@{/client/leave-queue}">
+									        	<input type="hidden" name="queueId" th:value="${dto.queue.id}">
+									        	<button class="btn btn-primary btn-sm" type="submit">Leave</button>
+									        </form>					        
+								        				
+										</div>
+									</div>
+								</div>
+							</div>                        
+                        </th:block>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

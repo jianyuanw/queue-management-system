@@ -1,10 +1,100 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+	<!--<th:block th:replace="fragments/layout.html :: head"/>-->
+<title>Edit Queue</title>
 </head>
 <body>
+	<!-- <div th:replace="fragments/layout.html :: header">  -->
 
+	<div
+		class="border border-dark container-fluid col-md-4 col-md-offset-4">
+		<div class="row-fluid">
+			<div class="span12">
+				<fieldset>
+					<legend>Edit Queue</legend>
+					
+					<table id="dataTableH" class="table table-striped table-bordered table-sm">					
+						<tr th:text="'Vendor:'${queue.vendor}"></tr>
+						<tr th:text="'Branch:'${queue.branch}"></tr>
+					</table>
+					
+					<table id="dataTableH" class="table table-striped table-bordered table-sm">					
+										
+						<tr>
+							<td>
+								<form class="form-horizontal">
+									
+									<div class="control-group">							
+										<label class="control-label">Old queue name</label>
+										<div class="controls">
+											<input class="form-control mb-4" type="text" name="queueName" id="queueName" title="queueName" value="${queue.name}" required autofocus>
+										</div>
+									</div>
+									
+									<div class="control-group">							
+										<label class="control-label">Old description</label>
+										<div class="controls">
+											<input class="form-control mb-4" type="text" name="queueDescription" id="queueDescription" title="queueDescription" value="${queue.description}" required autofocus>
+										</div>
+									</div>
+									
+									<div class="control-group">							
+										<label class="control-label">Time per Client</label>
+										<div class="controls">
+											<input class="form-control mb-4" type="text" name="timePerClient" id="timePerClient" title="timePerClient" value="${queue.timePerClient}" required autofocus>
+										</div>
+									</div>
+									
+									<div class="control-group">							
+										<label class="control-label">Call at Position</label>
+										<div class="controls">
+											<input class="form-control mb-4" type="text" name="callAtPosition" id="callAtPosition" title="callAtPosition" value="${queue.callAtPosition}" required autofocus>
+										</div>
+									</div>
+									
+									<div class="control-group">							
+										<label class="control-label">Delay before Call</label>
+										<div class="controls">
+											<input class="form-control mb-4" type="text" name="delayBeforeCall" id="delayBeforeCall" title="delayBeforeCall" value="${queue.delayBeforeCall}" required autofocus>
+										</div>
+									</div>											
+								</form>										
+							</td>
+	
+							
+							<td>
+								<form class="form-horizontal" method="post" th:action="@{/manage-branchAdmin/saveEditQueue}" th:object="${queue}">
+									
+									<div class="control-group">							
+										<label class="control-label">New queue name</label>
+										<div class="controls">
+											<input class="form-control mb-4" type="text" name="queueName" id="queueName" title="queueName" value="" required autofocus>
+										</div>
+									</div>
+									
+									<div class="control-group">							
+										<label class="control-label">New description</label>
+										<div class="controls">
+											<input class="form-control mb-4" type="text" name="queueDescription" id="queueDescription" title="queueDescription" value="" required autofocus>
+										</div>
+									</div>
+							
+									<div class="form-actions">
+										<button type="submit" class="btn btn-success">Save Changes</button>
+									</div>
+								</form>							
+							</td>														
+						</tr>
+																
+						
+					</table>
+					
+				</fieldset>
+			</div>
+		</div>
+	</div>
+
+	<div th:replace="fragments/layout.html :: footer"></div>
 </body>
 </html>

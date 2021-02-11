@@ -45,7 +45,7 @@ public class OperateQueueController {
     public void pullUpdatedUserVendorBranchesQueues() {
         cUser = getCurrentUser();
         cBranches = permissionService.getBranchPermissions(cUser.getId());
-        cVendor = cBranches.get(0).getVendor();
+        cVendor = permissionService.getVendorPermission(cUser.getId());
         cQueues = permissionService.getQueuePermissions(cUser.getId());
         cUniqueBranches = new HashSet<>(cBranches);
     }
@@ -65,7 +65,7 @@ public class OperateQueueController {
             queueIdWithCurrentPax.put(queue.getId(),pax);
         }
 
-        model.addAttribute("vendor","cVendor.getName()");
+        model.addAttribute("vendor",cVendor.getName());
         model.addAttribute("queuesWithPax", queueIdWithCurrentPax);
         model.addAttribute("queues",cQueues);
         model.addAttribute("branches",cUniqueBranches);

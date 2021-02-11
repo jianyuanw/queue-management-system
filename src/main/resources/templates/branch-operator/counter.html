@@ -24,8 +24,12 @@
         <form class="d-inline" th:action="@{/OperateQueue/call-next-number}" method="post">
             <button type="submit" class="btn btn-success rounded">Call next number</button>
         </form>
-        <button class="btn btn-unique rounded">No show</button>
-        <button class="btn btn-primary rounded">View people in queue</button>
+        <form class="d-inline" th:action="@{/OperateQueue/no-show}" method="post">
+            <button class="btn btn-unique rounded">No show</button>
+        </form>
+        <a th:href="|@{/OperateQueue/ViewSelectedQueue/}${counter.queue.id}|">
+            <button class="btn btn-primary rounded">View people in queue</button>
+        </a>
 
     </div>
 

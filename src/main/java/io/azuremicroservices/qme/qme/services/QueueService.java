@@ -250,4 +250,20 @@ public class QueueService {
         // TODO: Notify client / Update TV screen
         return nextInQueue.getQueueNumber();
     }
+
+    @Transactional
+    public String noShow(Counter counter) {
+        QueuePosition currentlyServing = queuePositionRepo.findByQueueNumber(counter.getCurrentlyServingQueueNumber());
+
+        if (currentlyServing != null) {
+            currentlyServing.setState(QueuePosition.State.INACTIVE_NO_SHOW);
+            currentlyServing.setStateChangeTime(LocalDateTime.now());
+            queuePositionRepo.save(currentlyServing);
+            counter.setCurrentlyServingQueueNumber(null);
+            counterRepo.save(counter);
+            return currentlyServing.getQueueNumber();
+        } else {
+            return null;
+        }
+    }
 }

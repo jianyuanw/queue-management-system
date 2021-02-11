@@ -205,4 +205,21 @@ public class OperateQueueController {
         }
         return "redirect:/OperateQueue/my-counter";
     }
+
+    @PostMapping("/no-show")
+    public String noShow(Authentication authentication, RedirectAttributes redirAttr) {
+        User user = ((MyUserDetails) authentication.getPrincipal()).getUser();
+        Counter counter = queueService.findCounterByUser(user);
+        if (counter == null) {
+            alertService.createAlert(AlertColour.RED, "An error occurred. Please try again.", redirAttr);
+            return "redirect:/OperateQueue/my-counter";
+        }
+        String noShowNumber = queueService.noShow(counter);
+        if (noShowNumber == null) {
+            alertService.createAlert(AlertColour.RED, "An error occurred. Please try again.", redirAttr);
+        } else {
+            alertService.createAlert(AlertColour.GREEN, "Queue number (" + noShowNumber + ") did not show up. You may call the next queue number.", redirAttr);
+        }
+        return "redirect:/OperateQueue/my-counter";
+    }
 }

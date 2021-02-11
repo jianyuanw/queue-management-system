@@ -25,8 +25,8 @@
                             <p class="m-0 font-weight-bold" th:text="${dto.queue.name}"></p>
                             <p class="m-0"><i class="fas fa-map-marker-alt pr-1"></i><span th:text="${dto.queue.branch.address}"></span></p>
                             <p class="m-0 font-weight-bold">Queue No.:
-                                <span class="text-danger" th:if="${dto.state == dto.state.INACTIVE_MISSED}">Missed</span>
-                                <span class="text-primary" th:if="${dto.state != dto.state.INACTIVE_MISSED}" th:text="${dto.queueNumber}"></span>
+                                <span class="text-danger" th:if="${dto.state == dto.state.INACTIVE_NO_SHOW}">Missed</span>
+                                <span class="text-primary" th:if="${dto.state != dto.state.INACTIVE_NO_SHOW}" th:text="${dto.queueNumber}"></span>
                             </p>
                         </div>
                     </div>
@@ -34,17 +34,17 @@
                 <div class="row">
                     <div class="col d-flex align-items-center">
                         <div>
-                            <p class="m-0" th:if="${dto.state != dto.state.INACTIVE_MISSED}">
+                            <p class="m-0" th:if="${dto.state != dto.state.INACTIVE_NO_SHOW}">
                                 <i class="fas fa-users pr-1"></i><span th:text="|${dto.personsInFront} person(s) in front|"></span>
                             </p>
-                            <p class="m-0" th:if="${dto.state == dto.state.INACTIVE_MISSED}">
+                            <p class="m-0" th:if="${dto.state == dto.state.INACTIVE_NO_SHOW}">
                                 <i class="fas fa-users pr-1"></i><span th:text="|${dto.personsInLine} person(s) in line|"></span>
                             </p>
                             <p class="m-0"><i class="far fa-clock pr-1"></i><span th:text="|About ${dto.waitTime} mins wait|"></span></p>
                         </div>
                     </div>
                     <div class="col">
-                        <th:block th:if="${dto.state == dto.state.INACTIVE_MISSED}">
+                        <th:block th:if="${dto.state == dto.state.INACTIVE_NO_SHOW}">
                             <button type="button" class="btn btn-secondary rounded p-3" data-toggle="modal"
                                     th:data-target="${'#rejoinQueueConfirm' + dto.queuePositionId}">Rejoin Queue</button>
 
@@ -69,8 +69,8 @@
                                 </div>
                             </div>
                         </th:block>
-                        <th:block th:if="${dto.state != dto.state.INACTIVE_MISSED}">
-                        	<button type="button" class="btn btn-primary rounded p-3" th:if="${dto.state != dto.state.INACTIVE_MISSED}" data-toggle="modal"
+                        <th:block th:if="${dto.state != dto.state.INACTIVE_NO_SHOW}">
+                        	<button type="button" class="btn btn-primary rounded p-3" data-toggle="modal"
                         		th:data-target="${'#leaveQueueConfirm' + dto.queuePositionId}">Leave Queue</button>
                         	
 							<div class="modal fade" th:id="${'leaveQueueConfirm' + dto.queuePositionId}" tabindex="-1" role="dialog" aria-hidden="true">

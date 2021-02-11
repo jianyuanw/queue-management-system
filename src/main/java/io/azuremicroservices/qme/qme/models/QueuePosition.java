@@ -58,8 +58,7 @@ public class QueuePosition {
         ACTIVE_REQUEUE,
         INACTIVE_COMPLETE,
         INACTIVE_NO_SHOW,
-        INACTIVE_LEFT,
-        INACTIVE_MISSED;
+        INACTIVE_LEFT;
 
         private final String displayValue;
 

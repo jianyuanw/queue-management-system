@@ -109,17 +109,6 @@ public class ClientService {
         return branchRepo.findById(branchId).get().getQueues();
     }
 
-    public List<QueuePosition> findCurrentQueuePositionsByUserId(Long userId) {
-    	return userRepo.findById(userId)
-				.get()
-				.getQueuePositions()
-				.stream()
-				.filter(x -> x.getState() == State.ACTIVE_QUEUE ||
-						x.getState() == State.ACTIVE_REQUEUE ||
-						x.getState() == State.INACTIVE_MISSED)
-				.collect(Collectors.toList());
-	}
-
 	public List<MyQueueDto> generateMyQueueDto(Long userId) {
     	List<MyQueueDto> list = new ArrayList<>();
 
@@ -127,9 +116,11 @@ public class ClientService {
 				.get()
 				.getQueuePositions()
 				.stream()
+				.filter(x -> x.getQueueStartTime().getYear() == LocalDateTime.now().getYear() &&
+						x.getQueueStartTime().getDayOfYear() == LocalDateTime.now().getDayOfYear())
 				.filter(x -> x.getState() == State.ACTIVE_QUEUE ||
 						x.getState() == State.ACTIVE_REQUEUE ||
-						x.getState() == State.INACTIVE_MISSED)
+						x.getState() == State.INACTIVE_NO_SHOW)
 				.collect(Collectors.toList());
 
     	for (QueuePosition queuePosition : currentQueuePositions) {

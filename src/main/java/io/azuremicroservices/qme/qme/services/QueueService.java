@@ -2,11 +2,7 @@ package io.azuremicroservices.qme.qme.services;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.hibernate.procedure.UnknownSqlResultSetMappingException;
@@ -231,4 +227,67 @@ public class QueueService {
 		
 		return viewQueuePositions;
 	}	
+	
+	public Counter findCounterByUser(User user) {
+        return counterRepo.findByUser(user);
+    }
+
+    public int findQueueLengthByCounter(Counter counter) {
+        return (int) counter.getQueue()
+                .getQueuePositions()
+                .stream()
+                .filter(x -> x.getState() == QueuePosition.State.ACTIVE_QUEUE ||
+                        x.getState() == QueuePosition.State.ACTIVE_REQUEUE)
+                .count();
+    }
+
+    @Transactional
+    public String callNextNumber(Counter counter) {
+        QueuePosition currentlyServing = counter.getCurrentlyServingQueueNumber();
+
+        if (currentlyServing != null) {
+            currentlyServing.setState(QueuePosition.State.INACTIVE_COMPLETE);
+            currentlyServing.setStateChangeTime(LocalDateTime.now());
+            queuePositionRepo.save(currentlyServing);
+        }
+
+        if (findQueueLengthByCounter(counter) == 0) {
+            counter.setCurrentlyServingQueueNumber(null);
+            counterRepo.save(counter);
+            return null;
+        }
+
+        QueuePosition nextInQueue = counter.getQueue()
+                .getQueuePositions()
+                .stream()
+                .filter(x -> x.getState() == QueuePosition.State.ACTIVE_QUEUE ||
+                        x.getState() == QueuePosition.State.ACTIVE_REQUEUE)
+                .min(Comparator.comparingInt(QueuePosition::getPosition))
+                .get();
+
+        counter.setCurrentlyServingQueueNumber(nextInQueue);
+        nextInQueue.setState(QueuePosition.State.ACTIVE_CALLED);
+        nextInQueue.setStateChangeTime(LocalDateTime.now());
+        nextInQueue.setPosition(null);
+        counterRepo.save(counter);
+        queuePositionRepo.save(nextInQueue);
+        // TODO: Notify client / Update TV screen
+        return nextInQueue.getQueueNumber();
+    }
+
+    @Transactional
+    public String noShow(Counter counter) {
+        QueuePosition currentlyServing = queuePositionRepo.findByQueueNumber(counter.getCurrentlyServingQueueNumber().getQueueNumber());
+
+        if (currentlyServing != null) {
+            currentlyServing.setState(QueuePosition.State.INACTIVE_NO_SHOW);
+            currentlyServing.setStateChangeTime(LocalDateTime.now());
+            queuePositionRepo.save(currentlyServing);
+            counter.setCurrentlyServingQueueNumber(null);
+            counterRepo.save(counter);
+            return currentlyServing.getQueueNumber();
+        } else {
+            return null;
+        }
+    }
 }

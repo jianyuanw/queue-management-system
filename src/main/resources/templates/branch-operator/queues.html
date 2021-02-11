@@ -58,7 +58,7 @@
 		</thead>
 		<tbody th:each="queue : ${queueMap}" th:remove="tag">
 			<tr class="row tablerow d-none" th:attr="data-branch=${queue.key.branch.id}">
-				<td class="col" th:text="${queue.key.name}"></td>
+				<td class="col" ><a th:href="@{'/OperateQueue/ViewSelectedQueue/' + ${queue.key.id}}" th:text="${queue.key.name}" /></td>
 				<td class="col" th:text="${queue.value}"></td>
 				<td class="col" th:text="${queue.key.state.getDisplayValue()}"></td>
 				<td class="col">					

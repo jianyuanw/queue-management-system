@@ -28,7 +28,7 @@ public class QueuePosition {
     @ManyToOne
     private User user;
     
-    @OneToOne(mappedBy = "queuePosition")
+    @OneToOne(mappedBy = "currentlyServingQueueNumber")
     private Counter counter;
 
     private String queueNumber;

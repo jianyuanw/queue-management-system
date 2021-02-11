@@ -106,12 +106,4 @@ public class QueuePositionService {
 		return queueCounters;
 	}
 
-	@Transactional
-	public void callNext(Counter counter) {
-		State[] activeStates = new State[] { State.ACTIVE_QUEUE, State.ACTIVE_REQUEUE };
-		
-		QueuePosition next = queuePositionRepo.findTopByQueue_IdAndStateInOrderByPositionAscPriorityDesc(counter.getQueue().getId(), activeStates);
-		counter.setQueuePosition(next);		
-		next.setState(State.ACTIVE_CALLED);
-	}
 }

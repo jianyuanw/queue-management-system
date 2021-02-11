@@ -62,8 +62,8 @@ public class OperateQueueController {
 
     public void pullUpdatedUserVendorBranchesQueues() {
         cUser = getCurrentUser();
-        cVendor = null;    // currently not figure out how to find vendor for non vendoradmin user
         cBranches = permissionService.getBranchPermissions(cUser.getId());
+        cVendor = permissionService.getVendorPermission(cUser.getId());
         cQueues = permissionService.getQueuePermissions(cUser.getId());
         cUniqueBranches = new HashSet<>(cBranches);
     }
@@ -157,31 +157,6 @@ public class OperateQueueController {
     	
     	return "branch-operator/current-counter";
     }
-    
-    @PostMapping("current-counter")
-    public String operateCurrentCounter(@RequestParam("command") String command, Model model, Authentication authentication, RedirectAttributes redirAttr) {
-    	MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
-    	var counter = queueService.findCounterByUserId(myUserDetails.getId());
-    	
-    	if (counter == null) {
-    		alertService.createAlert(AlertColour.YELLOW, "You are not signed into a counter", redirAttr);
-    		return "redirect:/OperateQueue/ViewQueue";
-    	}
-    	
-    	switch (command) {
-    		case "call":
-    			queuePositionService.callNext(counter);
-    			break;
-    		case "advance":
-    			
-    			break;
-    		case "no-show":
-    			
-    			break;
-    	}
-    	
-    	return "redirect:/OperateQueue/current-counter";
-    }
 
     @GetMapping("/ViewSelectedQueue/{queueId}")
     public String viewSelectedQueue(@PathVariable("queueId") Long queueId,Model model) {
@@ -192,7 +167,7 @@ public class OperateQueueController {
         // List<QueuePosition> qps = queuePositionService.getActiveSortedQueuePositions(queueId);
         List<QueuePosition> qps = queuePositionService.getAllSortedQueuePositions(queueId);
 
-        model.addAttribute("vendor","cVendor.getName()");
+        model.addAttribute("vendor",cVendor.getName());
         model.addAttribute("state",queue.getState().getDisplayValue());
         model.addAttribute("queue",queue);
         model.addAttribute("positions",qps);
@@ -214,10 +189,71 @@ public class OperateQueueController {
         Queue queue = queueService.findQueue(queueId);
         model.addAttribute("noShowList",noShowQP);
         model.addAttribute("queue",queue);
-        model.addAttribute("vendor","cVendor.getName()");
+        model.addAttribute("vendor",cVendor.getName());
         model.addAttribute("branches",cBranches);
         model.addAttribute("queues",cQueues);
         return "branch-operator/noShowListPage";
     }
 
+    @GetMapping("/my-counter")
+    public String myCounter(Authentication authentication, Model model, RedirectAttributes redirAttr) {
+    	MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+    	var counter = queueService.findCounterByUserId(myUserDetails.getId());
+    	
+    	if (counter == null) {
+    		alertService.createAlert(AlertColour.YELLOW, "You are not signed into a counter", redirAttr);
+    		return "redirect:/OperateQueue/ViewQueue";
+    	}
+    	
+    	List<ViewQueuePosition> viewQueuePositions = queueService.generateViewQueuePositions(counter);
+    	
+    	model.addAttribute("counter", counter);
+    	model.addAttribute("viewQueuePositions", viewQueuePositions);        
+        model.addAttribute("queueLength", viewQueuePositions.size());
+        return "branch-operator/counter";
+    }
+
+    @PostMapping("/my-counter")
+    public String callNextNumber(@RequestParam("command") String command, Authentication authentication, RedirectAttributes redirAttr) {
+        User user = ((MyUserDetails) authentication.getPrincipal()).getUser();
+        Counter counter = queueService.findCounterByUser(user);
+
+        if (counter == null) {
+            alertService.createAlert(AlertColour.RED, "An error occurred. Please try again.", redirAttr);
+            return "redirect:/OperateQueue/my-counter";
+        }        
+        
+        switch (command) {
+        	case "next":
+                String nextNumber = queueService.callNextNumber(counter);
+                if (nextNumber == null) {
+                    alertService.createAlert(AlertColour.RED, "Failed to call next number. No people in queue.", redirAttr);
+                } else {
+                    alertService.createAlert(AlertColour.GREEN, "Called queue number: " + nextNumber, redirAttr);
+                }
+                break;
+        	case "no-show":
+                String noShowNumber = queueService.noShow(counter);
+                if (noShowNumber == null) {
+                    alertService.createAlert(AlertColour.RED, "An error occurred. Please try again.", redirAttr);
+                } else {
+                    alertService.createAlert(AlertColour.GREEN, "Queue number (" + noShowNumber + ") did not show up. You may call the next queue number.", redirAttr);
+                }        		
+        		break;
+        }
+        
+        return "redirect:/OperateQueue/my-counter";
+    }
+
+    @PostMapping("/no-show")
+    public String noShow(Authentication authentication, RedirectAttributes redirAttr) {
+        User user = ((MyUserDetails) authentication.getPrincipal()).getUser();
+        Counter counter = queueService.findCounterByUser(user);
+        if (counter == null) {
+            alertService.createAlert(AlertColour.RED, "An error occurred. Please try again.", redirAttr);
+            return "redirect:/OperateQueue/my-counter";
+        }
+
+        return "redirect:/OperateQueue/my-counter";
+    }
 }

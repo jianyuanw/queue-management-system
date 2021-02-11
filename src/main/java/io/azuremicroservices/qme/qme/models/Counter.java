@@ -28,10 +28,10 @@ public class Counter {
 	private User user;
 	
 	@OneToOne
-	private QueuePosition queuePosition;
+	private QueuePosition currentlyServingQueueNumber;
 	
 	private String name;
 	
 	private String description;
-
+	
 }

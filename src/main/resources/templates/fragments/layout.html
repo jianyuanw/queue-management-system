@@ -54,9 +54,10 @@
                             </div>
                             <div class="modal-body mb-0 text-center">
                                 <a th:href="@{/client}"><h2>Home</h2></a>
-                                <a href="#"><h2>My Queues</h2></a>
+                                <a th:href="@{/client/my-queues}"><h2>My Queues</h2></a>
                                 <a href="#"><h2>Messages</h2></a>
                                 <a href="#"><h2>Contact Us</h2></a>
+                                <a th:href="@{/logout}"><h2>Logout</h2></a>
                             </div>
                         </div>
                     </div>
@@ -146,7 +147,7 @@
 		                        </a>
 		                    </li>
 		                    <li class="nav-item">
-		                        <a class="nav-link" href="#">Current Counter</a>
+		                        <a class="nav-link" href="/OperateQueue/my-counter">Current Counter</a>
 		                    </li>
 		                </ul>
 		                <ul class="navbar-nav ml-auto nav-flex-icons">

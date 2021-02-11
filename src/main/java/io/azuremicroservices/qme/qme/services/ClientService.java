@@ -1,5 +1,6 @@
 package io.azuremicroservices.qme.qme.services;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -129,9 +130,16 @@ public class ClientService {
 							x.getState() == State.ACTIVE_REQUEUE)
 					.filter(x -> x.getPosition() < queuePosition.getPosition())
 					.count();
+    		int personsInLine = (int) queuePosition.getQueue()
+					.getQueuePositions()
+					.stream()
+					.filter(x -> x.getState() == State.ACTIVE_QUEUE ||
+							x.getState() == State.ACTIVE_REQUEUE)
+					.count();
     		list.add(new MyQueueDto(
     				queuePosition.getQueue(),
 					personsInFront,
+					personsInLine,
 					queueEstimateService.estimateQueueTime(queuePosition.getQueue().getId().toString()) * personsInFront,
 					queuePosition.getQueueNumber(),
 					queuePosition.getState(),
@@ -139,5 +147,23 @@ public class ClientService {
 		}
 
     	return list;
+	}
+
+	public void rejoinQueue(Long queuePositionId) {
+    	QueuePosition queuePosition = queuePositionRepo.findById(queuePositionId).get();
+
+    	int lastPosition = queuePosition.getQueue()
+				.getQueuePositions()
+				.stream()
+				.filter(x -> x.getState() == State.ACTIVE_QUEUE ||
+						x.getState() == State.ACTIVE_REQUEUE)
+				.mapToInt(QueuePosition::getPosition)
+				.max()
+				.getAsInt();
+
+    	queuePosition.setState(State.ACTIVE_REQUEUE);
+    	queuePosition.setStateChangeTime(LocalDateTime.now());
+    	queuePosition.setPosition(lastPosition + 1);
+    	queuePositionRepo.save(queuePosition);
 	}
 }

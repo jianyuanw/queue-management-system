@@ -108,7 +108,14 @@ public class ClientController {
     	
     	alertService.createAlert(AlertColour.GREEN, "Successfully left queue", redirAttr);
     	return "redirect:/client";
-    }    
+    }
+
+    @PostMapping("/rejoin-queue")
+    public String rejoinQueue(@RequestParam String queuePositionId, RedirectAttributes redirAttr) {
+        clientService.rejoinQueue(Long.valueOf(queuePositionId));
+        alertService.createAlert(AlertColour.GREEN, "Successfully rejoined queue", redirAttr);
+        return "redirect:/client/my-queues";
+    }
 
     @GetMapping("/search/branch")
     public String viewBranchQueues(@RequestParam String id, Model model) {

@@ -31,4 +31,5 @@ public class Counter {
 	
 	private String description;
 
+	private String currentlyServingQueueNumber;
 }

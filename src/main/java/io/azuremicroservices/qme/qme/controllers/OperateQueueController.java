@@ -179,7 +179,30 @@ public class OperateQueueController {
     }
 
     @GetMapping("/my-counter")
-    public String myCounter() {
+    public String myCounter(Authentication authentication, Model model) {
+        User user = ((MyUserDetails) authentication.getPrincipal()).getUser();
+        Counter counter = queueService.findCounterByUser(user);
+        int queueLength = queueService.findQueueLengthByCounter(counter);
+
+        model.addAttribute("counter", counter);
+        model.addAttribute("queueLength", queueLength);
         return "branch-operator/counter";
+    }
+
+    @PostMapping("/call-next-number")
+    public String callNextNumber(Authentication authentication, RedirectAttributes redirAttr) {
+        User user = ((MyUserDetails) authentication.getPrincipal()).getUser();
+        Counter counter = queueService.findCounterByUser(user);
+        if (counter == null) {
+            alertService.createAlert(AlertColour.RED, "An error occurred. Please try again.", redirAttr);
+            return "redirect:/OperateQueue/my-counter";
+        }
+        String nextNumber = queueService.callNextNumber(counter);
+        if (nextNumber == null) {
+            alertService.createAlert(AlertColour.RED, "Failed to call next number. No people in queue.", redirAttr);
+        } else {
+            alertService.createAlert(AlertColour.GREEN, "Called queue number: " + nextNumber, redirAttr);
+        }
+        return "redirect:/OperateQueue/my-counter";
     }
 }

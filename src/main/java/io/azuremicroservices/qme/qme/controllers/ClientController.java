@@ -113,8 +113,12 @@ public class ClientController {
 
     @PostMapping("/rejoin-queue")
     public String rejoinQueue(@RequestParam String queuePositionId, RedirectAttributes redirAttr) {
-        clientService.rejoinQueue(Long.valueOf(queuePositionId));
-        alertService.createAlert(AlertColour.GREEN, "Successfully rejoined queue", redirAttr);
+        boolean rejoined = clientService.rejoinQueue(Long.valueOf(queuePositionId));
+        if (rejoined) {
+            alertService.createAlert(AlertColour.GREEN, "Successfully rejoined queue", redirAttr);
+        } else {
+            alertService.createAlert(AlertColour.RED, "Queue closed. Failed to rejoin.", redirAttr);
+        }
         return "redirect:/client/my-queues";
     }
 

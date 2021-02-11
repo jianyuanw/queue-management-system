@@ -159,8 +159,12 @@ public class ClientService {
     	return list;
 	}
 
-	public void rejoinQueue(Long queuePositionId) {
+	public boolean rejoinQueue(Long queuePositionId) {
     	QueuePosition queuePosition = queuePositionRepo.findById(queuePositionId).get();
+
+    	if (queuePosition.getQueue().getState() == Queue.State.CLOSED) {
+    		return false;
+		}
 
     	int lastPosition = queuePosition.getQueue()
 				.getQueuePositions()
@@ -175,5 +179,7 @@ public class ClientService {
     	queuePosition.setStateChangeTime(LocalDateTime.now());
     	queuePosition.setPosition(lastPosition + 1);
     	queuePositionRepo.save(queuePosition);
+
+    	return true;
 	}
 }

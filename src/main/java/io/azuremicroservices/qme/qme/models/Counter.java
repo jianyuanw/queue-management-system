@@ -27,6 +27,9 @@ public class Counter {
 	@OneToOne
 	private User user;
 	
+	@OneToOne
+	private QueuePosition queuePosition;
+	
 	private String name;
 	
 	private String description;

@@ -1,5 +1,6 @@
 package io.azuremicroservices.qme.qme.services;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import org.hibernate.procedure.UnknownSqlResultSetMappingException;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.stereotype.Service;
@@ -18,8 +20,10 @@ import io.azuremicroservices.qme.qme.models.Branch;
 import io.azuremicroservices.qme.qme.models.Counter;
 import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.models.QueuePosition;
+import io.azuremicroservices.qme.qme.models.QueuePosition.State;
 import io.azuremicroservices.qme.qme.models.User;
 import io.azuremicroservices.qme.qme.models.Vendor;
+import io.azuremicroservices.qme.qme.models.ViewQueuePosition;
 import io.azuremicroservices.qme.qme.repositories.CounterRepository;
 import io.azuremicroservices.qme.qme.repositories.QueuePositionRepository;
 import io.azuremicroservices.qme.qme.repositories.QueueRepository;
@@ -206,5 +210,25 @@ public class QueueService {
 
 	public Optional<Counter> findCounterById(Long counterId) {
 		return counterRepo.findById(counterId);
+	}
+
+	public Counter findCounterByUserId(Long id) {
+		return counterRepo.findByUser_Id(id);
+	}
+
+	@Transactional(readOnly = true)
+	public List<ViewQueuePosition> generateViewQueuePositions(Counter counter) {
+		List<ViewQueuePosition> viewQueuePositions = new ArrayList<>();
+		Queue queue = counter.getQueue();
+		State[] activeStates = new State[] { State.ACTIVE_QUEUE, State.ACTIVE_REQUEUE };
+		Integer count = 1;
+		
+		for (QueuePosition qp : queuePositionRepo.findAllByQueue_IdAndStateInOrderByPositionAscPriorityDesc(queue.getId(), activeStates)) {
+			viewQueuePositions.add(new ViewQueuePosition(
+				qp, count++, Duration.between(qp.getQueueStartTime(), LocalDateTime.now()).toMinutes()
+			));
+		}
+		
+		return viewQueuePositions;
 	}	
 }

@@ -12,7 +12,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +25,7 @@ import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.models.QueuePosition;
 import io.azuremicroservices.qme.qme.models.User;
 import io.azuremicroservices.qme.qme.models.Vendor;
+import io.azuremicroservices.qme.qme.models.ViewQueuePosition;
 import io.azuremicroservices.qme.qme.services.AlertService;
 import io.azuremicroservices.qme.qme.services.AlertService.AlertColour;
 import io.azuremicroservices.qme.qme.services.PermissionService;
@@ -139,7 +139,49 @@ public class OperateQueueController {
     	queueService.signOutCounter(myUserDetails.getUser(), counter.get());
     	alertService.createAlert(AlertColour.GREEN, "Signed out of counter", redirAttr);
     	return "redirect:/OperateQueue/ViewQueue";
-    }    
+    }
+    
+    @GetMapping("/current-counter")
+    public String initCurrentCounter(Model model, Authentication authentication, RedirectAttributes redirAttr) {
+    	MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+    	var counter = queueService.findCounterByUserId(myUserDetails.getId());
+    	
+    	if (counter == null) {
+    		alertService.createAlert(AlertColour.YELLOW, "You are not signed into a counter", redirAttr);
+    		return "redirect:/OperateQueue/ViewQueue";
+    	}
+    	
+    	List<ViewQueuePosition> viewQueuePositions = queueService.generateViewQueuePositions(counter);
+    	model.addAttribute("counter", counter);
+    	model.addAttribute("viewQueuePositions", viewQueuePositions);
+    	
+    	return "branch-operator/current-counter";
+    }
+    
+    @PostMapping("current-counter")
+    public String operateCurrentCounter(@RequestParam("command") String command, Model model, Authentication authentication, RedirectAttributes redirAttr) {
+    	MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+    	var counter = queueService.findCounterByUserId(myUserDetails.getId());
+    	
+    	if (counter == null) {
+    		alertService.createAlert(AlertColour.YELLOW, "You are not signed into a counter", redirAttr);
+    		return "redirect:/OperateQueue/ViewQueue";
+    	}
+    	
+    	switch (command) {
+    		case "call":
+    			queuePositionService.callNext(counter);
+    			break;
+    		case "advance":
+    			
+    			break;
+    		case "no-show":
+    			
+    			break;
+    	}
+    	
+    	return "redirect:/OperateQueue/current-counter";
+    }
 
     @GetMapping("/ViewSelectedQueue/{queueId}")
     public String viewSelectedQueue(@PathVariable("queueId") Long queueId,Model model) {

@@ -46,4 +46,8 @@ public interface QueuePositionRepository extends JpaRepository<QueuePosition, Lo
 	public List<QueuePosition> findAllByUser_Id(Long userId);
 
 	public Integer countByQueue_IdAndStateIn(Long queueId, State[] states);
+
+	public List<QueuePosition> findAllByQueue_IdAndStateInOrderByPositionAscPriorityDesc(Long queueId, State[] activeStates);
+
+	public QueuePosition findTopByQueue_IdAndStateInOrderByPositionAscPriorityDesc(Long id, State[] activeStates);
 }

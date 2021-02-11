@@ -11,12 +11,16 @@ import java.util.stream.Collectors;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import io.azuremicroservices.qme.qme.models.Branch;
+import io.azuremicroservices.qme.qme.models.Counter;
 import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.models.QueuePosition;
+import io.azuremicroservices.qme.qme.models.User;
 import io.azuremicroservices.qme.qme.models.Vendor;
+import io.azuremicroservices.qme.qme.repositories.CounterRepository;
 import io.azuremicroservices.qme.qme.repositories.QueuePositionRepository;
 import io.azuremicroservices.qme.qme.repositories.QueueRepository;
 
@@ -25,14 +29,16 @@ public class QueueService {
 
     private final QueuePositionRepository queuePositionRepo;
     private final QueueRepository queueRepo;
+    private final CounterRepository counterRepo;
 
     private final List<SseEmitter> emitters = new ArrayList<>();
     private final AsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
 
     public QueueService(QueuePositionRepository queuePositionRepo,
-                        QueueRepository queueRepo) {
+                        QueueRepository queueRepo, CounterRepository counterRepo) {
         this.queuePositionRepo = queuePositionRepo;
         this.queueRepo = queueRepo;
+        this.counterRepo = counterRepo;
     }
 
     public List<QueuePosition> findActiveQueuePositionsForPrototype(Long queueId) {
@@ -41,6 +47,22 @@ public class QueueService {
                 .stream()
                 .filter(x -> x.getState() == QueuePosition.State.ACTIVE_QUEUE ||
                         x.getState() == QueuePosition.State.ACTIVE_REQUEUE)
+                .collect(Collectors.toList());
+    }
+
+    public List<QueuePosition> findNoShowStatusQueuePositions(Long queueId) {
+        Queue queue = queueRepo.findById(queueId).get();
+        return queuePositionRepo.findAllByQueue(queue)
+                .stream()
+                .filter(x -> x.getState() == QueuePosition.State.INACTIVE_NO_SHOW)
+                .collect(Collectors.toList());
+    }
+
+    public List<QueuePosition> findActiveRejoinStatusQueuePositions(Long queueId) {
+        Queue queue = queueRepo.findById(queueId).get();
+        return queuePositionRepo.findAllByQueue(queue)
+                .stream()
+                .filter(x -> x.getState() == QueuePosition.State.ACTIVE_REQUEUE)
                 .collect(Collectors.toList());
     }
 
@@ -157,4 +179,32 @@ public class QueueService {
         Queue queue = queueRepo.findById(queueId).get();
         return queuePositionRepo.findAllByQueue(queue);
     }
+
+    @Transactional
+	public boolean signInCounter(User user, Counter counter) {
+		if (counterRepo.findByUser_Id(user.getId()) != null) {
+			return false;
+		} else {
+			counterRepo.findById(counter.getId())
+				.ifPresent(c -> c.setUser(user));
+		}
+		
+		return true;
+	}
+	
+    @Transactional
+	public boolean signOutCounter(User user, Counter counter) {
+		if (counterRepo.findByUser_Id(user.getId()) == null) {
+			return false;
+		} else {
+			counterRepo.findById(counter.getId())
+				.ifPresent(c -> c.setUser(null));
+		}
+		
+		return true;
+	}
+
+	public Optional<Counter> findCounterById(Long counterId) {
+		return counterRepo.findById(counterId);
+	}	
 }

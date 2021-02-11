@@ -10,4 +10,10 @@ import io.azuremicroservices.qme.qme.models.Queue;
 public interface CounterRepository extends JpaRepository<Counter,Long> {
 	
 	List<Counter> findAllByQueue_IdIn(List<Long> queueIds);
+
+	Counter findByUser_Id(Long id);
+
+	List<Counter> findAllByQueue_Id(Long id);
+
+	List<Counter> findAllByQueue_IdAndUser_IdNull(Long id);
 }

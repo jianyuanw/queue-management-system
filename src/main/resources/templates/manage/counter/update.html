@@ -42,12 +42,6 @@
 	            <p class="text-danger text-left" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
 	        </div>
 	        
-	        <div class="col form-group">
-	        	<label class="form-label" for="displayName">Display Name</label>
-	            <input type="text" id="displayName" class="form-control" th:field="*{displayName}" required>
-	            <p class="text-danger text-left" th:if="${#fields.hasErrors('displayName')}" th:errors="*{displayName}"></p>
-	        </div>
-	        
 	    </div>
 	    
 	    <button class="btn btn-info my-4 btn-block" type="submit">Submit</button>

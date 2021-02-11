@@ -76,14 +76,15 @@ public class ClientController {
     }
     
     @GetMapping("/branch/{branchId}")
-    public String viewBranch(Model model, @PathVariable("branchId") String branchId, RedirectAttributes redirAttr) {
+    public String viewBranch(Model model, @PathVariable("branchId") String branchId, Authentication authentication, RedirectAttributes redirAttr) {
+    	MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
     	List<Queue> queues = clientService.findQueuesByBranchId(branchId);
     	
     	if (queues == null || queues.size() == 0) {
     		alertService.createAlert(AlertColour.YELLOW, "Branch not found", redirAttr);
     	}
     	
-    	List<ViewQueue> viewQueues = clientService.generateViewQueues(queues);
+    	List<ViewQueue> viewQueues = clientService.generateViewQueues(userDetails.getId(), queues);
     	
     	model.addAttribute("branch", clientService.findBranchById(branchId));
     	model.addAttribute("viewQueues", viewQueues);

@@ -5,6 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import lombok.Data;
@@ -23,9 +24,10 @@ public class Counter {
 	@ManyToOne
 	private Queue queue;
 	
-	private String name;
+	@OneToOne
+	private User user;
 	
-	private String displayName;
+	private String name;
 	
 	private String description;
 

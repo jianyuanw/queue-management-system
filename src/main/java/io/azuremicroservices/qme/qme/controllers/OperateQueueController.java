@@ -1,21 +1,36 @@
 package io.azuremicroservices.qme.qme.controllers;
 
-import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
-import io.azuremicroservices.qme.qme.models.*;
-import io.azuremicroservices.qme.qme.models.Queue;
-import io.azuremicroservices.qme.qme.services.AccountService;
-import io.azuremicroservices.qme.qme.services.PermissionService;
-import io.azuremicroservices.qme.qme.services.QueuePositionService;
-import io.azuremicroservices.qme.qme.services.QueueService;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.*;
+import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
+import io.azuremicroservices.qme.qme.models.Branch;
+import io.azuremicroservices.qme.qme.models.Counter;
+import io.azuremicroservices.qme.qme.models.Queue;
+import io.azuremicroservices.qme.qme.models.QueuePosition;
+import io.azuremicroservices.qme.qme.models.User;
+import io.azuremicroservices.qme.qme.models.Vendor;
+import io.azuremicroservices.qme.qme.services.AlertService;
+import io.azuremicroservices.qme.qme.services.AlertService.AlertColour;
+import io.azuremicroservices.qme.qme.services.PermissionService;
+import io.azuremicroservices.qme.qme.services.QueuePositionService;
+import io.azuremicroservices.qme.qme.services.QueueService;
 
 
 @Controller
@@ -28,6 +43,9 @@ public class OperateQueueController {
     private QueueService queueService;
     @Autowired
     private QueuePositionService queuePositionService;
+    @Autowired
+    private AlertService alertService;
+    
 
     private User cUser;
     private Vendor cVendor;
@@ -44,8 +62,8 @@ public class OperateQueueController {
 
     public void pullUpdatedUserVendorBranchesQueues() {
         cUser = getCurrentUser();
-        cVendor = null;    // currently not figure out how to find vendor for non vendoradmin user
         cBranches = permissionService.getBranchPermissions(cUser.getId());
+        cVendor = permissionService.getVendorPermission(cUser.getId());
         cQueues = permissionService.getQueuePermissions(cUser.getId());
         cUniqueBranches = new HashSet<>(cBranches);
     }
@@ -55,39 +73,84 @@ public class OperateQueueController {
     }
 
     @GetMapping("/ViewQueue")
-    public String operatorViewQueue(Model model) {
-        pullUpdatedUserVendorBranchesQueues();
+    public String operatorViewQueue(Model model, Authentication authentication, RedirectAttributes redirAttr) {
+        MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+        List<Queue> queues = permissionService.getQueuePermissions(myUserDetails.getId());
+        
+        HashMap<Queue, Integer> queueIdWithCurrentPax = queuePositionService.findAllQueuePositionsInQueues(queues);
 
-        HashMap<Long, Integer> queueIdWithCurrentPax = new HashMap<>();
-        for (Queue queue: cQueues) {
-            List<QueuePosition> queuePositions = queueService.findActiveQueuePositionsForPrototype(queue.getId());
-            int pax = queuePositions.size();
-            queueIdWithCurrentPax.put(queue.getId(),pax);
+        if (queues.size() < 1) {
+        	alertService.createAlert(AlertColour.YELLOW, "You do not have any queue permissions", redirAttr);
+        	return "redirect:/";
         }
-
-        model.addAttribute("vendor","cVendor.getName()");
-        model.addAttribute("queuesWithPax", queueIdWithCurrentPax);
-        model.addAttribute("queues",cQueues);
-        model.addAttribute("branches",cUniqueBranches);
-        return "branch-operator/viewQueuePage";
+        
+        List<Branch> branches = queues.stream().map(Queue::getBranch).distinct().collect(Collectors.toList());
+        Map<Long, List<Counter>> queueCounters = queuePositionService.findAllCountersByQueueId(queues);
+        Counter counter = queuePositionService.findCounterByUserId(myUserDetails.getId());        
+        
+        model.addAttribute("vendor", queues.get(0).getBranch().getVendor());
+        model.addAttribute("queueMap", queueIdWithCurrentPax);
+        model.addAttribute("branches", branches);
+        model.addAttribute("counter", counter);
+        model.addAttribute("counters", queueCounters);
+        return "branch-operator/queues";
     }
 
-    @PostMapping("/UpdateQueueState/{queueId}")
-    public String updateQueueState(@PathVariable("queueId") Long queueId) {
+    @GetMapping("/UpdateQueueState/{queueId}")
+    public String updateQueueState(@PathVariable("queueId") Long queueId, Authentication authentication, RedirectAttributes redirAttr) {
+    	MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+    	var queue = queueService.findQueueById(queueId);
+    	
+    	if (queue.isEmpty() || !permissionService.authenticateQueue(myUserDetails.getUser(), queueService.findQueue(queueId))) {
+    		alertService.createAlert(AlertColour.YELLOW, "Queue not found", redirAttr);
+    		return "redirect:/OperateQueue";
+    	}
+    	
         queueService.updateQueueState(queueId);
+        alertService.createAlert(AlertColour.GREEN, "Queue state updated", redirAttr);
         return "redirect:/OperateQueue/ViewQueue";
     }
+    
+    @PostMapping("/sign-in")
+    public String signInCounter(@RequestParam("counterId") Long counterId, Authentication authentication, RedirectAttributes redirAttr) {
+    	MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+    	var counter = queueService.findCounterById(counterId);
+    	
+    	if (counter.isEmpty() || !permissionService.authenticateQueue(myUserDetails.getUser(), counter.get().getQueue())) {
+    		alertService.createAlert(AlertColour.YELLOW, "Counter not found", redirAttr);
+    		return "redirect:/OperateQueue/ViewQueue";
+    	}
+    	
+    	queueService.signInCounter(myUserDetails.getUser(), counter.get());
+    	alertService.createAlert(AlertColour.GREEN, "Signed in to counter", redirAttr);
+    	return "redirect:/OperateQueue/ViewQueue";
+    }
+    
+    @PostMapping("/sign-out")
+    public String signOutCounter(@RequestParam("counterId") Long counterId, Authentication authentication, RedirectAttributes redirAttr) {
+    	MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+    	var counter = queueService.findCounterById(counterId);
+    	
+    	if (counter.isEmpty() || !permissionService.authenticateQueue(myUserDetails.getUser(), counter.get().getQueue())) {
+    		alertService.createAlert(AlertColour.YELLOW, "Counter not found", redirAttr);
+    		return "redirect:/OperateQueue/ViewQueue";
+    	}
+    	
+    	queueService.signOutCounter(myUserDetails.getUser(), counter.get());
+    	alertService.createAlert(AlertColour.GREEN, "Signed out of counter", redirAttr);
+    	return "redirect:/OperateQueue/ViewQueue";
+    }    
 
     @GetMapping("/ViewSelectedQueue/{queueId}")
     public String viewSelectedQueue(@PathVariable("queueId") Long queueId,Model model) {
+
         pullUpdatedUserVendorBranchesQueues();
-
         Queue queue = queueService.findQueue(queueId);
-        // List<QueuePosition> qps = queueService.findActiveQueuePositionsForPrototype(queueId);
-        List<QueuePosition> qps = queueService.findAllQueuePositions(queueId);
-        sortQueuePositionsByPriorityAndPosition(qps);
 
-        model.addAttribute("vendor","cVendor.getName()");
+        // List<QueuePosition> qps = queuePositionService.getActiveSortedQueuePositions(queueId);
+        List<QueuePosition> qps = queuePositionService.getAllSortedQueuePositions(queueId);
+
+        model.addAttribute("vendor",cVendor.getName());
         model.addAttribute("state",queue.getState().getDisplayValue());
         model.addAttribute("queue",queue);
         model.addAttribute("positions",qps);
@@ -101,24 +164,18 @@ public class OperateQueueController {
         return "redirect:/OperateQueue/ViewSelectedQueue/"+queueId;
     }
 
-    public void sortQueuePositionsByPriorityAndPosition(List<QueuePosition> qps) {
-        qps.sort(new Comparator<QueuePosition>() {
-            @Override
-            public int compare(QueuePosition o1, QueuePosition o2) {
-                if(o1.getPriority() > o2.getPriority())
-                    return -1;
-                else if (o1.getPriority() < o2.getPriority())
-                    return 1;
-                else {
-                    if(o1.getPosition() < o2.getPosition())
-                        return -1;
-                    else if (o1.getPosition() > o2.getPosition())
-                        return 1;
-                    else
-                        return 0;
-                }
-            }
-        });
+    @GetMapping("/NoShow/{queueId}")
+    public String viewNoShowList(@PathVariable("queueId")Long queueId, Model model) {
+
+        pullUpdatedUserVendorBranchesQueues();
+        List<QueuePosition> noShowQP = queueService.findNoShowStatusQueuePositions(queueId);
+        Queue queue = queueService.findQueue(queueId);
+        model.addAttribute("noShowList",noShowQP);
+        model.addAttribute("queue",queue);
+        model.addAttribute("vendor",cVendor.getName());
+        model.addAttribute("branches",cBranches);
+        model.addAttribute("queues",cQueues);
+        return "branch-operator/noShowListPage";
     }
 
 }

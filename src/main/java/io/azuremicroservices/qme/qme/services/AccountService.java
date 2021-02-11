@@ -128,10 +128,11 @@ public class AccountService {
     @Transactional
     public void changePerspective(MyUserDetails currentDetails, Role perspective) {
         currentDetails.setPerspective(perspective);
-//    	User user = this.findUserByUsername(currentDetails.getUsername());
-//    	if (user.getRolePerspectives().containsKey(perspective.getDisplayValue())) {
-//    		user.setPerspective(perspective);
-//    	}
+        // Uncomment to make perspective change persistent
+    	//User user = this.findUserByUsername(currentDetails.getUsername());
+    	//if (user.getRolePerspectives().containsKey(perspective.getDisplayValue())) {
+    	//	user.setPerspective(perspective);
+    	//}
         // userRepo.save(user);
     }
 

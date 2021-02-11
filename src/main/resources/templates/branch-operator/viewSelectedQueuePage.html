@@ -6,9 +6,35 @@
 <head>
     <title>qMe - Branch Operator</title>
     <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+
+    <style>
+        .clickable {
+            cursor: pointer;
+        }
+    </style>
+
+    <script type="text/javascript">
+        var obj = document.getElementById("selectedQueuePageTable");
+        var rowNum = obj.rows.length;
+
+        try{
+            for(var i=1;i<rowNum;i++){
+                obj.rows[i].cells[1].innerHTML = (i).toString();
+            }
+        }
+        catch(e)
+        {
+            alert(e.description);
+        }
+    </script>
+
+
 </head>
 <body>
+
 <div th:replace="fragments/layout.html :: navbar"></div>
+
+<h1>Notice: for easy testing, web page will display all queue positions no matter active or not.</h1>
 
 <p><b>Vendor: </b><span th:text="${vendor}">VENDOR</span></p>
 
@@ -23,23 +49,23 @@
     <input type="submit" value="View No-show List" />
 </form>
 
-<table id="selectedQueuePageTable">
+<table id="selectedQueuePageTable" class="table table-striped table-bordered">
     <thead>
     <tr>
-        <td>Queue Number</td>
-        <td>Position</td>
-        <td>Duration In Queue</td>
-        <td>Rejoined?</td>
-        <td></td>
+        <td >Queue Number</td>
+        <td >Position</td>
+        <td >Duration In Queue</td>
+        <td >Rejoined?</th>
+        <td ></td>
     </tr>
     </thead>
     <tbody th:each="position:${positions}">
-    <tr>
+    <tr >
         <td ><span th:text="${position.getQueueNumber()}">QueueNumber</span></td>
-        <td><span >postion</span></td>
-        <td><span >duration</span></td>
-        <td><span th:if="${position.getState().ordinal()==1}" text="Yes">Yes</span><span th:if="${position.getState().ordinal()!=1}" text="No">No</span></td>
-        <td>
+        <td ><span >postion</span></td>
+        <td ><span >duration</span></td>
+        <td ><span th:if="${position.getState().ordinal()==1}" text="Yes">Yes</span><span th:if="${position.getState().ordinal()!=1}" text="No">No</span></td>
+        <td >
             <form method="get" th:action="@{/OperateQueue/ViewSelectedQueue/{qId}/{rId}(qId=${queue.getId()},rId=${position.getId()})}" >
                 <input type="submit" value="Reassign Position" />
             </form>
@@ -47,20 +73,7 @@
     </tr>
     </tbody>
 </table>
-<script type="text/javascript">
-    var obj = document.getElementById("selectedQueuePageTable");
-    var rowNum = obj.rows.length;
 
-    try{
-        for(var i=1;i<rowNum;i++){
-            obj.rows[i].cells[1].innerHTML = (i).toString();
-        }
-    }
-    catch(e)
-    {
-        alert(e.description);
-    }
-</script>
 <div th:replace="fragments/layout.html :: footer"></div>
 </body>
 </html>

@@ -1,5 +1,6 @@
 package io.azuremicroservices.qme.qme.repositories;
 
+import io.azuremicroservices.qme.qme.models.Branch;
 import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.models.QueuePosition;
 import io.azuremicroservices.qme.qme.models.QueuePosition.State;
@@ -39,7 +40,7 @@ public interface QueuePositionRepository extends JpaRepository<QueuePosition, Lo
     @Query("SELECT qp FROM QueuePosition qp WHERE qp.queue = :queue")
     public List<QueuePosition> findAllByQueue(@Param("queue") Queue queue);
 
-	public List<QueuePosition> findAllByQueueAndStateIn(Queue queue, State[] activeStates);
+	public List<QueuePosition> findAllByQueueAndStateIn(Queue queue, List<State> activeStates);
 
 	public List<QueuePosition> findTop10ByQueue_IdAndStateEqualsOrderByQueueStartTimeDesc(Long queueId, State state);
 
@@ -52,4 +53,9 @@ public interface QueuePositionRepository extends JpaRepository<QueuePosition, Lo
 	public QueuePosition findTopByQueue_IdAndStateInOrderByPositionAscPriorityDesc(Long id, State[] activeStates);
 	
 	public QueuePosition findByQueueNumber(String queueNumber);
+
+	public Integer countByQueue_Id(Long queueId);
+
+	public Integer countByQueueAndStateInAndPositionLessThanEqualAndPriorityGreaterThan(Queue queue,
+			List<State> activeStates, QueuePosition queuePosition, Integer priority);
 }

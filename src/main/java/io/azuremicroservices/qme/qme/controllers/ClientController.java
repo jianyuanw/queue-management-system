@@ -98,7 +98,7 @@ public class ClientController {
     	manageUserQueueService.enterQueue(myUserDetails.getId().toString(), queueId);
     	
     	alertService.createAlert(AlertColour.GREEN, "Successfully entered queue", redirAttr);
-    	return "redirect:/client";
+    	return "redirect:/client/my-queues";
     }
     
     @PostMapping("/leave-queue")

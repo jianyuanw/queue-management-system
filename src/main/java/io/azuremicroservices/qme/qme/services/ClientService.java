@@ -75,15 +75,19 @@ public class ClientService {
 
 	public List<ViewQueue> generateViewQueues(Long userId, List<Queue> queues) {
 		List<ViewQueue> viewQueues = new ArrayList<>();
-		State[] activeStates = new State[] { State.ACTIVE_QUEUE, State.ACTIVE_REQUEUE };				
+		List<State> activeStates = new ArrayList<>();
+		activeStates.add(State.ACTIVE_QUEUE);
+		activeStates.add(State.ACTIVE_REQUEUE);
+					
 		List<QueuePosition> userQueues = queuePositionRepo.findAllByUser_Id(userId);
 
 		for (Queue queue : queues) {
 			Integer inLine = queuePositionRepo.findAllByQueueAndStateIn(queue, activeStates).size();
 			Integer waitingTime = queueEstimateService.estimateQueueTime(queue.getId().toString());
 			boolean userInQueue = userQueues.stream()
-					.map(QueuePosition::getQueue)
-					.collect(Collectors.toList())
+					.filter(queuePosition -> activeStates.contains(queuePosition.getState()))
+					.map(QueuePosition::getQueue)					
+					.collect(Collectors.toList())					
 					.contains(queue);
 
 			viewQueues.add(new ViewQueue(queue, inLine, waitingTime, userInQueue));
@@ -110,8 +114,11 @@ public class ClientService {
     }
 
 	public List<MyQueueDto> generateMyQueueDto(Long userId) {
-    	List<MyQueueDto> list = new ArrayList<>();
-
+    	List<MyQueueDto> list = new ArrayList<>();    	
+    	List<State> activeStates = new ArrayList<>();
+    	activeStates.add(State.ACTIVE_QUEUE);
+    	activeStates.add(State.ACTIVE_REQUEUE);
+    	
     	List<QueuePosition> currentQueuePositions = userRepo.findById(userId)
 				.get()
 				.getQueuePositions()
@@ -124,19 +131,9 @@ public class ClientService {
 				.collect(Collectors.toList());
 
     	for (QueuePosition queuePosition : currentQueuePositions) {
-    		int personsInFront = (int) queuePosition.getQueue()
-					.getQueuePositions()
-					.stream()
-					.filter(x -> x.getState() == State.ACTIVE_QUEUE ||
-							x.getState() == State.ACTIVE_REQUEUE)
-					.filter(x -> x.getPosition() < queuePosition.getPosition())
-					.count();
-    		int personsInLine = (int) queuePosition.getQueue()
-					.getQueuePositions()
-					.stream()
-					.filter(x -> x.getState() == State.ACTIVE_QUEUE ||
-							x.getState() == State.ACTIVE_REQUEUE)
-					.count();
+    		int personsInLine = queuePositionRepo.findAllByQueueAndStateIn(queuePosition.getQueue(), activeStates).size();
+    		// int personsInLine = queuePositionRepo.countByQueue_IdAndStateIn(queuePosition.getQueue().getId(), new State[] { State.ACTIVE_QUEUE, State.ACTIVE_REQUEUE});
+    		int personsInFront = queuePositionRepo.countByQueueAndStateInAndPositionLessThanEqualAndPriorityGreaterThan(queuePosition.getQueue(), activeStates, queuePosition, queuePosition.getPriority());
     		list.add(new MyQueueDto(
     				queuePosition.getQueue(),
 					personsInFront,

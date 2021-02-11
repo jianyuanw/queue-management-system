@@ -2,10 +2,14 @@ package io.azuremicroservices.qme.qme.services;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
-import org.hibernate.procedure.UnknownSqlResultSetMappingException;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.stereotype.Service;
@@ -30,15 +34,18 @@ public class QueueService {
     private final QueuePositionRepository queuePositionRepo;
     private final QueueRepository queueRepo;
     private final CounterRepository counterRepo;
+    private final SMSService smsService;
 
     private final List<SseEmitter> emitters = new ArrayList<>();
     private final AsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
 
     public QueueService(QueuePositionRepository queuePositionRepo,
-                        QueueRepository queueRepo, CounterRepository counterRepo) {
+                        QueueRepository queueRepo, CounterRepository counterRepo,
+                        SMSService smsService) {
         this.queuePositionRepo = queuePositionRepo;
         this.queueRepo = queueRepo;
         this.counterRepo = counterRepo;
+        this.smsService = smsService;
     }
 
     public List<QueuePosition> findActiveQueuePositionsForPrototype(Long queueId) {
@@ -272,7 +279,13 @@ public class QueueService {
         counterRepo.save(counter);
         queuePositionRepo.save(nextInQueue);
         // TODO: Notify client / Update TV screen
+        this.notifyBySMS(counter.getQueue().getId());
         return nextInQueue.getQueueNumber();
+    }
+    
+    public List<QueuePosition> findAllOngoingQueuePositions(Long queueId) {
+    	State[] activeStates = { State.ACTIVE_QUEUE, State.ACTIVE_REQUEUE };
+    	return queuePositionRepo.findAllByQueue_IdAndStateInOrderByPositionAscPriorityDesc(queueId, activeStates);
     }
 
     @Transactional
@@ -285,9 +298,26 @@ public class QueueService {
             queuePositionRepo.save(currentlyServing);
             counter.setCurrentlyServingQueueNumber(null);
             counterRepo.save(counter);
+            this.notifyBySMS(counter.getQueue().getId());
             return currentlyServing.getQueueNumber();
         } else {
             return null;
         }
+    }
+    
+    @Transactional
+    public boolean notifyBySMS(Long queueId) {
+    	List<QueuePosition> queuePositions = this.findAllOngoingQueuePositions(queueId);
+    	
+    	if (queuePositions.size() > 0) {
+    		Queue queue = queuePositions.get(0).getQueue();
+    		if (queuePositions.size() == queue.getNotificationPosition()) {
+    			// TODO: Send to the user mobile phone, currently it is just proof of concept
+    			smsService.send("+6591003555", "You are currently in position " + queue.getNotificationPosition() + ", please start to make your way back");
+    			return true;
+    		}
+    	}
+    	
+    	return false;
     }
 }

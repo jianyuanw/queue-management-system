@@ -12,6 +12,7 @@ import javax.persistence.Table;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString.Exclude;
 
 @Entity
 @NoArgsConstructor
@@ -26,6 +27,7 @@ public class QueuePosition {
     private Queue queue;
 
     @ManyToOne
+    @Exclude
     private User user;
     
     @OneToOne(mappedBy = "currentlyServingQueueNumber")

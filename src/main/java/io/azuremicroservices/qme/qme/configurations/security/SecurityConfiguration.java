@@ -45,7 +45,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(BRANCH_ADMIN_URLS).hasAnyAuthority("APP_ADMIN", "VENDOR_ADMIN", "BRANCH_ADMIN")
                 .antMatchers(BRANCH_OPERATOR_URLS).hasAnyAuthority("APP_ADMIN", "VENDOR_ADMIN", "BRANCH_ADMIN", "BRANCH_OPERATOR")
                 .antMatchers(CLIENT_URLS).hasAnyAuthority("CLIENT")
-                .antMatchers(PUBLIC_URLS).permitAll()
             .and()
                 .formLogin()
                 .loginPage("/login")
@@ -63,24 +62,29 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     private final String[] APP_ADMIN_URLS = {
-            "/app-admin/**"
+            "/manage/vendor/**",
+            "/manage/vendor-admin-account/**",
+            "/manage/app-admin-account/**",
     };
 
     private final String[] VENDOR_ADMIN_URLS = {
-            "/vendor-admin/**"
+            "/manage/branch/**",
+    		"/manage/branch-admin-account/**",
     };
 
     private final String[] BRANCH_ADMIN_URLS = {
-            "/branch-admin/**"
+    		"/dashboard",
+    		"/manage/queue/**",
+    		"/manage/branch-operator-account/**",
+    		"/manage/counter/**",
     };
 
     private final String[] BRANCH_OPERATOR_URLS = {
-            "/OperateQueue/ViewQueue"
-
+    		"/OperateQueue/**",
     };
 
     private final String[] CLIENT_URLS = {
-            "/client/**"
+            "/client/**",
     };
 
     private final String[] PUBLIC_URLS = {

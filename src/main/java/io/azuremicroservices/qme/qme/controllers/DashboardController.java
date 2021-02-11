@@ -1,4 +1,4 @@
-package io.azuremicroservices.qme.qme.controllers.prototype;
+package io.azuremicroservices.qme.qme.controllers;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -17,13 +17,13 @@ import io.azuremicroservices.qme.qme.models.QueuePosition;
 import io.azuremicroservices.qme.qme.repositories.QueuePositionRepository;
 
 @Controller
-public class dashboardProtoController {
+public class DashboardController {
 	
      @Autowired
 	QueuePositionRepository qpRepo;
      
      
-	 @GetMapping("/prototype/dashboard")
+	 @GetMapping("/dashboard")
 	    public String dashboard(Model model) {
 	        List<QueuePosition> qps = qpRepo.findAll();
 	        

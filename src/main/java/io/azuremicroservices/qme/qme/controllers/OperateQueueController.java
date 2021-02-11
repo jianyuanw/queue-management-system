@@ -63,7 +63,7 @@ public class OperateQueueController {
     public void pullUpdatedUserVendorBranchesQueues() {
         cUser = getCurrentUser();
         cBranches = permissionService.getBranchPermissions(cUser.getId());
-        cVendor = cBranches.get(0).getVendor();
+        cVendor = permissionService.getVendorPermission(cUser.getId());
         cQueues = permissionService.getQueuePermissions(cUser.getId());
         cUniqueBranches = new HashSet<>(cBranches);
     }

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>qMe - Branch Operator</title>
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+</head>
+<body>
+    <div th:replace="fragments/layout.html :: navbar"></div>
+
+    <div class="m-4">
+
+        <h3 class="mb-4 font-weight-bold"><u>My Current Counter</u></h3>
+        <h5><span class="font-weight-bold">Vendor: </span><span>Vendor Name</span></h5>
+        <h5><span class="font-weight-bold">Branch: </span><span>Branch Name</span></h5>
+        <h5 class="mb-4"><span class="font-weight-bold">Queue: </span><span>Queue Name</span></h5>
+        <h5><span class="font-weight-bold">Counter No.: </span><span>Counter No.</span></h5>
+        <h5><span class="font-weight-bold">Served By: </span><span>Branch Operator Name</span></h5>
+        <h5 class="mb-4"><span class="font-weight-bold">Currently serving: </span><span>Queue Number</span></h5>
+
+        <button class="btn btn-success rounded">Call next number</button>
+        <button class="btn btn-danger rounded">No show</button>
+        <button class="btn btn-primary rounded">Back to queue</button>
+
+    </div>
+
+    <div th:replace="fragments/layout.html :: footer"></div>
+</body>
+</html>

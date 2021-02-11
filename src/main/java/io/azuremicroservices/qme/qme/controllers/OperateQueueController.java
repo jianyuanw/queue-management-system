@@ -178,4 +178,8 @@ public class OperateQueueController {
         return "branch-operator/noShowListPage";
     }
 
+    @GetMapping("/my-counter")
+    public String myCounter() {
+        return "branch-operator/counter";
+    }
 }

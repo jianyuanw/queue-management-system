@@ -62,8 +62,8 @@ public class OperateQueueController {
 
     public void pullUpdatedUserVendorBranchesQueues() {
         cUser = getCurrentUser();
-        cVendor = null;    // currently not figure out how to find vendor for non vendoradmin user
         cBranches = permissionService.getBranchPermissions(cUser.getId());
+        cVendor = cBranches.get(0).getVendor();
         cQueues = permissionService.getQueuePermissions(cUser.getId());
         cUniqueBranches = new HashSet<>(cBranches);
     }
@@ -150,7 +150,7 @@ public class OperateQueueController {
         // List<QueuePosition> qps = queuePositionService.getActiveSortedQueuePositions(queueId);
         List<QueuePosition> qps = queuePositionService.getAllSortedQueuePositions(queueId);
 
-        model.addAttribute("vendor","cVendor.getName()");
+        model.addAttribute("vendor",cVendor.getName());
         model.addAttribute("state",queue.getState().getDisplayValue());
         model.addAttribute("queue",queue);
         model.addAttribute("positions",qps);
@@ -172,7 +172,7 @@ public class OperateQueueController {
         Queue queue = queueService.findQueue(queueId);
         model.addAttribute("noShowList",noShowQP);
         model.addAttribute("queue",queue);
-        model.addAttribute("vendor","cVendor.getName()");
+        model.addAttribute("vendor",cVendor.getName());
         model.addAttribute("branches",cBranches);
         model.addAttribute("queues",cQueues);
         return "branch-operator/noShowListPage";

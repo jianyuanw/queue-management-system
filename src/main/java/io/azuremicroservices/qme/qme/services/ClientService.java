@@ -131,9 +131,17 @@ public class ClientService {
 				.collect(Collectors.toList());
 
     	for (QueuePosition queuePosition : currentQueuePositions) {
-    		int personsInLine = queuePositionRepo.findAllByQueueAndStateIn(queuePosition.getQueue(), activeStates).size();
+    		List<QueuePosition> queuePositions = queuePositionRepo.findAllByQueue_IdAndStateIn(queuePosition.getQueue().getId(), activeStates);
+    		int personsInLine = queuePositions.size();
+    		System.out.println(personsInLine);
     		// int personsInLine = queuePositionRepo.countByQueue_IdAndStateIn(queuePosition.getQueue().getId(), new State[] { State.ACTIVE_QUEUE, State.ACTIVE_REQUEUE});
-    		int personsInFront = queuePositionRepo.countByQueueAndStateInAndPositionLessThanEqualAndPriorityGreaterThan(queuePosition.getQueue(), activeStates, queuePosition, queuePosition.getPriority());
+    		int personsInFront = 0;
+    		for (QueuePosition qp : queuePositions) {
+    			if (qp.getPosition() < queuePosition.getPosition()) {
+    				personsInFront++;
+    			}
+    		}
+
     		list.add(new MyQueueDto(
     				queuePosition.getQueue(),
 					personsInFront,

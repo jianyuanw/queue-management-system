@@ -44,7 +44,7 @@ public class ManageUserQueueService {
         queuePosition.setQueueStartTime(LocalDateTime.now());
         queuePosition.setQueueEndTime(null);
         queuePosition.setUser(user);        
-        queuePosition.setQueueNumber(queue.getName().substring(0, 4) + String.valueOf(obtainQueueNumber(queueId)));
+        queuePosition.setQueueNumber(queue.getName().substring(0, 4) + String.valueOf(queueNumber));
         queuePosition.setPosition(queueNumber);
         queuePosition.setPriority(0);
         queuePosition.setState(QueuePosition.State.ACTIVE_QUEUE);
@@ -96,8 +96,7 @@ public class ManageUserQueueService {
 
     // This is to restart the Queue Number to 1 every new day
     private Integer obtainQueueNumber(Long queueId) {
-        int count = queuePosRepo
-                .countByQueue_Id(Long.parseLong(String.valueOf(queueId)));
+        int count = queuePosRepo.findTopByQueue_IdOrderByPositionDesc(queueId).getPosition();
 
         count = count + 1;
         return count;

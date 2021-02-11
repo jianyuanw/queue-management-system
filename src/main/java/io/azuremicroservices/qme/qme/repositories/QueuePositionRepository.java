@@ -58,4 +58,11 @@ public interface QueuePositionRepository extends JpaRepository<QueuePosition, Lo
 
 	public Integer countByQueueAndStateInAndPositionLessThanEqualAndPriorityGreaterThan(Queue queue,
 			List<State> activeStates, QueuePosition queuePosition, Integer priority);
+
+	public List<QueuePosition> findAllByQueueAndStateInAndPositionLessThanEqualAndPriorityGreaterThan(Queue queue,
+			List<State> activeStates, QueuePosition queuePosition, Integer priority);
+
+	public List<QueuePosition> findAllByQueue_IdAndStateIn(Long id, List<State> activeStates);
+
+	public QueuePosition findTopByQueue_IdOrderByPositionDesc(Long queueId);
 }

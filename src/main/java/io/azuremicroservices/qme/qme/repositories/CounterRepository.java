@@ -2,6 +2,7 @@ package io.azuremicroservices.qme.qme.repositories;
 
 import java.util.List;
 
+import io.azuremicroservices.qme.qme.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import io.azuremicroservices.qme.qme.models.Counter;
@@ -16,4 +17,6 @@ public interface CounterRepository extends JpaRepository<Counter,Long> {
 	List<Counter> findAllByQueue_Id(Long id);
 
 	List<Counter> findAllByQueue_IdAndUser_IdNull(Long id);
+
+	Counter findByUser(User user);
 }

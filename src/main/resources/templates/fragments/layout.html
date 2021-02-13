@@ -124,7 +124,7 @@
 		                </ul>
 		                <ul th:case="branchadmin" class="navbar-nav mr-auto">
 		                    <li class="nav-item">
-		                        <a class="nav-link" href="#">Dashboard	                            
+		                        <a class="nav-link" th:href="@{/dashboard}">Dashboard	                            
 		                        </a>
 		                    </li>
 		                    
@@ -147,7 +147,7 @@
 		                        </a>
 		                    </li>
 		                    <li class="nav-item">
-		                        <a class="nav-link" href="#">Current Counter</a>
+		                        <a class="nav-link" href="/OperateQueue/my-counter">Current Counter</a>
 		                    </li>
 		                </ul>
 		                <ul class="navbar-nav ml-auto nav-flex-icons">

@@ -1,7 +1,9 @@
 package io.azuremicroservices.qme.qme.services;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -18,8 +20,10 @@ import io.azuremicroservices.qme.qme.models.Branch;
 import io.azuremicroservices.qme.qme.models.Counter;
 import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.models.QueuePosition;
+import io.azuremicroservices.qme.qme.models.QueuePosition.State;
 import io.azuremicroservices.qme.qme.models.User;
 import io.azuremicroservices.qme.qme.models.Vendor;
+import io.azuremicroservices.qme.qme.models.ViewQueuePosition;
 import io.azuremicroservices.qme.qme.repositories.CounterRepository;
 import io.azuremicroservices.qme.qme.repositories.QueuePositionRepository;
 import io.azuremicroservices.qme.qme.repositories.QueueRepository;
@@ -30,15 +34,18 @@ public class QueueService {
     private final QueuePositionRepository queuePositionRepo;
     private final QueueRepository queueRepo;
     private final CounterRepository counterRepo;
+    private final SMSService smsService;
 
     private final List<SseEmitter> emitters = new ArrayList<>();
     private final AsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
 
     public QueueService(QueuePositionRepository queuePositionRepo,
-                        QueueRepository queueRepo, CounterRepository counterRepo) {
+                        QueueRepository queueRepo, CounterRepository counterRepo,
+                        SMSService smsService) {
         this.queuePositionRepo = queuePositionRepo;
         this.queueRepo = queueRepo;
         this.counterRepo = counterRepo;
+        this.smsService = smsService;
     }
 
     public List<QueuePosition> findActiveQueuePositionsForPrototype(Long queueId) {
@@ -206,5 +213,111 @@ public class QueueService {
 
 	public Optional<Counter> findCounterById(Long counterId) {
 		return counterRepo.findById(counterId);
+	}
+
+	public Counter findCounterByUserId(Long id) {
+		return counterRepo.findByUser_Id(id);
+	}
+
+	@Transactional(readOnly = true)
+	public List<ViewQueuePosition> generateViewQueuePositions(Counter counter) {
+		List<ViewQueuePosition> viewQueuePositions = new ArrayList<>();
+		Queue queue = counter.getQueue();
+		State[] activeStates = new State[] { State.ACTIVE_QUEUE, State.ACTIVE_REQUEUE };
+		Integer count = 1;
+		
+		for (QueuePosition qp : queuePositionRepo.findAllByQueue_IdAndStateInOrderByPositionAscPriorityDesc(queue.getId(), activeStates)) {
+			viewQueuePositions.add(new ViewQueuePosition(
+				qp, count++, Duration.between(qp.getQueueStartTime(), LocalDateTime.now()).toMinutes()
+			));
+		}
+		
+		return viewQueuePositions;
 	}	
+	
+	public Counter findCounterByUser(User user) {
+        return counterRepo.findByUser(user);
+    }
+
+    public int findQueueLengthByCounter(Counter counter) {
+        return (int) counter.getQueue()
+                .getQueuePositions()
+                .stream()
+                .filter(x -> x.getState() == QueuePosition.State.ACTIVE_QUEUE ||
+                        x.getState() == QueuePosition.State.ACTIVE_REQUEUE)
+                .count();
+    }
+
+    @Transactional
+    public String callNextNumber(Counter counter) {
+        QueuePosition currentlyServing = counter.getCurrentlyServingQueueNumber();
+
+        if (currentlyServing != null) {
+            currentlyServing.setState(QueuePosition.State.INACTIVE_COMPLETE);
+            currentlyServing.setStateChangeTime(LocalDateTime.now());
+            queuePositionRepo.save(currentlyServing);
+        }
+
+        if (findQueueLengthByCounter(counter) == 0) {
+            counter.setCurrentlyServingQueueNumber(null);
+            counterRepo.save(counter);
+            return null;
+        }
+
+        QueuePosition nextInQueue = counter.getQueue()
+                .getQueuePositions()
+                .stream()
+                .filter(x -> x.getState() == QueuePosition.State.ACTIVE_QUEUE ||
+                        x.getState() == QueuePosition.State.ACTIVE_REQUEUE)
+                .min(Comparator.comparingInt(QueuePosition::getPosition))
+                .get();
+
+        counter.setCurrentlyServingQueueNumber(nextInQueue);
+        nextInQueue.setState(QueuePosition.State.ACTIVE_CALLED);
+        nextInQueue.setStateChangeTime(LocalDateTime.now());
+        nextInQueue.setPosition(null);
+        counterRepo.save(counter);
+        queuePositionRepo.save(nextInQueue);
+        // TODO: Notify client / Update TV screen
+        this.notifyBySMS(counter.getQueue().getId());
+        return nextInQueue.getQueueNumber();
+    }
+    
+    public List<QueuePosition> findAllOngoingQueuePositions(Long queueId) {
+    	State[] activeStates = { State.ACTIVE_QUEUE, State.ACTIVE_REQUEUE };
+    	return queuePositionRepo.findAllByQueue_IdAndStateInOrderByPositionAscPriorityDesc(queueId, activeStates);
+    }
+
+    @Transactional
+    public String noShow(Counter counter) {
+        QueuePosition currentlyServing = queuePositionRepo.findByQueueNumber(counter.getCurrentlyServingQueueNumber().getQueueNumber());
+
+        if (currentlyServing != null) {
+            currentlyServing.setState(QueuePosition.State.INACTIVE_NO_SHOW);
+            currentlyServing.setStateChangeTime(LocalDateTime.now());
+            queuePositionRepo.save(currentlyServing);
+            counter.setCurrentlyServingQueueNumber(null);
+            counterRepo.save(counter);
+            this.notifyBySMS(counter.getQueue().getId());
+            return currentlyServing.getQueueNumber();
+        } else {
+            return null;
+        }
+    }
+    
+    @Transactional
+    public boolean notifyBySMS(Long queueId) {
+    	List<QueuePosition> queuePositions = this.findAllOngoingQueuePositions(queueId);
+    	
+    	if (queuePositions.size() > 0) {
+    		Queue queue = queuePositions.get(0).getQueue();
+    		if (queuePositions.size() == queue.getNotificationPosition()) {
+    			// TODO: Send to the user mobile phone, currently it is just proof of concept
+    			smsService.send("+6591003555", "You are currently in position " + queue.getNotificationPosition() + ", please start to make your way back");
+    			return true;
+    		}
+    	}
+    	
+    	return false;
+    }
 }

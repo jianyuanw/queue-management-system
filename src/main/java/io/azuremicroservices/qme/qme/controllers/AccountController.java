@@ -50,13 +50,13 @@ public class AccountController {
         if (user != null) {
             alertService.createAlert(AlertService.AlertColour.GREEN, "Login successful", redirAttr);
             if (user.getRole() == User.Role.APP_ADMIN) {
-                return "redirect:/app-admin";
+                return "redirect:/manage/vendor/list";
             } else if (user.getRole() == User.Role.VENDOR_ADMIN) {
-                return "redirect:/vendor-admin";
+                return "redirect:/manage/branch/list";
             } else if (user.getRole() == User.Role.BRANCH_ADMIN) {
-                return "redirect:/branch-admin";
+                return "redirect:/dashboard";
             } else if (user.getRole() == User.Role.BRANCH_OPERATOR) {
-                return "branch-operator/landing-page";
+                return "redirect:/OperateQueue/ViewQueue";
             } else {
                 return "redirect:/client";
             }

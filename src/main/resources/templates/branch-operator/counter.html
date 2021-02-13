@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>qMe - Branch Operator</title>
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+</head>
+<body>
+    <div th:replace="fragments/layout.html :: navbar"></div>
+
+    <div class="m-4">
+		<div class="row">
+			<div class="col-6">
+		        <h3 class="mb-4 font-weight-bold"><u>My Current Counter</u></h3>
+		        <h5><span class="font-weight-bold">Vendor: </span><span th:text="${counter.queue.branch.vendor.name}">Vendor Name</span></h5>
+		        <h5><span class="font-weight-bold">Branch: </span><span th:text="${counter.queue.branch.name}">Branch Name</span></h5>
+		        <h5><span class="font-weight-bold">Queue: </span><span th:text="${counter.queue.name}">Queue Name</span></h5>
+		        <h5 class="mb-4"><span class="font-weight-bold">Counter No.: </span><span th:text="${counter.name}">Counter No.</span></h5>
+		        <h5><span class="font-weight-bold">Current Queue Length: </span><span th:text="${queueLength}">Queue Length</span></h5>
+		        <h5><span class="font-weight-bold">Served By: </span><span th:text="|${counter.user.firstName} ${counter.user.lastName}|">Branch Operator Name</span></h5>
+		        <h5 class="mb-4"><span class="font-weight-bold">Currently serving: </span><span th:if="${counter.currentlyServingQueueNumber != null}" th:text="${counter.currentlyServingQueueNumber.queueNumber}">Queue Number</span></h5>
+		
+		        <form class="d-inline" th:action="@{/OperateQueue/my-counter}" method="post">
+		        	<input type="hidden" name="command" value="next">
+		            <button type="submit" class="btn btn-success rounded">Call next number</button>
+		        </form>
+		        <form class="d-inline" th:if="${counter.currentlyServingQueueNumber != null}" th:action="@{/OperateQueue/my-counter}" method="post">
+		        <input type="hidden" name="command" value="no-show">
+		            <button class="btn btn-danger rounded">No show</button>
+		        </form>
+	        </div>
+	        <div class="col-6">
+				<table class="table">
+					<tr class="table-primary">
+						<th>Queue Number</th>
+						<th>Position</th>
+						<th>Duration In Queue</th>
+					</tr>
+					<tr class="table-light" th:each="qp : ${viewQueuePositions}">
+						<td th:text="${qp.queuePosition.queueNumber}">
+						<td th:text="${qp.position}">
+						<td th:text="${qp.durationInQueue}">
+					</tr>
+				</table>	        
+	        </div>
+        </div>
+
+    </div>
+
+    <div th:replace="fragments/layout.html :: footer"></div>
+</body>
+</html>

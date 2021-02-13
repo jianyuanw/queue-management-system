@@ -12,7 +12,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +25,7 @@ import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.models.QueuePosition;
 import io.azuremicroservices.qme.qme.models.User;
 import io.azuremicroservices.qme.qme.models.Vendor;
+import io.azuremicroservices.qme.qme.models.ViewQueuePosition;
 import io.azuremicroservices.qme.qme.services.AlertService;
 import io.azuremicroservices.qme.qme.services.AlertService.AlertColour;
 import io.azuremicroservices.qme.qme.services.PermissionService;
@@ -139,7 +139,24 @@ public class OperateQueueController {
     	queueService.signOutCounter(myUserDetails.getUser(), counter.get());
     	alertService.createAlert(AlertColour.GREEN, "Signed out of counter", redirAttr);
     	return "redirect:/OperateQueue/ViewQueue";
-    }    
+    }
+    
+    @GetMapping("/current-counter")
+    public String initCurrentCounter(Model model, Authentication authentication, RedirectAttributes redirAttr) {
+    	MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+    	var counter = queueService.findCounterByUserId(myUserDetails.getId());
+    	
+    	if (counter == null) {
+    		alertService.createAlert(AlertColour.YELLOW, "You are not signed into a counter", redirAttr);
+    		return "redirect:/OperateQueue/ViewQueue";
+    	}
+    	
+    	List<ViewQueuePosition> viewQueuePositions = queueService.generateViewQueuePositions(counter);
+    	model.addAttribute("counter", counter);
+    	model.addAttribute("viewQueuePositions", viewQueuePositions);
+    	
+    	return "branch-operator/current-counter";
+    }
 
     @GetMapping("/ViewSelectedQueue/{queueId}")
     public String viewSelectedQueue(@PathVariable("queueId") Long queueId,Model model) {
@@ -178,4 +195,65 @@ public class OperateQueueController {
         return "branch-operator/noShowListPage";
     }
 
+    @GetMapping("/my-counter")
+    public String myCounter(Authentication authentication, Model model, RedirectAttributes redirAttr) {
+    	MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+    	var counter = queueService.findCounterByUserId(myUserDetails.getId());
+    	
+    	if (counter == null) {
+    		alertService.createAlert(AlertColour.YELLOW, "You are not signed into a counter", redirAttr);
+    		return "redirect:/OperateQueue/ViewQueue";
+    	}
+    	
+    	List<ViewQueuePosition> viewQueuePositions = queueService.generateViewQueuePositions(counter);
+    	
+    	model.addAttribute("counter", counter);
+    	model.addAttribute("viewQueuePositions", viewQueuePositions);        
+        model.addAttribute("queueLength", viewQueuePositions.size());
+        return "branch-operator/counter";
+    }
+
+    @PostMapping("/my-counter")
+    public String callNextNumber(@RequestParam("command") String command, Authentication authentication, RedirectAttributes redirAttr) {
+        User user = ((MyUserDetails) authentication.getPrincipal()).getUser();
+        Counter counter = queueService.findCounterByUser(user);
+
+        if (counter == null) {
+            alertService.createAlert(AlertColour.RED, "An error occurred. Please try again.", redirAttr);
+            return "redirect:/OperateQueue/my-counter";
+        }        
+        
+        switch (command) {
+        	case "next":
+                String nextNumber = queueService.callNextNumber(counter);
+                if (nextNumber == null) {
+                    alertService.createAlert(AlertColour.RED, "Failed to call next number. No people in queue.", redirAttr);
+                } else {
+                    alertService.createAlert(AlertColour.GREEN, "Called queue number: " + nextNumber, redirAttr);
+                }
+                break;
+        	case "no-show":
+                String noShowNumber = queueService.noShow(counter);
+                if (noShowNumber == null) {
+                    alertService.createAlert(AlertColour.RED, "An error occurred. Please try again.", redirAttr);
+                } else {
+                    alertService.createAlert(AlertColour.GREEN, "Queue number (" + noShowNumber + ") did not show up. You may call the next queue number.", redirAttr);
+                }        		
+        		break;
+        }
+        
+        return "redirect:/OperateQueue/my-counter";
+    }
+
+    @PostMapping("/no-show")
+    public String noShow(Authentication authentication, RedirectAttributes redirAttr) {
+        User user = ((MyUserDetails) authentication.getPrincipal()).getUser();
+        Counter counter = queueService.findCounterByUser(user);
+        if (counter == null) {
+            alertService.createAlert(AlertColour.RED, "An error occurred. Please try again.", redirAttr);
+            return "redirect:/OperateQueue/my-counter";
+        }
+
+        return "redirect:/OperateQueue/my-counter";
+    }
 }

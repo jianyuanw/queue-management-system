@@ -35,7 +35,7 @@
                     <div class="col d-flex align-items-center">
                         <div>
                             <p class="m-0" th:if="${dto.state != dto.state.INACTIVE_NO_SHOW}">
-                                <i class="fas fa-users pr-1"></i><span th:text="|${dto.personsInFront} person(s) in front|"></span>
+                                <i class="fas fa-users pr-1"></i><span th:text="|${dto.personsInFront} person(s) in front of you|"></span>
                             </p>
                             <p class="m-0" th:if="${dto.state == dto.state.INACTIVE_NO_SHOW}">
                                 <i class="fas fa-users pr-1"></i><span th:text="|${dto.personsInLine} person(s) in line|"></span>

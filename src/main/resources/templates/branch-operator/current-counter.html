@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <title>qMe - Counter</title>
+    <meta charset="UTF-8">
+
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+</head>
+<body>
+    <div th:replace="fragments/layout.html :: navbar"></div>
+
+	<div class="row">
+		<div class="col-6">
+			<p th:text="${'Vendor: ' + counter.queue.branch.vendor.name}"></p>
+			<p th:text="${'Branch: ' + counter.queue.branch.name}"></p>
+			<p th:text="${'Queue Name: ' + counter.queue.name}"></p>
+			
+			<p th:text="${'Counter: ' + counter.name}"></p>
+			<p th:text="${'Served By: ' + counter.user.firstName}"></p>
+			<p th:text="${'Currently Serving: ' + {counter.queuePosition == null ? 'NIL' : counter.queuePosition.user.firstName}}"></p>	
+		</div>
+		<div class="col-6">
+			<table class="table">
+				<tr class="table-primary">
+					<th>Queue Number</th>
+					<th>Position</th>
+					<th>Duration In Queue</th>
+				</tr>
+				<tr class="table-light" th:each="qp : ${viewQueuePositions}">
+					<td th:text="${qp.queuePosition.queueNumber}">
+					<td th:text="${qp.position}">
+					<td th:text="${qp.durationInQueue}">
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div class="row ml-4">
+		<form th:if="${counter.queuePosition == null}" method="post" th:action="@{/OperateQueue/current-counter}">
+			<input type="hidden" name="command" value="call">
+			<button type="submit" class="btn btn-primary btn-sm">Call Next</button>
+		</form>
+		<form th:if="${counter.queuePosition != null}" method="post" th:action="@{/OperateQueue/current-counter}">
+			<input type="hidden" name="command" value="advance">
+			<button type="submit" class="btn btn-success btn-sm">Advance Queue</button>
+		</form>
+		<form th:if="${counter.queuePosition != null}" method="post" th:action="@{/OperateQueue/current-counter}">
+			<input type="hidden" name="command" value="no-show">
+			<button type="submit" class="btn btn-danger btn-sm">No-Show</button>
+		</form>				
+	</div>
+
+    <div th:replace="fragments/layout.html :: footer"></div>
+</body>
+</html>

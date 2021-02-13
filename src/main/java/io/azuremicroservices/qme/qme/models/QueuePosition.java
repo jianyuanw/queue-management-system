@@ -7,10 +7,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString.Exclude;
 
 @Entity
 @NoArgsConstructor
@@ -25,7 +27,11 @@ public class QueuePosition {
     private Queue queue;
 
     @ManyToOne
+    @Exclude
     private User user;
+    
+    @OneToOne(mappedBy = "currentlyServingQueueNumber")
+    private Counter counter;
 
     private String queueNumber;
     
@@ -58,7 +64,8 @@ public class QueuePosition {
         ACTIVE_REQUEUE,
         INACTIVE_COMPLETE,
         INACTIVE_NO_SHOW,
-        INACTIVE_LEFT;
+        INACTIVE_LEFT,
+    	ACTIVE_CALLED;
 
         private final String displayValue;
 

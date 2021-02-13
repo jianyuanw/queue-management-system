@@ -6,6 +6,7 @@ import io.azuremicroservices.qme.qme.services.AccountService;
 import io.azuremicroservices.qme.qme.services.AlertService;
 import io.azuremicroservices.qme.qme.services.AlertService.AlertColour;
 
+import io.azuremicroservices.qme.qme.services.QueuePositionService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,10 +23,12 @@ public class AccountController {
 
     private final AccountService accountService;
     private final AlertService alertService;
+    private final QueuePositionService queuePositionService;
 
-    public AccountController(AccountService accountService, AlertService alertService) {
+    public AccountController(AccountService accountService, AlertService alertService, QueuePositionService queuePositionService) {
         this.accountService = accountService;
         this.alertService = alertService;
+        this.queuePositionService = queuePositionService;
     }
 
     @GetMapping("/login")
@@ -48,6 +51,14 @@ public class AccountController {
     public String loginSuccess(HttpServletRequest request, RedirectAttributes redirAttr) {
         User user = accountService.findUserByUsername(request.getUserPrincipal().getName());
         if (user != null) {
+
+            // First check if user is black listed, if yes, redirect to error page
+            boolean userIsBlacklisted = queuePositionService.isUserBlacklisted(user.getId());
+            if (userIsBlacklisted) {
+                return "redirect:/login/user-blacklisted";
+            }
+
+            // Otherwise, allows user to continue the journey
             alertService.createAlert(AlertService.AlertColour.GREEN, "Login successful", redirAttr);
             if (user.getRole() == User.Role.APP_ADMIN) {
                 return "redirect:/manage/vendor/list";
@@ -68,6 +79,12 @@ public class AccountController {
     @GetMapping("/login/error")
     public String loginError(RedirectAttributes redirAttr) {
         redirAttr.addFlashAttribute("error", "Incorrect username or password");
+        return "redirect:/login";
+    }
+
+    @GetMapping("/login/user-blacklisted")
+    public String loginBlackListed(RedirectAttributes redirAttr) {
+        redirAttr.addFlashAttribute("error", "You are blacklisted for consecutively no show for " + QueuePositionService.BLACKLIST_TOTAL_NO_SHOW + " times.");
         return "redirect:/login";
     }
 

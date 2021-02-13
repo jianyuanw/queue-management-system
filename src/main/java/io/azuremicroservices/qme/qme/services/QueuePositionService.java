@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,8 @@ import io.azuremicroservices.qme.qme.repositories.QueueRepository;
 
 @Service
 public class QueuePositionService {
+    public static final int BLACKLIST_TOTAL_NO_SHOW = 3;
+
     private final QueuePositionRepository queuePositionRepo;
     private final QueueRepository queueRepo;
     private final QueueService queueService;
@@ -105,5 +108,40 @@ public class QueuePositionService {
 		
 		return queueCounters;
 	}
+
+    /**
+     *      N = 3
+     *      Last N queue status         User is Black listed
+     *      ------------------------------------------------
+     *      NO_SHOW, NO_SHOW, NO_SHOW   TRUE
+     *      SHOW, NO_SHOW, NO_SHOW      FALSE
+     *      NO_SHOW, SHOW, NO_SHOW      FALSE
+     *      NO_SHOW, NO_SHOW, SHOW      FALSE
+     *
+     * @param userId
+     * @return
+     */
+	public boolean isUserBlacklisted(Long userId) {
+        // Obtain latest N queues from the user
+        List<QueuePosition> lastNQueuesOfTheUser = queuePositionRepo
+                .findAllByUser_Id(userId)
+                .stream()
+                .sorted((q1, q2) -> q2.getQueueStartTime().compareTo(q1.getQueueStartTime()))
+                .limit(BLACKLIST_TOTAL_NO_SHOW)
+                .collect(Collectors.toList());
+
+        // Check if the last N queues are NO_SHOW
+        // If not all are no show, the user is not black listed
+        boolean lastNQueuesAreAllNoShow = BLACKLIST_TOTAL_NO_SHOW == countOfNoShow(lastNQueuesOfTheUser);
+
+        return lastNQueuesAreAllNoShow;
+    }
+
+    private long countOfNoShow(List<QueuePosition> sortedAscendingUserPastQueues) {
+        return sortedAscendingUserPastQueues
+                .stream()
+                .filter(q -> q.getState() == State.INACTIVE_NO_SHOW)
+                .count();
+    }
 
 }

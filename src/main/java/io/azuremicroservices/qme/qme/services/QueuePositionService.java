@@ -1,40 +1,40 @@
 package io.azuremicroservices.qme.qme.services;
 
-import java.util.Comparator;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import io.azuremicroservices.qme.qme.models.Counter;
+import io.azuremicroservices.qme.qme.models.MyQueueDto;
 import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.models.QueuePosition;
 import io.azuremicroservices.qme.qme.models.QueuePosition.State;
+import io.azuremicroservices.qme.qme.models.BranchQueueDto;
 import io.azuremicroservices.qme.qme.repositories.CounterRepository;
 import io.azuremicroservices.qme.qme.repositories.QueuePositionRepository;
-import io.azuremicroservices.qme.qme.repositories.QueueRepository;
 
 @Service
 public class QueuePositionService {
     private final QueuePositionRepository queuePositionRepo;
-    private final QueueRepository queueRepo;
-    private final QueueService queueService;
     private final CounterRepository counterRepo;
 
-    public QueuePositionService(QueuePositionRepository queuePositionRepo, QueueRepository queueRepo, QueueService queueService, CounterRepository counterRepo) {
+    public QueuePositionService(QueuePositionRepository queuePositionRepo, CounterRepository counterRepo) {
         this.queuePositionRepo = queuePositionRepo;
-        this.queueRepo = queueRepo;
-        this.queueService = queueService;
         this.counterRepo = counterRepo;
     }
 
     public void updateReassignedIdPriority(Long reassignedId) {
         QueuePosition qp = queuePositionRepo.findById(reassignedId).get();
         Queue q = qp.getQueue();
-        // List<QueuePosition> qps = queueService.findActiveQueuePositionsForPrototype(q.getId());
-        List<QueuePosition> qps = queueService.findAllQueuePositions(q.getId());
+
+        List<QueuePosition> qps = q.getQueuePositions();
         int p = 0;
         for (int i = 0; i<qps.size(); i++) {
             if(p < qps.get(i).getPriority())
@@ -51,42 +51,18 @@ public class QueuePositionService {
     }
 
     public List<QueuePosition> getAllSortedQueuePositions(Long queueId) {
-        List<QueuePosition> qps = queueService.findAllQueuePositions(queueId);
-        sortQueuePositionsByPriorityAndPosition(qps);
-        return qps;
+    	return queuePositionRepo.findAllByQueue_IdOrderByPositionAscPriorityDesc(queueId);
     }
 
     public List<QueuePosition> getActiveSortedQueuePositions(Long queueId) {
-        List<QueuePosition> qps = queueService.findActiveQueuePositionsForPrototype(queueId);
-        sortQueuePositionsByPriorityAndPosition(qps);
-        return qps;
-    }
-
-    public void sortQueuePositionsByPriorityAndPosition(List<QueuePosition> qps) {
-        qps.sort(new Comparator<QueuePosition>() {
-            @Override
-            public int compare(QueuePosition o1, QueuePosition o2) {
-                if(o1.getPriority() > o2.getPriority())
-                    return -1;
-                else if (o1.getPriority() < o2.getPriority())
-                    return 1;
-                else {
-                    if(o1.getPosition() < o2.getPosition())
-                        return -1;
-                    else if (o1.getPosition() > o2.getPosition())
-                        return 1;
-                    else
-                        return 0;
-                }
-            }
-        });
+    	return queuePositionRepo.findAllByQueue_IdAndStateInOrderByPositionAscPriorityDesc(queueId, QueuePosition.getQueuingStates());
     }
 
 	public HashMap<Queue, Integer> findAllQueuePositionsInQueues(List<Queue> queuePermissions) {
 		HashMap<Queue, Integer> queueCount = new HashMap<>();
-		State[] activeStates = new State[] {State.ACTIVE_QUEUE, State.ACTIVE_REQUEUE};
+
 		for (Queue queue : queuePermissions) {
-			queueCount.put(queue, queuePositionRepo.countByQueue_IdAndStateIn(queue.getId(), activeStates));
+			queueCount.put(queue, queuePositionRepo.countByQueue_IdAndStateIn(queue.getId(), QueuePosition.getQueuingStates()));
 		}
 		
 		return queueCount;
@@ -105,5 +81,15 @@ public class QueuePositionService {
 		
 		return queueCounters;
 	}
+
+
+
+	public List<QueuePosition> findAllQueuePositionsByQueueIdAndActiveStates(Long queueId) {
+		return queuePositionRepo.findAllByQueue_IdAndStateIn(queueId, QueuePosition.getQueuingStates());
+	}
+
+	public List<QueuePosition> findAllQueuePositionsByQueueIdAndState(Long queueId, State inactiveNoShow) {
+		return queuePositionRepo.findAllByQueue_IdAndState(queueId, inactiveNoShow);
+	}    
 
 }

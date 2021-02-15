@@ -3,17 +3,14 @@ package io.azuremicroservices.qme.qme.controllers;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
-import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
-import io.azuremicroservices.qme.qme.models.*;
-import io.azuremicroservices.qme.qme.models.Queue;
-import io.azuremicroservices.qme.qme.services.PermissionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,7 +22,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
+import io.azuremicroservices.qme.qme.models.Branch;
+import io.azuremicroservices.qme.qme.models.BranchOperatorNotification;
+import io.azuremicroservices.qme.qme.models.Queue;
+import io.azuremicroservices.qme.qme.models.QueuePosition;
+import io.azuremicroservices.qme.qme.models.User;
+import io.azuremicroservices.qme.qme.models.Vendor;
 import io.azuremicroservices.qme.qme.services.BranchOperatorNotificationService;
+import io.azuremicroservices.qme.qme.services.PermissionService;
+import io.azuremicroservices.qme.qme.services.QueuePositionService;
 import io.azuremicroservices.qme.qme.services.QueueService;
 
 @Controller
@@ -65,19 +71,21 @@ public class QueueController {
 
     private final QueueService queueService;
     private final BranchOperatorNotificationService BoNotifyService;
-    @Autowired
+    private final QueuePositionService queuePositionService;    
     private PermissionService permissionService;
 
-    public QueueController(QueueService queueService,
+    public QueueController(QueueService queueService, QueuePositionService queuePositionService, PermissionService permissionService,
     		BranchOperatorNotificationService BoNotifyService) {
         this.queueService = queueService;
         this.BoNotifyService=BoNotifyService;
+        this.queuePositionService = queuePositionService;
+        this.permissionService = permissionService;
     }
 
     @GetMapping("/prototype/viewQueue")
     public String viewQueuePrototype(Model model) {
         /* Will shift code to service layer */
-        List<QueuePosition> queuePositions = queueService.findActiveQueuePositionsForPrototype(1L);
+        List<QueuePosition> queuePositions = queuePositionService.findAllQueuePositionsByQueueIdAndActiveStates(1L);
         Map<QueuePosition, Duration> queuePositionDurationMap = new LinkedHashMap<>();
         for (QueuePosition queuePosition : queuePositions) {
             queuePositionDurationMap.put(queuePosition,

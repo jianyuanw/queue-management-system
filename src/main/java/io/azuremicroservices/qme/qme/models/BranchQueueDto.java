@@ -3,13 +3,13 @@ package io.azuremicroservices.qme.qme.models;
 import lombok.Data;
 
 @Data
-public class ViewQueue {
+public class BranchQueueDto {
 	private Queue queue;
 	private Integer inLine;
 	private Integer waitingTime;
 	private boolean userInQueue;
 	
-	public ViewQueue(Queue queue, Integer inline, Integer waitingTime, boolean userInQueue) {
+	public BranchQueueDto(Queue queue, Integer inline, Integer waitingTime, boolean userInQueue) {
 		this.queue = queue;
 		this.inLine = inline;
 		this.waitingTime = waitingTime;

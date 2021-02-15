@@ -1,5 +1,7 @@
 package io.azuremicroservices.qme.qme.models;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
@@ -65,7 +67,7 @@ public class QueuePosition {
         INACTIVE_COMPLETE,
         INACTIVE_NO_SHOW,
         INACTIVE_LEFT,
-    	ACTIVE_CALLED;
+    	INACTIVE_CALLED;
 
         private final String displayValue;
 
@@ -81,6 +83,23 @@ public class QueuePosition {
         }
 
         public String getDisplayValue() { return displayValue; }
+    }
+    
+    public static List<State> getQueuingStates() {
+    	List<State> queueStates = new ArrayList<>();
+    	queueStates.add(State.ACTIVE_QUEUE);
+    	queueStates.add(State.ACTIVE_REQUEUE);
+    	
+    	return queueStates;
+    }
+    
+    public static List<State> getViewedStates() {
+    	List<State> queueStates = new ArrayList<>();
+    	queueStates.add(State.ACTIVE_QUEUE);
+    	queueStates.add(State.ACTIVE_REQUEUE);
+    	queueStates.add(State.INACTIVE_NO_SHOW);
+    	
+    	return queueStates;
     }
 
 }

@@ -1,6 +1,7 @@
 package io.azuremicroservices.qme.qme.services;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -18,19 +19,24 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import io.azuremicroservices.qme.qme.models.Branch;
 import io.azuremicroservices.qme.qme.models.Counter;
+import io.azuremicroservices.qme.qme.models.MyQueueDto;
 import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.models.QueuePosition;
 import io.azuremicroservices.qme.qme.models.QueuePosition.State;
 import io.azuremicroservices.qme.qme.models.User;
+import io.azuremicroservices.qme.qme.models.UserQueueNumberDto;
 import io.azuremicroservices.qme.qme.models.Vendor;
-import io.azuremicroservices.qme.qme.models.ViewQueuePosition;
+import io.azuremicroservices.qme.qme.models.BranchQueueDto;
+import io.azuremicroservices.qme.qme.models.QueuePositionDto;
 import io.azuremicroservices.qme.qme.repositories.CounterRepository;
 import io.azuremicroservices.qme.qme.repositories.QueuePositionRepository;
 import io.azuremicroservices.qme.qme.repositories.QueueRepository;
+import io.azuremicroservices.qme.qme.repositories.UserRepository;
 
 @Service
 public class QueueService {
 
+	private final UserRepository userRepo;
     private final QueuePositionRepository queuePositionRepo;
     private final QueueRepository queueRepo;
     private final CounterRepository counterRepo;
@@ -39,39 +45,40 @@ public class QueueService {
     private final List<SseEmitter> emitters = new ArrayList<>();
     private final AsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
 
-    public QueueService(QueuePositionRepository queuePositionRepo,
+    public QueueService(UserRepository userRepo, QueuePositionRepository queuePositionRepo,
                         QueueRepository queueRepo, CounterRepository counterRepo,
                         SMSService smsService) {
+    	this.userRepo = userRepo;
         this.queuePositionRepo = queuePositionRepo;
         this.queueRepo = queueRepo;
         this.counterRepo = counterRepo;
         this.smsService = smsService;
     }
 
-    public List<QueuePosition> findActiveQueuePositionsForPrototype(Long queueId) {
-        Queue queue = queueRepo.findById(queueId).get();
-        return queuePositionRepo.findAllByQueue(queue)
-                .stream()
-                .filter(x -> x.getState() == QueuePosition.State.ACTIVE_QUEUE ||
-                        x.getState() == QueuePosition.State.ACTIVE_REQUEUE)
-                .collect(Collectors.toList());
-    }
-
-    public List<QueuePosition> findNoShowStatusQueuePositions(Long queueId) {
-        Queue queue = queueRepo.findById(queueId).get();
-        return queuePositionRepo.findAllByQueue(queue)
-                .stream()
-                .filter(x -> x.getState() == QueuePosition.State.INACTIVE_NO_SHOW)
-                .collect(Collectors.toList());
-    }
-
-    public List<QueuePosition> findActiveRejoinStatusQueuePositions(Long queueId) {
-        Queue queue = queueRepo.findById(queueId).get();
-        return queuePositionRepo.findAllByQueue(queue)
-                .stream()
-                .filter(x -> x.getState() == QueuePosition.State.ACTIVE_REQUEUE)
-                .collect(Collectors.toList());
-    }
+//    public List<QueuePosition> findActiveQueuePositionsForPrototype(Long queueId) {
+//        Queue queue = queueRepo.findById(queueId).get();
+//        return queuePositionRepo.findAllByQueue(queue)
+//                .stream()
+//                .filter(x -> x.getState() == QueuePosition.State.ACTIVE_QUEUE ||
+//                        x.getState() == QueuePosition.State.ACTIVE_REQUEUE)
+//                .collect(Collectors.toList());
+//    }
+//
+//    public List<QueuePosition> findNoShowStatusQueuePositions(Long queueId) {
+//        Queue queue = queueRepo.findById(queueId).get();
+//        return queuePositionRepo.findAllByQueue(queue)
+//                .stream()
+//                .filter(x -> x.getState() == QueuePosition.State.INACTIVE_NO_SHOW)
+//                .collect(Collectors.toList());
+//    }
+//
+//    public List<QueuePosition> findActiveRejoinStatusQueuePositions(Long queueId) {
+//        Queue queue = queueRepo.findById(queueId).get();
+//        return queuePositionRepo.findAllByQueue(queue)
+//                .stream()
+//                .filter(x -> x.getState() == QueuePosition.State.ACTIVE_REQUEUE)
+//                .collect(Collectors.toList());
+//    }
 
     public Queue findQueue(Long queueId) {
         return queueRepo.findById(queueId).get();
@@ -153,6 +160,15 @@ public class QueueService {
             q.setState(Queue.State.CLOSED);
         queueRepo.save(q);
     }
+    
+	public List<Queue> findQueuesByBranchId(Long branchId) {
+		try {
+			return queueRepo.findAllByBranch_Id(branchId);
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	
+	}	    
 
 	public List<Queue> findAllQueuesInBranches(List<Branch> branches) {
 		return queueRepo.findAllByBranch_IdIn(branches.stream()
@@ -180,12 +196,6 @@ public class QueueService {
 	public void deleteQueue(Queue queue) {
 		queueRepo.delete(queue);
 	}
-
-	// Note: add for test; currently used in OperateQueueController
-    public List<QueuePosition> findAllQueuePositions(Long queueId) {
-        Queue queue = queueRepo.findById(queueId).get();
-        return queuePositionRepo.findAllByQueue(queue);
-    }
 
     @Transactional
 	public boolean signInCounter(User user, Counter counter) {
@@ -220,14 +230,13 @@ public class QueueService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<ViewQueuePosition> generateViewQueuePositions(Counter counter) {
-		List<ViewQueuePosition> viewQueuePositions = new ArrayList<>();
+	public List<QueuePositionDto> generateViewQueuePositions(Counter counter) {
+		List<QueuePositionDto> viewQueuePositions = new ArrayList<>();
 		Queue queue = counter.getQueue();
-		State[] activeStates = new State[] { State.ACTIVE_QUEUE, State.ACTIVE_REQUEUE };
 		Integer count = 1;
 		
-		for (QueuePosition qp : queuePositionRepo.findAllByQueue_IdAndStateInOrderByPositionAscPriorityDesc(queue.getId(), activeStates)) {
-			viewQueuePositions.add(new ViewQueuePosition(
+		for (QueuePosition qp : queuePositionRepo.findAllByQueue_IdAndStateInOrderByPositionAscPriorityDesc(queue.getId(), QueuePosition.getQueuingStates())) {
+			viewQueuePositions.add(new QueuePositionDto(
 				qp, count++, Duration.between(qp.getQueueStartTime(), LocalDateTime.now()).toMinutes()
 			));
 		}
@@ -273,7 +282,7 @@ public class QueueService {
                 .get();
 
         counter.setCurrentlyServingQueueNumber(nextInQueue);
-        nextInQueue.setState(QueuePosition.State.ACTIVE_CALLED);
+        nextInQueue.setState(QueuePosition.State.INACTIVE_CALLED);
         nextInQueue.setStateChangeTime(LocalDateTime.now());
         nextInQueue.setPosition(null);
         counterRepo.save(counter);
@@ -283,9 +292,8 @@ public class QueueService {
         return nextInQueue.getQueueNumber();
     }
     
-    public List<QueuePosition> findAllOngoingQueuePositions(Long queueId) {
-    	State[] activeStates = { State.ACTIVE_QUEUE, State.ACTIVE_REQUEUE };
-    	return queuePositionRepo.findAllByQueue_IdAndStateInOrderByPositionAscPriorityDesc(queueId, activeStates);
+    public List<QueuePosition> findAllOngoingQueuePositions(Long queueId) {    	
+    	return queuePositionRepo.findAllByQueue_IdAndStateInOrderByPositionAscPriorityDesc(queueId, QueuePosition.getQueuingStates());
     }
 
     @Transactional
@@ -320,4 +328,198 @@ public class QueueService {
     	
     	return false;
     }
+    
+    public UserQueueNumberDto enterQueue(String userId, String queueIdStr) {
+        User user = userRepo
+                .findById(Long.parseLong(userId))
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+        long queueId = Long.parseLong(queueIdStr);
+        Queue queue = queueRepo
+                .findById(queueId)
+                .orElseThrow(() -> new RuntimeException("Invalid queue: " + queueId));
+
+        QueuePosition queuePosition = new QueuePosition();
+        Integer queueNumber = obtainQueueNumber(queueId);
+        
+        // set all attributes including state
+        queuePosition.setQueue(queue);
+        queuePosition.setQueueStartTime(LocalDateTime.now());
+        queuePosition.setQueueEndTime(null);
+        queuePosition.setUser(user);        
+        queuePosition.setQueueNumber(queue.getName().substring(0, 4) + String.valueOf(queueNumber));
+        queuePosition.setPosition(queueNumber);
+        queuePosition.setPriority(0);
+        queuePosition.setState(QueuePosition.State.ACTIVE_QUEUE);
+        queuePositionRepo.save(queuePosition);
+
+        return new UserQueueNumberDto(
+                user,
+                queuePosition.getQueueNumber(),
+                user.getFirstName() + " " + user.getLastName());
+    }
+
+    // User decide to leave queue without completing their biz
+    public UserQueueNumberDto leaveQueue(String userId, String queueIdstr) {
+        User user = userRepo
+                .findById(Long.parseLong(userId))
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+
+        long queueId = Long.parseLong(queueIdstr);
+        Queue queue = queueRepo
+                .findById(queueId)
+                .orElseThrow(() -> new RuntimeException("Invalid queue: " + queueId));
+
+        queuePositionRepo
+                .findByUserIdQueueIdAndState(
+                        Long.parseLong(userId),
+                        Long.parseLong(queueIdstr),
+                        QueuePosition.State.ACTIVE_QUEUE)
+                .forEach(queuePosition -> {
+                    queuePosition.setState(QueuePosition.State.INACTIVE_LEFT);
+                    queuePositionRepo.save(queuePosition);
+                });
+
+        return new UserQueueNumberDto(
+                user,
+                null,
+                user.getFirstName() + " " + user.getLastName());
+    }
+
+
+//    private String obtainQueueNumber(Long queueId) {
+//        AtomicInteger branchQueueNumberCounter = queueNumberMap.get(queueId);
+//        if (branchQueueNumberCounter == null) {
+//            branchQueueNumberCounter = new AtomicInteger(0);
+//            queueNumberMap.put(queueId, branchQueueNumberCounter);
+//        }
+//        return branchQueueNumberCounter.incrementAndGet() + "";
+//    }
+//
+
+    // This is to restart the Queue Number to 1 every new day
+    private Integer obtainQueueNumber(Long queueId) {
+        int count = queuePositionRepo.findTopByQueue_IdOrderByPositionDesc(queueId).getPosition();
+
+        count = count + 1;
+        return count;
+    }
+    
+	public boolean rejoinQueue(Long queuePositionId) {
+	QueuePosition queuePosition = queuePositionRepo.findById(queuePositionId).get();
+
+	if (queuePosition.getQueue().getState() == Queue.State.CLOSED) {
+		return false;
+	}
+
+	int lastPosition = queuePositionRepo.findAllByQueue_IdAndStateIn(queuePosition.getQueue().getId(), QueuePosition.getQueuingStates()).stream()
+			.mapToInt(QueuePosition::getPosition)
+			.max()
+			.getAsInt();
+
+	queuePosition.setState(State.ACTIVE_REQUEUE);
+	queuePosition.setStateChangeTime(LocalDateTime.now());
+	queuePosition.setPosition(lastPosition + 1);
+	queuePositionRepo.save(queuePosition);
+
+	return true;
+}    
+
+    /**
+     * Estimate queue time in minutes, using moving average.
+     *
+     * @return estimated queue time in minutes
+     * <p>
+     */
+    public int estimateQueueTime(String queueId) {
+        List<QueuePosition> lastNQueuePosition =
+                queuePositionRepo.findTop10ByQueue_IdAndStateEqualsOrderByQueueStartTimeDesc(
+                        Long.parseLong(queueId),
+                        QueuePosition.State.INACTIVE_COMPLETE
+                );
+        //if nobody queue
+        if (lastNQueuePosition.isEmpty()) {
+            return 0;
+        }
+        //duration between start and end of each queue
+        Duration totalDuration = lastNQueuePosition
+                .stream()
+                .map(queuePosition ->
+                        Duration.between(
+                                queuePosition.getQueueEndTime(),
+                                queuePosition.getQueueStartTime()))
+                .reduce((total, current) -> {
+                    return total.plus(current);
+                })
+                //                .reduce(Duration::plus)
+                .orElse(Duration.ofMinutes(0));
+        //convert to minutes
+        int movingAverageInMinutes =
+                (int) (totalDuration.toMinutes() / lastNQueuePosition.size());
+
+        return movingAverageInMinutes;
+    }	
+    
+	public List<MyQueueDto> generateMyQueueDto(Long userId) {
+    	List<MyQueueDto> list = new ArrayList<>();    	
+    	
+    	List<QueuePosition> currentQueuePositions = queuePositionRepo.findAllByUser_IdAndQueueStartTimeGreaterThanEqualAndStateIn(
+    			userId, 
+    			LocalDate.now().atStartOfDay(),
+    			QueuePosition.getViewedStates());
+    			
+//    			userRepo.findById(userId)
+//				.get()
+//				.getQueuePositions()
+//				.stream()
+//				.filter(x -> x.getQueueStartTime().getYear() == LocalDateTime.now().getYear() &&
+//						x.getQueueStartTime().getDayOfYear() == LocalDateTime.now().getDayOfYear())
+//				.filter(x -> x.getState() == State.ACTIVE_QUEUE ||
+//						x.getState() == State.ACTIVE_REQUEUE ||
+//						x.getState() == State.INACTIVE_NO_SHOW)
+//				.collect(Collectors.toList());
+
+    	for (QueuePosition queuePosition : currentQueuePositions) {
+    		List<QueuePosition> queuePositions = queuePositionRepo.findAllByQueue_IdAndStateIn(queuePosition.getQueue().getId(), QueuePosition.getQueuingStates());
+    		int personsInLine = queuePositions.size();
+
+    		int personsInFront = Math.toIntExact(queuePositions.stream()
+    				.filter(qp -> qp.getPosition() < queuePosition.getPosition())
+    				.count());
+
+    		list.add(new MyQueueDto(
+    				queuePosition.getQueue(),
+					personsInFront,
+					personsInLine,
+					this.estimateQueueTime(queuePosition.getQueue().getId().toString()) * personsInFront,
+					queuePosition.getQueueNumber(),
+					queuePosition.getState(),
+					queuePosition.getId().intValue()));
+		}
+
+    	return list;
+	}
+	
+	public List<BranchQueueDto> generateBranchQueueDtos(Long userId, List<Queue> queues) {
+	List<BranchQueueDto> viewQueues = new ArrayList<>();
+	List<State> activeStates = new ArrayList<>();
+	activeStates.add(State.ACTIVE_QUEUE);
+	activeStates.add(State.ACTIVE_REQUEUE);
+				
+	List<QueuePosition> userQueues = queuePositionRepo.findAllByUser_Id(userId);
+
+	for (Queue queue : queues) {
+		Integer inLine = queuePositionRepo.findAllByQueueAndStateIn(queue, activeStates).size();
+		Integer waitingTime = this.estimateQueueTime(queue.getId().toString());
+		boolean userInQueue = userQueues.stream()
+				.filter(queuePosition -> activeStates.contains(queuePosition.getState()))
+				.map(QueuePosition::getQueue)					
+				.collect(Collectors.toList())					
+				.contains(queue);
+
+		viewQueues.add(new BranchQueueDto(queue, inLine, waitingTime, userInQueue));
+	}
+
+	return viewQueues;
+}	
+	
 }

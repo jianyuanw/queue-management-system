@@ -23,9 +23,10 @@ import io.azuremicroservices.qme.qme.models.Branch;
 import io.azuremicroservices.qme.qme.models.Counter;
 import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.models.QueuePosition;
+import io.azuremicroservices.qme.qme.models.QueuePosition.State;
 import io.azuremicroservices.qme.qme.models.User;
 import io.azuremicroservices.qme.qme.models.Vendor;
-import io.azuremicroservices.qme.qme.models.ViewQueuePosition;
+import io.azuremicroservices.qme.qme.models.QueuePositionDto;
 import io.azuremicroservices.qme.qme.services.AlertService;
 import io.azuremicroservices.qme.qme.services.AlertService.AlertColour;
 import io.azuremicroservices.qme.qme.services.PermissionService;
@@ -151,7 +152,7 @@ public class OperateQueueController {
     		return "redirect:/OperateQueue/ViewQueue";
     	}
     	
-    	List<ViewQueuePosition> viewQueuePositions = queueService.generateViewQueuePositions(counter);
+    	List<QueuePositionDto> viewQueuePositions = queueService.generateViewQueuePositions(counter);
     	model.addAttribute("counter", counter);
     	model.addAttribute("viewQueuePositions", viewQueuePositions);
     	
@@ -185,7 +186,7 @@ public class OperateQueueController {
     public String viewNoShowList(@PathVariable("queueId")Long queueId, Model model) {
 
         pullUpdatedUserVendorBranchesQueues();
-        List<QueuePosition> noShowQP = queueService.findNoShowStatusQueuePositions(queueId);
+        List<QueuePosition> noShowQP = queuePositionService.findAllQueuePositionsByQueueIdAndState(queueId, State.INACTIVE_NO_SHOW);
         Queue queue = queueService.findQueue(queueId);
         model.addAttribute("noShowList",noShowQP);
         model.addAttribute("queue",queue);
@@ -205,7 +206,7 @@ public class OperateQueueController {
     		return "redirect:/OperateQueue/ViewQueue";
     	}
     	
-    	List<ViewQueuePosition> viewQueuePositions = queueService.generateViewQueuePositions(counter);
+    	List<QueuePositionDto> viewQueuePositions = queueService.generateViewQueuePositions(counter);
     	
     	model.addAttribute("counter", counter);
     	model.addAttribute("viewQueuePositions", viewQueuePositions);        

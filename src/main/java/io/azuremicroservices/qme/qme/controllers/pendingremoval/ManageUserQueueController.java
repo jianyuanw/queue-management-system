@@ -1,7 +1,8 @@
-package io.azuremicroservices.qme.qme.controllers;
+package io.azuremicroservices.qme.qme.controllers.pendingremoval;
 
 import io.azuremicroservices.qme.qme.models.UserQueueNumberDto;
-import io.azuremicroservices.qme.qme.services.ManageUserQueueService;
+import io.azuremicroservices.qme.qme.services.pendingremoval.ManageUserQueueService;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

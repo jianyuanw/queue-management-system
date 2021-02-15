@@ -8,7 +8,10 @@
     <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
 </head>
 <body>
+    <div th:replace="fragments/layout.html :: mobile-navbar-modal"></div>
+
     <div class="m-4 text-center">
+        <h2 class="font-weight-bold mb-4"><img width="65" th:src="@{/images/logos/qMe_logo.png}"> qMe+<sup>+</sup></h2>
         <h4 class="mb-4">Are you sure you want to log out?</h4>
         <form th:action="@{/logout}" method="post">
             <button type="submit" class="btn btn-danger">log Out</button>

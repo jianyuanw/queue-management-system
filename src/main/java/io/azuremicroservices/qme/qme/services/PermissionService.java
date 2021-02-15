@@ -32,7 +32,7 @@ public class PermissionService {
 		
 	}
 	
-	@Transactional
+	@Transactional(readOnly = true)
 	public Vendor getVendorPermission(Long userId) {		
 		List<UserVendorPermission> vendors = userRepo.findById(userId).get().getUserVendorPermissions();
 		if (vendors.size() > 1) {

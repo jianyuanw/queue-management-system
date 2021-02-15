@@ -1,4 +1,4 @@
-package io.azuremicroservices.qme.qme.services;
+package io.azuremicroservices.qme.qme.services.pendingremoval;
 
 import io.azuremicroservices.qme.qme.models.QueuePosition;
 import io.azuremicroservices.qme.qme.repositories.QueuePositionRepository;

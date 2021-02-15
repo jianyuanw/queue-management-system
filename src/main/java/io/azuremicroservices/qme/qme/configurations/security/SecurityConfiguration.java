@@ -84,8 +84,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     };
 
     private final String[] CLIENT_URLS = {
-            "/client/**",
-            "/support-ticket/**",
+            "/home",
+            "/search/**",
+            "/branch/**",
+            "/join-queue",
+            "/leave-queue",
+            "/rejoin-queue",
+            "/my-queues"
     };
 
     private final String[] PUBLIC_URLS = {

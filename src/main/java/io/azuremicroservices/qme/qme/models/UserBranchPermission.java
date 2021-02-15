@@ -1,10 +1,10 @@
 package io.azuremicroservices.qme.qme.models;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import lombok.Data;
@@ -18,10 +18,10 @@ public class UserBranchPermission {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     private Branch branch;
     
-    @ManyToOne    
+    @ManyToOne(fetch=FetchType.LAZY)      
     private User user;
     
     public UserBranchPermission(User user, Branch branch) {

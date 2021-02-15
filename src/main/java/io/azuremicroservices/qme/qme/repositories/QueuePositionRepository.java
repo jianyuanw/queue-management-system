@@ -13,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 public interface QueuePositionRepository extends JpaRepository<QueuePosition, Long> {
@@ -71,4 +72,10 @@ public interface QueuePositionRepository extends JpaRepository<QueuePosition, Lo
 	public List<QueuePosition> findAllByQueue_IdOrderByPositionAscPriorityDesc(Long queueId);
 
 	public List<QueuePosition> findAllByQueue_IdAndState(Long queueId, State inactiveNoShow);
+
+	public List<QueuePosition> findAllByQueue_Branch_IdIn(List<Long> branchIds);
+	
+	@Query(value = "SELECT qp FROM QueuePosition qp JOIN qp.queue q LEFT JOIN FETCH qp.counter c WHERE q.id IN :queueIds")
+	public List<QueuePosition> findAllByQueue_IdIn(@Param("queueIds") List<Long> queueIds);
+	
 }

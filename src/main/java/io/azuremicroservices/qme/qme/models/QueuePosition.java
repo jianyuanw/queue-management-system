@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -25,14 +26,15 @@ public class QueuePosition {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     private Queue queue;
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     @Exclude
     private User user;
     
-    @OneToOne(mappedBy = "currentlyServingQueueNumber")
+    @OneToOne(mappedBy = "currentlyServingQueueNumber", fetch = FetchType.LAZY)
+    @Exclude
     private Counter counter;
 
     private String queueNumber;

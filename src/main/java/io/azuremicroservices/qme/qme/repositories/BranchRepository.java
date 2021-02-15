@@ -21,4 +21,6 @@ public interface BranchRepository extends JpaRepository<Branch, Long> {
 
 	List<Branch> findAllByNameContaining(String query);
 
+	List<Branch> findAllByUserBranchPermissions_IdIn(List<Long> userBranchPermissionIds);
+
 }

@@ -78,7 +78,7 @@ public class OperateQueueController {
         MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
         List<Queue> queues = permissionService.getQueuePermissions(myUserDetails.getId());
         
-        HashMap<Queue, Integer> queueIdWithCurrentPax = queuePositionService.findAllQueuePositionsInQueues(queues);
+        HashMap<Queue, Integer> queueIdWithCurrentPax = queuePositionService.countAllQueuePositionsInQueues(queues);
 
         if (queues.size() < 1) {
         	alertService.createAlert(AlertColour.YELLOW, "You do not have any queue permissions", redirAttr);

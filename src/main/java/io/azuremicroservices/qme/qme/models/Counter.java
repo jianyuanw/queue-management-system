@@ -1,6 +1,7 @@
 package io.azuremicroservices.qme.qme.models;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -21,13 +22,13 @@ public class Counter {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	private Queue queue;
 	
-	@OneToOne
+	@OneToOne(fetch=FetchType.LAZY)
 	private User user;
 	
-	@OneToOne
+	@OneToOne(fetch=FetchType.LAZY)
 	private QueuePosition currentlyServingQueueNumber;
 	
 	private String name;

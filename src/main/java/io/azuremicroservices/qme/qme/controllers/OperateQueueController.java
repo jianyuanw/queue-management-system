@@ -155,7 +155,7 @@ public class OperateQueueController {
         return "redirect:/OperateQueue/ViewSelectedQueue/"+queueId;
     }
 
-    @GetMapping("/NoShow/{queueId}")
+    @GetMapping("/ViewNoShowList/{queueId}")
     public String viewNoShowList(@PathVariable("queueId")Long queueId, Authentication authentication, Model model) {
         MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
         User user = myUserDetails.getUser();

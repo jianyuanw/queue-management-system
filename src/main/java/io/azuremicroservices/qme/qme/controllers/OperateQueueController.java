@@ -257,4 +257,18 @@ public class OperateQueueController {
 
         return "redirect:/OperateQueue/my-counter";
     }
+
+    @GetMapping("/queue-number-screen/{queueId}")
+    public String queueNumberScreen(@PathVariable String queueId, Model model, RedirectAttributes redirAttr) {
+        Queue queue = queueService.findQueue(Long.valueOf(queueId));
+        List<Counter> counters = queue.getCounters();
+        if (counters.size() == 0) {
+            alertService.createAlert(AlertColour.RED, "Queue has no counters.", redirAttr);
+            return "redirect:/OperateQueue/ViewQueue";
+        }
+        model.addAttribute("counters", counters);
+        model.addAttribute("queue", queue);
+        return "branch-operator/queue-number-screen";
+        // Screen design currently works best for <= 10 counters
+    }
 }

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>qMe - Queue Number Screen</title>
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+    <style>
+        #container {
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body class="green accent-1">
+    <div class="m-5">
+
+        <h1 class="display-4"><small><span class="font-weight-bold">Location: </span><span th:text="${queue.branch.name}">Branch Name</span></small></h1>
+        <h1 class="display-4 mb-5"><small><span class="font-weight-bold">Queue: </span><span th:text="${queue.name}">Queue Name</span></small></h1>
+
+        <div class="row mb-5">
+            <th:block th:each="counter : ${counters}">
+                <th:block th:if="${counterStat.index % 5 == 0}" th:utext="'&lt;div class=&quot;col&quot;&gt;'"></th:block>
+                <th:block th:if="${counterStat.index % 5 == 0}">
+                    <div class="row py-2 primary-color text-white">
+                        <div class="col display-4">Queue No.</div>
+                        <div class="col display-4">Counter</div>
+                    </div>
+                </th:block>
+                <div class="row py-2" th:classappend="${(counterStat.index % 5) % 2 == 0} ? 'white' : 'blue lighten-5'">
+                    <div class="col display-4" th:text="${counter.currentlyServingQueueNumber}">Queue No.</div>
+                    <div class="col display-4" th:text="${counter.name}">Counter Name</div>
+                </div>
+                <th:block th:if="${counterStat.index % 5 == 4 || counterStat.last}" th:utext="'&lt;/div&gt;'"></th:block>
+                <th:block th:if="${counterStat.index % 5 == 4 && !counterStat.last}" th:utext="'&lt;div class=&quot;col-auto&quot;&gt;&lt;/div&gt;'"></th:block>
+            </th:block>
+        </div>
+
+        <div class="row">Missed Queue Numbers</div>
+
+    </div>
+</body>
+</html>

@@ -48,8 +48,10 @@ public class PermissionService {
 	public List<Branch> getBranchPermissions(Long userId) {
 		List<UserBranchPermission> branchPermissions = userRepo.findById(userId).get().getUserBranchPermissions();
 		
-		List<Branch> localBranchPermissions = branchPermissions.stream().map(ubp -> ubp.getBranch()).collect(Collectors.toList());
-		
+		List<Branch> localBranchPermissions = branchRepo.findAllByUserBranchPermissions_IdIn(branchPermissions.stream()
+				.map(UserBranchPermission::getId)
+				.collect(Collectors.toList()));
+				
 		Vendor vendor = this.getVendorPermission(userId);
 		
 		if (vendor != null) {

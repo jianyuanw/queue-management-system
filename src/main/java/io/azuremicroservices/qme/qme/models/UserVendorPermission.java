@@ -1,7 +1,7 @@
 package io.azuremicroservices.qme.qme.models;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,10 +19,10 @@ public class UserVendorPermission {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @ManyToOne
+	@ManyToOne
     private Vendor vendor;
     
-    @ManyToOne
+	@ManyToOne
     private User user;       
     
     public UserVendorPermission(User user, Vendor vendor) {

@@ -19,10 +19,10 @@ public class UserVendorPermission {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne
     private Vendor vendor;
     
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne
     private User user;       
     
     public UserVendorPermission(User user, Vendor vendor) {

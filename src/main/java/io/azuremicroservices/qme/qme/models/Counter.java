@@ -22,13 +22,13 @@ public class Counter {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne
 	private Queue queue;
 	
-	@OneToOne(fetch=FetchType.LAZY)
+	@OneToOne
 	private User user;
 	
-	@OneToOne(fetch=FetchType.LAZY)
+	@OneToOne
 	private QueuePosition currentlyServingQueueNumber;
 	
 	private String name;

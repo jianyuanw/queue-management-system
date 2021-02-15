@@ -26,7 +26,7 @@ public class Queue {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	private Branch branch;
 
 	private String name;

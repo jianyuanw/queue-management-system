@@ -26,14 +26,14 @@ public class QueuePosition {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne
     private Queue queue;
 
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne
     @Exclude
     private User user;
     
-    @OneToOne(mappedBy = "currentlyServingQueueNumber", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "currentlyServingQueueNumber")
     @Exclude
     private Counter counter;
 

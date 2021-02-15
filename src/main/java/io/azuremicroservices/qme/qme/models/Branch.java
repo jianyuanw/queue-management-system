@@ -29,7 +29,7 @@ public class Branch {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne
 	private Vendor vendor;
 
 	@NotEmpty(message = "Branch name must not be empty")

@@ -18,10 +18,10 @@ public class UserBranchPermission {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne
     private Branch branch;
     
-    @ManyToOne(fetch=FetchType.LAZY)      
+    @ManyToOne      
     private User user;
     
     public UserBranchPermission(User user, Branch branch) {

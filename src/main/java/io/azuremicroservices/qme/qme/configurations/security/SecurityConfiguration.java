@@ -90,7 +90,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             "/join-queue",
             "/leave-queue",
             "/rejoin-queue",
-            "/my-queues"
+            "/my-queues",
+            "/support-ticket/**",
     };
 
     private final String[] PUBLIC_URLS = {

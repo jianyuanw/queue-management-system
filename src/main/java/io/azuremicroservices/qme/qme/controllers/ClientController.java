@@ -9,7 +9,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -28,7 +27,6 @@ import io.azuremicroservices.qme.qme.services.QueuePositionService;
 import io.azuremicroservices.qme.qme.services.QueueService;
 
 @Controller
-@RequestMapping("/client")
 public class ClientController {
 
     private final BranchService branchService;
@@ -43,7 +41,7 @@ public class ClientController {
         this.alertService = alertService;        
     }
 
-    @GetMapping
+    @GetMapping("/home")
     public String clientLandingPage(Model model) {
     	List<String> categories = new ArrayList<>();
 
@@ -66,13 +64,13 @@ public class ClientController {
     		messageQuery = branchService.parseSearchQuery(query, category, branches);
     	}    		
 
-        if (branches.size() == 0) {
-            model.addAttribute("error", "Unfortunately, there are no results found. Please try another search term.");
-        }
-        
-        model.addAttribute("branches", branches);
-        model.addAttribute("query", messageQuery);
-        return "client/search-result";
+      if (branches.size() == 0) {
+          model.addAttribute("error", "Unfortunately, there are no results found. Please try another search term.");
+      }
+
+      model.addAttribute("branches", branches);
+      model.addAttribute("query", messageQuery);
+      return "client/search-result";
     }
     
     @GetMapping("/branch/{branchId}")
@@ -98,7 +96,7 @@ public class ClientController {
     	queueService.enterQueue(myUserDetails.getId().toString(), queueId);
     	
     	alertService.createAlert(AlertColour.GREEN, "Successfully entered queue", redirAttr);
-    	return "redirect:/client/my-queues";
+    	return "redirect:/my-queues";
     }
     
     @PostMapping("/leave-queue")
@@ -108,7 +106,7 @@ public class ClientController {
     	queueService.leaveQueue(myUserDetails.getId().toString(), queueId);
     	
     	alertService.createAlert(AlertColour.GREEN, "Successfully left queue", redirAttr);
-    	return "redirect:/client";
+    	return "redirect:/my-queues";
     }
 
     @PostMapping("/rejoin-queue")
@@ -119,7 +117,7 @@ public class ClientController {
         } else {
             alertService.createAlert(AlertColour.RED, "Queue closed. Failed to rejoin.", redirAttr);
         }
-        return "redirect:/client/my-queues";
+        return "redirect:/my-queues";
     }
 
     @GetMapping("/search/branch")
@@ -143,6 +141,9 @@ public class ClientController {
         Long userId = ((MyUserDetails) authentication.getPrincipal()).getId();
         List<MyQueueDto> myQueueDtos = queueService.generateMyQueueDto(userId);
         model.addAttribute("myQueueDtos", myQueueDtos);
+        if (myQueueDtos.size() == 0) {
+            model.addAttribute("error", "Not in any queue");
+        }
         return "client/my-queues";
     }
 }

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>qMe - Register Success</title>
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+    <style>
+        #container {
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div class="m-4">
+        <div class="mx-auto text-center" id="container">
+            <h2 class="font-weight-bold mb-4"><img width="65" th:src="@{/images/logos/qMe_logo.png}"> qMe+<sup>+</sup></h2>
+            <h2 class="mb-4">Account created successfully!</h2>
+            <h2 class="mb-4">You may now login.</h2>
+            <a th:href="@{/login}">
+                <button class="btn btn-info">Login</button>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

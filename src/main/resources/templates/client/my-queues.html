@@ -60,7 +60,7 @@
                                         <div class="modal-body" th:text="${'Rejoin ' + dto.queue.name + '?'}"></div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-mdb-color btn-sm" data-dismiss="modal">Cancel</button>
-                                            <form method="post" th:action="@{/client/rejoin-queue}">
+                                            <form method="post" th:action="@{/rejoin-queue}">
                                                 <input type="hidden" name="queuePositionId" th:value="${dto.queuePositionId}">
                                                 <button class="btn btn-primary btn-sm" type="submit">Rejoin</button>
                                             </form>
@@ -85,7 +85,7 @@
 										<div class="modal-body" th:text="${'Leave ' + dto.queue.name + '?'}"></div>
 										<div class="modal-footer">
 									        <button type="button" class="btn btn-mdb-color btn-sm" data-dismiss="modal">Cancel</button>
-									        <form method="post" th:action="@{/client/leave-queue}">
+									        <form method="post" th:action="@{/leave-queue}">
 									        	<input type="hidden" name="queueId" th:value="${dto.queue.id}">
 									        	<button class="btn btn-primary btn-sm" type="submit">Leave</button>
 									        </form>					        
@@ -99,6 +99,8 @@
                 </div>
             </div>
         </div>
+
+        <h5 class="text-center" th:text="${error}"></h5>
 
     </div>
 </body>

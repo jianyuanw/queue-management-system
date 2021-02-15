@@ -85,7 +85,7 @@
 							<div class="modal-body" th:text="${'Join queue ' + viewQueue.queue.name + ' of ' + viewQueue.queue.branch.name + '?'}"></div>
 							<div class="modal-footer">
 						        <button type="button" class="btn btn-mdb-color btn-sm" data-dismiss="modal">Cancel</button>
-						        <form method="post" th:action="@{/client/join-queue}">
+						        <form method="post" th:action="@{/join-queue}">
 						        	<input type="hidden" name="queueId" th:value="${viewQueue.queue.id}">
 						        	<button class="btn btn-primary btn-sm" type="submit">Join</button>
 						        </form>					        

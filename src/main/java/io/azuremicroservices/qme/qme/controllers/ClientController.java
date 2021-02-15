@@ -11,7 +11,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -24,7 +23,6 @@ import io.azuremicroservices.qme.qme.services.ClientService;
 import io.azuremicroservices.qme.qme.services.ManageUserQueueService;
 
 @Controller
-@RequestMapping("/client")
 public class ClientController {
 
     private final ClientService clientService;
@@ -37,7 +35,7 @@ public class ClientController {
         this.manageUserQueueService = manageUserQueueService;
     }
 
-    @GetMapping
+    @GetMapping("/home")
     public String clientLandingPage(Model model) {
     	List<String> categories = new ArrayList<>();
 
@@ -53,13 +51,20 @@ public class ClientController {
     public String searchResult(@RequestParam(required = false) String query, @RequestParam(required = false) String category, Model model, RedirectAttributes redirAttr) {
     	String messageQuery = "";
     	List<Branch> branches;
-    	if (query == null && category == null) {
+
+    	// Submitting empty search causes query = "" instead of null
+        // Quick fix for the case of submitting empty search
+    	if (query == null) {
+    	    query = "";
+        }
+
+    	if (query.equals("") && category == null) {
     		alertService.createAlert(AlertColour.YELLOW, "Needs to have at least one search term", redirAttr);
-    		return "redirect:/client";
+    		return "redirect:/home";
     	} else if (category == null) {
     		branches = clientService.findBranchesByQuery(query);
     		messageQuery = "Search: " + query;
-    	} else if (query == null) {
+    	} else if (query.equals("")) {
     		branches = clientService.findBranchesByCategory(category);
     		messageQuery = "Category: " + category;
     	} else {
@@ -98,7 +103,7 @@ public class ClientController {
     	manageUserQueueService.enterQueue(myUserDetails.getId().toString(), queueId);
     	
     	alertService.createAlert(AlertColour.GREEN, "Successfully entered queue", redirAttr);
-    	return "redirect:/client/my-queues";
+    	return "redirect:/my-queues";
     }
     
     @PostMapping("/leave-queue")
@@ -108,7 +113,7 @@ public class ClientController {
     	manageUserQueueService.leaveQueue(myUserDetails.getId().toString(), queueId);
     	
     	alertService.createAlert(AlertColour.GREEN, "Successfully left queue", redirAttr);
-    	return "redirect:/client";
+    	return "redirect:/my-queues";
     }
 
     @PostMapping("/rejoin-queue")
@@ -119,7 +124,7 @@ public class ClientController {
         } else {
             alertService.createAlert(AlertColour.RED, "Queue closed. Failed to rejoin.", redirAttr);
         }
-        return "redirect:/client/my-queues";
+        return "redirect:/my-queues";
     }
 
     @GetMapping("/search/branch")
@@ -137,6 +142,9 @@ public class ClientController {
         Long userId = ((MyUserDetails) authentication.getPrincipal()).getId();
         List<MyQueueDto> myQueueDtos = clientService.generateMyQueueDto(userId);
         model.addAttribute("myQueueDtos", myQueueDtos);
+        if (myQueueDtos.size() == 0) {
+            model.addAttribute("error", "Not in any queue");
+        }
         return "client/my-queues";
     }
 }

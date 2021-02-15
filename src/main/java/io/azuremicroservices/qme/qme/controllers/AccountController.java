@@ -58,7 +58,7 @@ public class AccountController {
             } else if (user.getRole() == User.Role.BRANCH_OPERATOR) {
                 return "redirect:/OperateQueue/ViewQueue";
             } else {
-                return "redirect:/client";
+                return "redirect:/home";
             }
         } else {
             return "redirect:/login/error";
@@ -106,7 +106,7 @@ public class AccountController {
         
         alertService.createAlert(AlertColour.GREEN, "Account successfully created", redirAttr);
         accountService.createUser(user, Role.CLIENT);
-        return "account/temp-register-success"; // TODO: Proper landing page
+        return "account/register-client-success";
     }
 
     @GetMapping("/app-admin")

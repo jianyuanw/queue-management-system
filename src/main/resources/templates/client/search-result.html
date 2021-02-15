@@ -23,7 +23,7 @@
         <h5 class="font-weight-bold mb-4">Showing results for: '<span th:text="${query}">query</span>'</h5>
 
         <div class="row row-cols-1">
-            <div class="col border border-info linkbox" th:each="branch : ${branches}" th:attr="data-location=@{/client/branch/{branchId}(branchId=${branch.id})}">
+            <div class="col border border-info linkbox" th:each="branch : ${branches}" th:attr="data-location=@{/branch/{branchId}(branchId=${branch.id})}">
                     <div class="row">
                         <div class="col-3 p-1">
                             <img class="img-fluid rounded" th:src="@{/images/logos/placeholder_image.png}">

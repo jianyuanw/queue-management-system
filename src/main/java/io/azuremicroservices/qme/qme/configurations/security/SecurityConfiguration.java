@@ -85,6 +85,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final String[] CLIENT_URLS = {
             "/client/**",
+            "/support-ticket/**",
     };
 
     private final String[] PUBLIC_URLS = {

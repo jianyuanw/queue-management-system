@@ -14,12 +14,15 @@
 	
     <div th:replace="fragments/layout.html :: navbar"></div>
     
-    <p class="h4 mb-4" th:text ="${supportTicket.title}"></p>
+    <h4 class="h4 mb-4" th:text ="${'Support Ticket #' + supportTicket.id}"></h4>
 	
-	<!-- Need to beautify -->
-	<div><p th:text ="${supportTicket.description}"></p></div>
-	
-	<div><p th:text = "${supportTicket.response}"></p></div>
+		<div class="text-center p-5"> 
+			<div class="card">
+			<div class="card-header h2" th:text="${supportTicket.title}"></div>
+			<p class = "card-text text-left" th:text = "${supportTicket.description}"></p>
+			<div class="card-header text-right" th:text="${supportTicket.response}"></div>
+			</div>
+		</div>
 
     <div th:replace="fragments/layout.html :: footer"></div>
 </body>

@@ -5,7 +5,7 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
-    <title>Create Support Ticket</title>
+    <title>Reply Support Ticket</title>
     <meta charset="UTF-8">
 
     <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
@@ -13,12 +13,16 @@
 <body>
     <div th:replace="fragments/layout.html :: navbar"></div>
 	
-	<p class="h4 mb-4" th:text ="${supportTicket.title}"></p>
+	<h4 class="h4 mb-4" th:text ="${'Support Ticket #' + supportTicket.id}"></h4>
 	
-	<!-- Need to beautify -->
-	<div><p th:text ="${supportTicket.description}"></p></div>
+		<div class="text-center p-5"> 
+			<div class="card">
+			<div class="card-header h2" th:text="${supportTicket.title}"></div>
+			<p class = "card-text" th:text = "${supportTicket.description}"></p>
+			</div>
+		</div>
 	
-	<form class="text-center border border-light p-5" method="post" th:action="@{/manage/support-ticket/reply}" th:object = "${supportTicket}">    
+	<form class="text-center p-5" method="post" th:action="@{/manage/support-ticket/reply}" th:object = "${supportTicket}">    
 	    	<input type="hidden" th:field="*{id}">
 			<input type="hidden" th:field="*{title}">
 			<input type="hidden" th:field="*{description}">

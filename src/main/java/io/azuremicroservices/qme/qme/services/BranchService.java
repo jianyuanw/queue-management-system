@@ -83,7 +83,7 @@ public class BranchService {
 		if (category == null) {
 			branches.addAll(this.findBranchesByQuery(query));
 			messageQuery = "Search: " + query;
-		} else if (query == null) {
+		} else if (query == null || query == "") {
 			branches.addAll(this.findBranchesByCategory(category));
 			messageQuery = "Category: " + category;
 		} else {

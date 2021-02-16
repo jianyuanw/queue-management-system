@@ -63,5 +63,11 @@ public class ManageSupportTicketController {
 		//alertService.createAlert(AlertColour.GREEN, "App Admin Account successfully deleted", redirAttr);
 		return "redirect:/manage/support-ticket/list";
 	}
+	
+	@GetMapping("/view/{supportTicketId}")
+	public String ViewSupportTicket(Model model, @PathVariable("supportTicketId") Long supportTicketId) {
+		model.addAttribute("supportTicket", supportTicketService.viewSupportTicket(supportTicketId));
+		return "manage/support-ticket/view";
+	}
 
 }

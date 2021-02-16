@@ -31,7 +31,7 @@ public class User {
     private Long id;
 
     @NotEmpty(message = "Username must not be empty")
-    @Pattern(regexp = "[A-Za-z0-9.]+", message = "Username must only contain alphanumeric characters and period")
+    @Pattern(regexp = "[A-Za-z0-9._]+", message = "Username must only contain alphanumeric characters, periods and underscores")
     private String username;
 
     @NotEmpty(message = "Password must not be empty")
@@ -50,6 +50,8 @@ public class User {
     private Role role;
     
     private Role perspective;
+    
+    private boolean blocked;
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private Counter counter;

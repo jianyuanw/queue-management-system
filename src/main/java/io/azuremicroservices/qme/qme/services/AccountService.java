@@ -4,10 +4,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.transaction.Transactional;
-
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 
 import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
@@ -41,11 +42,13 @@ public class AccountService {
     private final UserVendorPermissionRepository uvpRepo;
     private final UserBranchPermissionRepository ubpRepo;
     private final UserQueuePermissionRepository uqpRepo;
+    
+    private final SessionRegistry sessionRegistry;
 
     public AccountService(UserRepository userRepo, PermissionService permissionService, 
     		PasswordEncoder passwordEncoder, UserVendorPermissionRepository uvpRepo, VendorRepository vendorRepo,
     		BranchRepository branchRepo, UserBranchPermissionRepository ubpRepo, QueueRepository queueRepo,
-    		UserQueuePermissionRepository uqpRepo) {
+    		UserQueuePermissionRepository uqpRepo, SessionRegistry sessionRegistry) {
         this.userRepo = userRepo;
         this.permissionService = permissionService;
         this.passwordEncoder = passwordEncoder;
@@ -57,6 +60,8 @@ public class AccountService {
         this.uvpRepo = uvpRepo;
         this.ubpRepo = ubpRepo;
         this.uqpRepo = uqpRepo;
+        
+        this.sessionRegistry = sessionRegistry;
     }
 
     public boolean usernameExists(String username) {
@@ -67,14 +72,17 @@ public class AccountService {
         return userRepo.findByEmail(email) != null;
     }
 
+    @Transactional(readOnly = true)
     public User findUserByUsername(String username) {
         return userRepo.findByUsername(username);
     }
     
+    @Transactional(readOnly = true)
     public List<User> findAllUsersByRole(Role role) {
     	return userRepo.findAllByRole(role);
     }
     
+    @Transactional(readOnly = true)
     public User findUserByRole(Role role) {
     	return userRepo.findByRole(role);
     }
@@ -84,6 +92,7 @@ public class AccountService {
     	user.setRole(role);
     	user.setPerspective(role);
     	user.setPassword(passwordEncoder.encode(user.getPassword()));
+    	user.setBlocked(false);
     	userRepo.save(user);
     }
     
@@ -93,6 +102,7 @@ public class AccountService {
     	user.setPerspective(Role.VENDOR_ADMIN);
     	user.setPassword(passwordEncoder.encode(user.getPassword()));
     	user.setId(null);
+    	user.setBlocked(false);
     	userRepo.saveAndFlush(user);
     	Vendor dbVendor = vendorRepo.findById(vendor.getId()).get();
     	user.getUserVendorPermissions().add(new UserVendorPermission(user, dbVendor));
@@ -104,6 +114,7 @@ public class AccountService {
     	user.setPerspective(Role.BRANCH_ADMIN);
     	user.setPassword(passwordEncoder.encode(user.getPassword()));
     	user.setId(null);
+    	user.setBlocked(false);
     	userRepo.saveAndFlush(user);
     	Branch dbBranch = branchRepo.findById(branch.getId()).get();
     	user.getUserBranchPermissions().add(new UserBranchPermission(user, dbBranch));	
@@ -115,6 +126,7 @@ public class AccountService {
     	user.setPerspective(Role.BRANCH_OPERATOR);
     	user.setPassword(passwordEncoder.encode(user.getPassword()));
     	user.setId(null);
+    	user.setBlocked(false);
     	userRepo.saveAndFlush(user);
     	for (String q : queues) {
     		var queue = queueRepo.findById(Long.parseLong(q));
@@ -142,10 +154,12 @@ public class AccountService {
 	
 	public void updateUser(User user) {
 		userRepo.save(user);
+		this.invalidateSessions(user.getId());
 	}
 	
 	public void deleteUser(User user) {
 		userRepo.delete(user);
+		this.invalidateSessions(user.getId());
 	}
 
 	public BindingResult verifyUser(User user, BindingResult bindingResult) {	
@@ -168,6 +182,7 @@ public class AccountService {
 		return bindingResult;		
 	}
 
+	@Transactional(readOnly = true)
 	public List<User> findAllUsersByRoleAndVendor(Role role, Vendor vendor) {
 		List<Long> branches = branchRepo.findAllByVendor_Id(vendor.getId()).stream()
 				.map(Branch::getId)
@@ -178,6 +193,7 @@ public class AccountService {
 				.collect(Collectors.toList());
 	}
 
+	@Transactional(readOnly = true)
 	public List<User> findAllUsersByRoleAndBranchIn(Role role, List<Branch> branches) {
 		List<Long> queues = queueRepo.findAllByBranch_IdIn(branches.stream().map(Branch::getId).collect(Collectors.toList())).stream()
 				.map(Queue::getId)
@@ -187,4 +203,38 @@ public class AccountService {
 				.map(UserQueuePermission::getUser).distinct()
 				.collect(Collectors.toList());
 	}
+
+	@Transactional(readOnly = true)
+	public List<User> findAllUsers() {
+		return userRepo.findAll();
+	}
+
+	public void unblockUser(Long userId) {
+		User user = userRepo.findById(userId).get();
+		user.setBlocked(false);
+		userRepo.save(user);
+		this.invalidateSessions(userId);
+	}
+	
+	public void blockUser(Long userId) {
+		User user = userRepo.findById(userId).get();		
+		user.setBlocked(true);
+		userRepo.save(user);
+		this.invalidateSessions(userId);
+	}
+	
+	public void invalidateSessions(Long userId) {
+		List<Object> principals = sessionRegistry.getAllPrincipals();
+		for (Object principal : principals) {
+			if (principal instanceof MyUserDetails) {
+				MyUserDetails loggedInUser = (MyUserDetails) principal;
+				if (userId.equals(loggedInUser.getId())) {
+					List<SessionInformation> sessionsInfo = sessionRegistry.getAllSessions(principal, false );
+					for (SessionInformation sessionInfo : sessionsInfo) {
+						sessionInfo.expireNow();
+					}
+				}
+			}
+		}
+	}	
 }

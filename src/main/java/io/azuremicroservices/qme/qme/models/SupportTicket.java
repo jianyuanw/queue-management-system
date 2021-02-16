@@ -1,12 +1,13 @@
 package io.azuremicroservices.qme.qme.models;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import lombok.Data;
@@ -31,6 +32,10 @@ public class SupportTicket {
     private String description;
     
     private String response;
+    
+    private LocalDateTime ticketRaisedTime;
+    
+    private LocalDateTime responseTime;
     
     private TicketState ticketState;
 

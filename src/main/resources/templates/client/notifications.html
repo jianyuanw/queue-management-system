@@ -29,19 +29,38 @@
 
         <div class="row row-cols-1">
             <div class="col border border-info" th:each="notification : ${notifications}">
-            	<div class="row">
-					<h5 class="font-weight-bold" th:text="${notification.title}"></h5>
-            	</div>
-                <div class="row">
-                    <span class="d-inline-block text-truncate" th:text="${notification.body}"></span>
+            	<div data-toggle="modal" th:data-target="${'#viewNotification' + notification.id}">
+	            	<div class="row">
+						<h5 class="font-weight-bold" th:text="${notification.title}"></h5>
+	            	</div>
+	                <div class="row">
+	                    <span class="d-inline-block text-truncate" th:text="${notification.body}"></span>
+	                </div>
+	                <div class="row float-right">
+	                	<span class="d-inline-block" th:text="${#temporals.format(notification.timeOfMessage, 'dd MMM yyyy')}"></span>
+						<i class="fas fa-archive fa-lg clickable mx-2" title="Archive Notification" onclick="submitForm(this)" data-form="archive-form"></i>
+						<form id="archive-form" method="post" th:action="@{/notifications}">
+							<input type="hidden" name="messageId" th:value="${notification.id}">
+						</form>                	
+	                </div>
                 </div>
-                <div class="row float-right">
-                	<span class="d-inline-block" th:text="${#temporals.format(notification.timeOfMessage, 'dd MMM yyyy')}"></span>
-					<i class="fas fa-archive fa-lg clickable mx-2" title="Archive Notification" onclick="submitForm(this)" data-form="archive-form"></i>
-					<form id="archive-form" method="post" th:action="@{/notifications}">
-						<input type="hidden" name="messageId" th:value="${notification.id}">
-					</form>                	
-                </div>
+				<div class="modal fade" th:id="${'viewNotification' + notification.id}" tabindex="-1" role="dialog" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="modalTitle" th:text="${notification.title}"></h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body" th:text="${notification.body}"></div>
+							<div class="modal-footer">
+						        <button type="button" class="btn btn-mdb-color btn-sm" data-dismiss="modal">Cancel</button>
+						        <a class="btn btn-primary btn-sm" th:href="@{/my-queues}">My Queues</a>
+							</div>
+						</div>
+					</div>
+				</div>                
             </div>
         </div>
 

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>qMe - Queue Number Screen</title>
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+    <style>
+        #container {
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body class="green accent-1">
+    <div class="m-5">
+
+        <h1 class="display-4"><span class="font-weight-bold">Location: </span><span th:text="${queue.branch.name}">Branch Name</span></h1>
+        <h1 class="display-4 mb-5"><span class="font-weight-bold">Queue: </span><span th:text="${queue.name}">Queue Name</span></h1>
+
+        <div class="row mb-5">
+            <th:block th:each="counter : ${counters}">
+                <th:block th:if="${counterStat.index % 5 == 0}" th:utext="'&lt;div class=&quot;col&quot;&gt;'"></th:block>
+                <th:block th:if="${counterStat.index % 5 == 0}">
+                    <div class="row py-2 primary-color text-white">
+                        <div class="col display-4 font-weight-bold">Queue No.</div>
+                        <div class="col display-4 font-weight-bold">Counter</div>
+                    </div>
+                </th:block>
+                <div class="row py-2" th:classappend="${(counterStat.index % 5) % 2 == 0} ? 'white' : 'blue lighten-5'">
+                    <div class="col display-4" th:text="${counter.currentlyServingQueueNumber == null} ? '' : ${counter.currentlyServingQueueNumber.queueNumber} ">Queue No.</div>
+                    <div class="col display-4" th:text="${counter.name}">Counter Name</div>
+                </div>
+                <th:block th:if="${counterStat.index % 5 == 4 || counterStat.last}" th:utext="'&lt;/div&gt;'"></th:block>
+                <th:block th:if="${counterStat.index % 5 == 4 && !counterStat.last}" th:utext="'&lt;div class=&quot;col-auto&quot;&gt;&lt;/div&gt;'"></th:block>
+            </th:block>
+        </div>
+
+        <div class="row py-2 display-4 default-color text-white font-weight-bold">
+            <div class="col">Missed Queue No.</div>
+        </div>
+        <th:block th:each="number : ${missedQueueNumbers}">
+            <th:block th:if="${numberStat.index % 5 == 0}" th:utext="'&lt;div class=&quot;row&quot;&gt;'"></th:block>
+            <div class="col py-2 display-4" th:classappend="${numberStat.index % 2 == 0} ? 'white' : 'blue lighten-5'" th:text="${number}">Missed Queue Number</div>
+            <th:block th:if="${numberStat.index % 5 == 0 && numberStat.last}">
+                <div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div>
+            </th:block>
+            <th:block th:if="${numberStat.index % 5 == 1 && numberStat.last}">
+                <div class="col"></div><div class="col"></div><div class="col"></div>
+            </th:block>
+            <th:block th:if="${numberStat.index % 5 == 2 && numberStat.last}">
+                <div class="col"></div><div class="col"></div>
+            </th:block>
+            <th:block th:if="${numberStat.index % 5 == 3 && numberStat.last}">
+                <div class="col"></div>
+            </th:block>
+            <th:block th:if="${numberStat.index % 5 == 4 || numberStat.last}" th:utext="'&lt;/div&gt;'"></th:block>
+        </th:block>
+
+    </div>
+
+    <input type="hidden" id="queueId" th:value="${queue.id}">
+
+    <script>
+        const queueId = document.getElementById("queueId").value;
+        const eventSource = new EventSource("/OperateQueue/sse/" + queueId);
+        eventSource.onmessage = function (event) {
+            if (event.data === "refresh") {
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>

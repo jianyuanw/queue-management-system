@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.zxing.WriterException;
@@ -214,6 +215,7 @@ public class OperateQueueController {
         switch (command) {
         	case "next":
                 String nextNumber = queueService.callNextNumber(counter);
+                queueService.refreshBrowsers(counter.getQueue().getId());
                 if (nextNumber == null) {
                     alertService.createAlert(AlertColour.RED, "Failed to call next number. No people in queue.", redirAttr);
                 } else {
@@ -222,6 +224,7 @@ public class OperateQueueController {
                 break;
         	case "no-show":
                 String noShowNumber = queueService.noShow(counter);
+                queueService.refreshBrowsers(counter.getQueue().getId());
                 if (noShowNumber == null) {
                     alertService.createAlert(AlertColour.RED, "An error occurred. Please try again.", redirAttr);
                 } else {
@@ -243,5 +246,26 @@ public class OperateQueueController {
         }
 
         return "redirect:/OperateQueue/my-counter";
+    }
+
+    @GetMapping("/queue-number-screen/{queueId}")
+    public String queueNumberScreen(@PathVariable String queueId, Model model, RedirectAttributes redirAttr) {
+        Queue queue = queueService.findQueue(Long.valueOf(queueId));
+        List<Counter> counters = queue.getCounters();
+        if (counters.size() == 0) {
+            alertService.createAlert(AlertColour.RED, "Queue has no counters.", redirAttr);
+            return "redirect:/OperateQueue/ViewQueue";
+        }
+        String[] missedQueueNumbers = queuePositionService.findCurrentDayMissedQueueNumbersByQueue(queue);
+        model.addAttribute("missedQueueNumbers", missedQueueNumbers);
+        model.addAttribute("counters", counters);
+        model.addAttribute("queue", queue);
+        return "branch-operator/queue-number-screen";
+        // Screen design currently works best for <= 10 counters
+    }
+
+    @GetMapping("/sse/{queueId}")
+    public SseEmitter registerForLiveQueueUpdate(@PathVariable String queueId) {
+        return queueService.addEmitter(Long.valueOf(queueId));
     }
 }

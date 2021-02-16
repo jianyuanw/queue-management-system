@@ -194,4 +194,12 @@ public class QueuePositionService {
 		return dateBoundaryMapping;
 	}
 
+	public String[] findCurrentDayMissedQueueNumbersByQueue(Queue queue) {
+    	LocalDateTime startOfCurrentDay = LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT);
+    	return queuePositionRepo
+				.findAllByQueueAndStateAndQueueStartTimeAfter(queue, State.INACTIVE_NO_SHOW, startOfCurrentDay)
+				.stream()
+				.map(QueuePosition::getQueueNumber)
+				.toArray(String[]::new);
+	}
 }

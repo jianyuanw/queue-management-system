@@ -12,6 +12,16 @@
 			cursor: pointer;
 		}
 	</style>
+	<script th:if="${joinQueue != null}" th:inline="javascript">
+		/*[+
+		let queueId = '#joinQueueConfirm' + [[${joinQueue}]];
+		+]*/
+		
+	    $(window).on('load', function() {
+	        $(queueId).modal('show');
+	    });		
+	
+	</script>
 </head>
 <body>
     <div th:replace="fragments/layout.html :: mobile-navbar-modal"></div>

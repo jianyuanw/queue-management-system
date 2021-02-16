@@ -93,7 +93,7 @@
 					<th:block th:switch="${#strings.toLowerCase(#strings.replace(user.getPerspective(), ' ', ''))}">
 						<ul th:case="appadmin" class="navbar-nav mr-auto">
 						    <li class="nav-item">
-						        <a class="nav-link" th:href="@{manage/support-ticket/list}">Support Tickets</a>
+						        <a class="nav-link" th:href="@{/manage/support-ticket/list}">Support Tickets</a>
 						    </li>
 		                	<li class="nav-item dropdown">
 		                        <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle"

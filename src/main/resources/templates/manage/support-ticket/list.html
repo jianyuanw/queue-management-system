@@ -28,19 +28,12 @@
 				<td class="col" th:text="${ticket.title}"></td>
 				<td class="col" th:text="${ticket.ticketState.getDisplayValue()}"></td>
 				<td class="col">
-				<a th:href="@{~/support-ticket/view/__${ticket.id}__}">
+				<a th:href="@{/manage/support-ticket/view/__${ticket.id}__}">
 						<i class="fas fa-eye fa-lg" title="View Support Ticket"></i>
 					</a>
 				<a th:if="${ticket.ticketState.getDisplayValue() == 'Open'}" th:href="@{/manage/support-ticket/reply/__${ticket.id}__}">
 						<i class="fas fa-reply fa-lg" title="Reply"></i>
 					</a>
-				<a href="#" th:unless="${ticket.ticketState.getDisplayValue() == 'Open'}"><i class="fas fa-trash-alt fa-lg" data-toggle="modal" th:data-target="${'#deleteConfirm' + ticket.id}" title="Delete Support Ticket"></i></a>
-      				
-					<th:block th:insert="fragments/support-elements.html :: modalbox-red"
-						th:with="modalId=${'deleteConfirm' + ticket.id},modalTitle=${'Confirm Deletion'},modalBody=${'Are you sure you want to delete ' + ticket.title + '?'},
-							modalConfirm=${'Delete'},confirmUrl=${'/manage/support-ticket/delete/' + ticket.id}">
-					</th:block>
-				</a>
 				</td>
 			</tr>
 		</tbody>

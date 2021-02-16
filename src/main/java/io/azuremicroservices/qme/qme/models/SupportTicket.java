@@ -27,12 +27,10 @@ public class SupportTicket {
     private User user;
 
     private String title;
-
-    @OneToOne
-    private Message description;
-
-    @OneToOne
-    private Message response;
+    
+    private String description;
+    
+    private String response;
     
     private TicketState ticketState;
 

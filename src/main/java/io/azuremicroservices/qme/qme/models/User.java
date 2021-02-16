@@ -57,6 +57,9 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<SupportTicket> supportTickets;
     
+    @OneToMany(mappedBy = "user")
+    private List<Message> messages;    
+    
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<QueuePosition> queuePositions;
 

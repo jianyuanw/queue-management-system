@@ -3,26 +3,28 @@ package io.azuremicroservices.qme.qme.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.sun.el.stream.Optional;
-
 import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
 import io.azuremicroservices.qme.qme.models.Branch;
 import io.azuremicroservices.qme.qme.models.BranchCategory;
+import io.azuremicroservices.qme.qme.models.BranchQueueDto;
+import io.azuremicroservices.qme.qme.models.Message;
 import io.azuremicroservices.qme.qme.models.MyQueueDto;
 import io.azuremicroservices.qme.qme.models.Queue;
-import io.azuremicroservices.qme.qme.models.BranchQueueDto;
 import io.azuremicroservices.qme.qme.services.AlertService;
 import io.azuremicroservices.qme.qme.services.AlertService.AlertColour;
 import io.azuremicroservices.qme.qme.services.BranchService;
+import io.azuremicroservices.qme.qme.services.NotificationService;
 import io.azuremicroservices.qme.qme.services.QueuePositionService;
 import io.azuremicroservices.qme.qme.services.QueueService;
 
@@ -32,17 +34,27 @@ public class ClientController {
     private final BranchService branchService;
     private final QueueService queueService;
     private final QueuePositionService queuePositionService;
+    private final NotificationService notificationService;
     private final AlertService alertService;
 
-    public ClientController(BranchService branchService, QueueService queueService, QueuePositionService queuePositionService, AlertService alertService) {
+    @Autowired
+    public ClientController(BranchService branchService, QueueService queueService, QueuePositionService queuePositionService, 
+    		NotificationService notificationService, AlertService alertService) {
         this.branchService = branchService;
         this.queueService = queueService;
         this.queuePositionService = queuePositionService;
+        this.notificationService = notificationService;
         this.alertService = alertService;        
+    }
+    
+    @ModelAttribute
+    public void addAttributes(Model model, Authentication authentication) {
+    	MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
+    	model.addAttribute("newNotifications", notificationService.getNewNotifications(userDetails.getId()));
     }
 
     @GetMapping("/home")
-    public String clientLandingPage(Model model) {
+    public String clientLandingPage(Model model, Authentication authentication) {
     	List<String> categories = new ArrayList<>();
 
     	for (BranchCategory branchCategory : BranchCategory.values()) {
@@ -54,7 +66,7 @@ public class ClientController {
     }
 
     @GetMapping("/search")
-    public String searchResult(@RequestParam(required = false) String query, @RequestParam(required = false) String category, Model model, RedirectAttributes redirAttr) {
+    public String searchResult(@RequestParam(required = false) String query, @RequestParam(required = false) String category, Model model, Authentication authentication, RedirectAttributes redirAttr) {
     	String messageQuery = "";
     	List<Branch> branches = new ArrayList<>();
     	if (query == null && category == null) {
@@ -146,9 +158,45 @@ public class ClientController {
         Long userId = ((MyUserDetails) authentication.getPrincipal()).getId();
         List<MyQueueDto> myQueueDtos = queueService.generateMyQueueDto(userId);
         model.addAttribute("myQueueDtos", myQueueDtos);
+        
         if (myQueueDtos.size() == 0) {
             model.addAttribute("error", "Not in any queue");
         }
+        
         return "client/my-queues";
     }
+    
+    @GetMapping("/notifications")
+    public String viewNotifications(Authentication authentication, Model model) {
+    	Long userId = ((MyUserDetails) authentication.getPrincipal()).getId();
+    	
+    	List<Message> notifications = notificationService.generateNotifications(userId);
+    	
+    	model.addAttribute("notifications", notifications);
+    	model.addAttribute("newNotifications", 0);
+    	return "client/notifications";
+    }
+    
+    @PostMapping("/notifications")
+    public String archiveNotification(@RequestParam("messageId") Long messageId, Authentication authentication, Model model, RedirectAttributes redirAttr) {
+    	Long userId = ((MyUserDetails) authentication.getPrincipal()).getId();
+    	
+    	if (notificationService.archiveNotification(userId, messageId)) { 
+    		alertService.createAlert(AlertColour.GREEN, "Message archived", redirAttr);
+    	} else {
+    		alertService.createAlert(AlertColour.YELLOW, "Message not found", redirAttr);
+    	}
+    	
+    	return "redirect:/notifications";
+    }
+    
+    // TODO: Note - This is for testing, remove after
+    @GetMapping("/notifications/add/{title}/{body}")
+    public String viewNotifications(@PathVariable("title") String title, @PathVariable("body") String body, Authentication authentication, Model model) {
+    	Long userId = ((MyUserDetails) authentication.getPrincipal()).getId();
+    	
+    	notificationService.addNotification(userId, title, body);
+    	    	
+    	return "redirect:/home";
+    }    
 }

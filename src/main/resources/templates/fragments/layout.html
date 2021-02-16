@@ -55,7 +55,7 @@
                             <div class="modal-body mb-0 text-center">
                                 <a th:href="@{/home}"><h2>Home</h2></a>
                                 <a th:href="@{/my-queues}"><h2>My Queues</h2></a>
-                                <a href="#"><h2>Messages</h2></a>
+                                <a th:href="@{/notifications}"><span th:if="${newNotifications > 0}" class="badge badge-pill badge-danger align-top" th:text="${newNotifications}"></span><h2 class="d-inline-block">Notifications</h2></a>
                                 <a th:href="@{/support-ticket/my-tickets}"><h2>Contact Us</h2></a>
                                 <a th:href="@{/logout}"><h2>Logout</h2></a>
                             </div>

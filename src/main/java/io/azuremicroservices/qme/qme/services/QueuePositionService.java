@@ -77,7 +77,7 @@ public class QueuePositionService {
 		Map<Long, List<Counter>> queueCounters = new HashMap<>();
 		
 		for (Queue queue : queues) {
-			queueCounters.put(queue.getId(), counterRepo.findAllByQueue_IdAndUser_IdNull(queue.getId()));
+			queueCounters.put(queue.getId(), counterRepo.findAllByQueue_Id(queue.getId()));
 		}
 		
 		return queueCounters;

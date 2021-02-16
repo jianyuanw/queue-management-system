@@ -81,33 +81,6 @@ public class QueueController {
         this.queuePositionService = queuePositionService;
         this.permissionService = permissionService;
     }
-
-    @GetMapping("/prototype/viewQueue")
-    public String viewQueuePrototype(Model model) {
-        /* Will shift code to service layer */
-        List<QueuePosition> queuePositions = queuePositionService.findAllQueuePositionsByQueueIdAndActiveStates(1L);
-        Map<QueuePosition, Duration> queuePositionDurationMap = new LinkedHashMap<>();
-        for (QueuePosition queuePosition : queuePositions) {
-            queuePositionDurationMap.put(queuePosition,
-                    Duration.between(queuePosition.getQueueStartTime(), LocalDateTime.now()));
-        }
-        Queue queue = queueService.findQueue(1L);
-        model.addAttribute("queuePositionDurationMap", queuePositionDurationMap);
-        model.addAttribute("queue", queue);
-        return "prototype/viewQueue";
-    }
-
-    @GetMapping("/prototype/addQueueNumber")
-    public String addQueueNumberPrototype() {
-        return "prototype/addQueueNumber";
-    }
-
-    @PostMapping("/prototype/addQueueNumber")
-    public String addRandomQueueNumberPrototype() {
-        queueService.addRandomQueueNumber(1L);
-        queueService.refreshBrowsers();
-        return "prototype/addQueueNumber";
-    }
     
     @GetMapping("/manage-branchAdmin/manageQueue")
     public String showQueueManageForm(Model model) {
@@ -247,10 +220,5 @@ public class QueueController {
 			  BoNotifyService.findAllNotification();
       model.addAttribute("BoNotifyList",BoNotifyList);
       return "manage-branchOperator/branchOperatorNotification";
-    }    
-
-    @GetMapping("/prototype/sse")
-    public SseEmitter registerClient() {
-        return queueService.addEmitter();
     }
 }

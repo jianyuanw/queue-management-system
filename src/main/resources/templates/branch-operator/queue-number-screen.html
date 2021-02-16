@@ -28,7 +28,7 @@
                     </div>
                 </th:block>
                 <div class="row py-2" th:classappend="${(counterStat.index % 5) % 2 == 0} ? 'white' : 'blue lighten-5'">
-                    <div class="col display-4" th:text="${counter.currentlyServingQueueNumber}">Queue No.</div>
+                    <div class="col display-4" th:text="${counter.currentlyServingQueueNumber == null} ? '' : ${counter.currentlyServingQueueNumber.queueNumber} ">Queue No.</div>
                     <div class="col display-4" th:text="${counter.name}">Counter Name</div>
                 </div>
                 <th:block th:if="${counterStat.index % 5 == 4 || counterStat.last}" th:utext="'&lt;/div&gt;'"></th:block>
@@ -58,5 +58,17 @@
         </th:block>
 
     </div>
+
+    <input type="hidden" id="queueId" th:value="${queue.id}">
+
+    <script>
+        const queueId = document.getElementById("queueId").value;
+        const eventSource = new EventSource("/OperateQueue/sse/" + queueId);
+        eventSource.onmessage = function (event) {
+            if (event.data === "refresh") {
+                location.reload();
+            }
+        }
+    </script>
 </body>
 </html>

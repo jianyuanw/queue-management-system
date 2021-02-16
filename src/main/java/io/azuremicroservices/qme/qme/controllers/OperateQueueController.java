@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
@@ -204,6 +205,7 @@ public class OperateQueueController {
         switch (command) {
         	case "next":
                 String nextNumber = queueService.callNextNumber(counter);
+                queueService.refreshBrowsers(counter.getQueue().getId());
                 if (nextNumber == null) {
                     alertService.createAlert(AlertColour.RED, "Failed to call next number. No people in queue.", redirAttr);
                 } else {
@@ -212,6 +214,7 @@ public class OperateQueueController {
                 break;
         	case "no-show":
                 String noShowNumber = queueService.noShow(counter);
+                queueService.refreshBrowsers(counter.getQueue().getId());
                 if (noShowNumber == null) {
                     alertService.createAlert(AlertColour.RED, "An error occurred. Please try again.", redirAttr);
                 } else {
@@ -249,5 +252,10 @@ public class OperateQueueController {
         model.addAttribute("queue", queue);
         return "branch-operator/queue-number-screen";
         // Screen design currently works best for <= 10 counters
+    }
+
+    @GetMapping("/sse/{queueId}")
+    public SseEmitter registerForLiveQueueUpdate(@PathVariable String queueId) {
+        return queueService.addEmitter(Long.valueOf(queueId));
     }
 }

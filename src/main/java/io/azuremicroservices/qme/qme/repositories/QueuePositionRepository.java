@@ -77,5 +77,6 @@ public interface QueuePositionRepository extends JpaRepository<QueuePosition, Lo
 	
 	@Query(value = "SELECT qp FROM QueuePosition qp JOIN qp.queue q LEFT JOIN FETCH qp.counter c WHERE q.id IN :queueIds")
 	public List<QueuePosition> findAllByQueue_IdIn(@Param("queueIds") List<Long> queueIds);
-	
+
+	public List<QueuePosition> findAllByQueueAndStateAndQueueStartTimeAfter(Queue queue, State state, LocalDateTime dateTime);
 }

@@ -243,6 +243,8 @@ public class OperateQueueController {
             alertService.createAlert(AlertColour.RED, "Queue has no counters.", redirAttr);
             return "redirect:/OperateQueue/ViewQueue";
         }
+        String[] missedQueueNumbers = queuePositionService.findCurrentDayMissedQueueNumbersByQueue(queue);
+        model.addAttribute("missedQueueNumbers", missedQueueNumbers);
         model.addAttribute("counters", counters);
         model.addAttribute("queue", queue);
         return "branch-operator/queue-number-screen";

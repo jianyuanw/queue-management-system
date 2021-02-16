@@ -1,5 +1,12 @@
 package io.azuremicroservices.qme.qme.controllers;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+
 import javax.validation.Valid;
 import javax.websocket.server.PathParam;
 
@@ -7,12 +14,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
@@ -62,7 +72,9 @@ public class ManageBranchController {
 	}
 	
 	@PostMapping("/create")
-	public String createBranch(@ModelAttribute @Valid Branch branch, BindingResult bindingResult, RedirectAttributes redirAttr) {
+	public String createBranch(@ModelAttribute @Valid Branch branch, BindingResult bindingResult, RedirectAttributes redirAttr, @RequestParam("branchImage") MultipartFile branchImage)
+	throws IOException{
+		
 		if (branchService.branchNameExistsForVendor(branch.getName(), branch.getVendor().getId())) {
 			bindingResult.rejectValue("name", "error.name", "Branch name already exists");
 		}
@@ -70,7 +82,24 @@ public class ManageBranchController {
 			return "manage/branch/create";
 		} 
 		
-		branchService.createBranch(branch);
+		String fileName = StringUtils.cleanPath(branchImage.getOriginalFilename());
+		branch.setBranchImage(fileName);
+		Branch savedBranch = branchService.createBranch(branch);
+		
+		String uploadDir = "./branch-images/" + savedBranch.getId();
+		
+		Path uploadPath = Paths.get(uploadDir);
+		if (!Files.exists(uploadPath)) {
+			Files.createDirectories(uploadPath);
+		}
+		
+		try (InputStream inputStream = branchImage.getInputStream()){
+		Path filePath = uploadPath.resolve(fileName);
+		Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			throw new IOException("Could not save uploaded file:" + fileName);
+		}
+		
 		alertService.createAlert(AlertColour.GREEN, "Branch successfully created", redirAttr);
 		return "redirect:/manage/branch/list";
 	}

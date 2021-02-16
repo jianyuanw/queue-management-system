@@ -28,8 +28,8 @@ public class BranchService {
 		return branchRepo.findAll();
 	}
 
-	public void createBranch(Branch branch) {
-		branchRepo.save(branch);
+	public Branch createBranch(Branch branch) {
+		return branchRepo.save(branch);
 	}
 	
 	public void updateBranch(Branch branch) {

@@ -13,7 +13,7 @@
 <body>
     <div th:replace="fragments/layout.html :: navbar"></div>
 	
-	<form class="text-center border border-light p-5" method="post" th:action="@{/manage/branch/create}" th:object="${branch}">
+	<form class="text-center border border-light p-5" method="post" th:action="@{/manage/branch/create}" th:object="${branch}" enctype="multipart/form-data">
 	
 	    <p class="h4 mb-4">New Branch</p>
 	
@@ -43,6 +43,11 @@
 	            <input type="text" id="address" class="form-control" th:field="*{address}" required>
 	            <p class="text-danger text-left" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></p>
 	        </div>
+	        
+	         <div class="col form-group">
+	        	<label class="form-label" for="branchImage">Image Upload</label>
+	        	<input class = "form-control border-0" type = "file" name = branchImage id = branchImage accept = "image/png, image/jpeg"/>         
+	        </div>	        
 	    </div>
 	    
 	    <div class="form-row mb-4">

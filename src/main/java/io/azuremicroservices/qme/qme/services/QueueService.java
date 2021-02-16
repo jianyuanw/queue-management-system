@@ -329,33 +329,31 @@ public class QueueService {
     	return false;
     }
     
-    public UserQueueNumberDto enterQueue(String userId, String queueIdStr) {
-        User user = userRepo
-                .findById(Long.parseLong(userId))
-                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
-        long queueId = Long.parseLong(queueIdStr);
-        Queue queue = queueRepo
-                .findById(queueId)
-                .orElseThrow(() -> new RuntimeException("Invalid queue: " + queueId));
+    public boolean enterQueue(String userId, String queueIdStr) {
+    	Long queueId = Long.parseLong(queueIdStr);
+    	
+        Optional<User> user = userRepo.findById(Long.parseLong(userId));        
+        Optional<Queue> queue = queueRepo.findById(queueId);                
 
+        if (user.isEmpty() || queue.isEmpty() || queue.get().getState().equals(io.azuremicroservices.qme.qme.models.Queue.State.CLOSED)) {
+        	return false;
+        }
+        
         QueuePosition queuePosition = new QueuePosition();
         Integer queueNumber = obtainQueueNumber(queueId);
         
         // set all attributes including state
-        queuePosition.setQueue(queue);
+        queuePosition.setQueue(queue.get());
         queuePosition.setQueueStartTime(LocalDateTime.now());
         queuePosition.setQueueEndTime(null);
-        queuePosition.setUser(user);        
-        queuePosition.setQueueNumber(queue.getName().substring(0, 4) + String.valueOf(queueNumber));
+        queuePosition.setUser(user.get());        
+        queuePosition.setQueueNumber(queue.get().getName().substring(0, 4) + String.valueOf(queueNumber));
         queuePosition.setPosition(queueNumber);
         queuePosition.setPriority(0);
         queuePosition.setState(QueuePosition.State.ACTIVE_QUEUE);
         queuePositionRepo.save(queuePosition);
 
-        return new UserQueueNumberDto(
-                user,
-                queuePosition.getQueueNumber(),
-                user.getFirstName() + " " + user.getLastName());
+        return true;
     }
 
     // User decide to leave queue without completing their biz

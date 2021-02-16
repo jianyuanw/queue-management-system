@@ -33,6 +33,11 @@
     			}
     		}
     	}
+    	
+    	function submitForm(element) {
+    		let form = document.getElementById(element.getAttribute("data-form"));
+    		form.submit();
+    	}
     </script>
 </head>
 <body>
@@ -58,7 +63,7 @@
 		</thead>
 		<tbody th:each="queue : ${queueMap}" th:remove="tag">
 			<tr class="row tablerow d-none" th:attr="data-branch=${queue.key.branch.id}">
-				<td class="col" ><a th:href="@{'/OperateQueue/ViewSelectedQueue/' + ${queue.key.id}}" th:text="${queue.key.name}" /></td>
+				<td class="col" ><a th:href="@{'/OperateQueue/ViewSelectedQueue/' + ${queue.key.id}}" th:text="${queue.key.name}"></a></td>
 				<td class="col" th:text="${queue.value}"></td>
 				<td class="col" th:text="${queue.key.state.getDisplayValue()}"></td>
 				<td class="col">					
@@ -114,15 +119,20 @@
 								        <button type="button" class="btn btn-mdb-color btn-sm" data-dismiss="modal">Cancel</button>
 								        <form method="post" th:action="@{/OperateQueue/sign-out}">
 								        	<input type="hidden" name="counterId" th:value="${counter.id}">
-								        	<button class="btn btn-danger btn-sm" type="submit">Sign Out</button>
+								        	<button class="btn btn-stodanger btn-sm" type="submit">Sign Out</button>
 								        </form>					        
 							        				
 									</div>
 								</div>
 							</div>
 						</div>						
-					</th:block>	
-
+					</th:block>
+					<i class="fas fa-qrcode fa-lg clickable" title="Generate QR Code" onclick="submitForm(this)" data-form="qr-code-form"></i>
+					<form id="qr-code-form" target="_blank" method="post" th:action="@{/OperateQueue/qr-code}">
+						<input type="hidden" id="queueURL" name="queueURL" 
+							th:value="${#httpServletRequest.scheme} + '://' + ${#httpServletRequest.serverName} + ':' + ${#httpServletRequest.serverPort} + 
+							@{/branch/{branchId}?joinQueue={queueId}(branchId=${queue.key.branch.id},queueId=${queue.key.id})}">						
+					</form>
 				</td>
 			</tr>
 		</tbody>

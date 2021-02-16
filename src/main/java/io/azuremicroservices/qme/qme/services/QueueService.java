@@ -3,12 +3,7 @@ package io.azuremicroservices.qme.qme.services;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.core.task.AsyncTaskExecutor;
@@ -42,7 +37,7 @@ public class QueueService {
     private final CounterRepository counterRepo;
     private final SMSService smsService;
 
-    private final List<SseEmitter> emitters = new ArrayList<>();
+    private final Map<Long, List<SseEmitter>> queueEmittersMap;
     private final AsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
 
     public QueueService(UserRepository userRepo, QueuePositionRepository queuePositionRepo,
@@ -53,6 +48,10 @@ public class QueueService {
         this.queueRepo = queueRepo;
         this.counterRepo = counterRepo;
         this.smsService = smsService;
+
+        queueEmittersMap = queueRepo.findAll()
+                .stream()
+                .collect(Collectors.toMap(Queue::getId, x -> new ArrayList<>()));
     }
 
 //    public List<QueuePosition> findActiveQueuePositionsForPrototype(Long queueId) {
@@ -119,27 +118,35 @@ public class QueueService {
                 queue, queueNumber, QueuePosition.State.ACTIVE_QUEUE, LocalDateTime.now()));
     }
 
-    public SseEmitter addEmitter() {
-        System.out.println("\n*** Registering client ***");
+    // Uncomment below println for troubleshooting
+    public SseEmitter addEmitter(Long queueId) {
+//        System.out.println("\n*** Registering client ***");
         SseEmitter emitter = new SseEmitter(-1L);
-        System.out.println(emitter);
+//        System.out.println(emitter);
         emitter.onCompletion(() -> {
-            System.out.println("Completed/Timed out: " + emitter.toString());
-            emitters.remove(emitter);
+//            System.out.println("Completed/Timed out: " + emitter.toString());
+            queueEmittersMap.get(queueId).remove(emitter);
         });
-        emitters.add(emitter);
-        System.out.println("*** Current clients ***");
-        emitters.forEach(System.out::println);
-        System.out.println();
+        queueEmittersMap.get(queueId).add(emitter);
+//        System.out.println("*** Current clients ***");
+//        queueEmittersMap.forEach((k, v) -> {
+//            if (v.size() != 0) {
+//                System.out.println("Queue " + k);
+//                v.forEach(System.out::println);
+//            }
+//        });
+//        System.out.println();
         return emitter;
     }
 
-    public void refreshBrowsers() {
-        emitters.removeIf(Objects::isNull);
-        System.out.println("\n*** Sending refresh message to these clients ***");
-        emitters.forEach(System.out::println);
-        System.out.println();
-        emitters.forEach(emitter -> {
+    // Uncomment below println for troubleshooting
+    public void refreshBrowsers(Long queueId) {
+        queueEmittersMap.get(queueId).removeIf(Objects::isNull);
+//        System.out.println("\n*** Sending refresh message to these clients ***");
+//        System.out.println("Queue " + queueId);
+//        queueEmittersMap.get(queueId).forEach(System.out::println);
+//        System.out.println();
+        queueEmittersMap.get(queueId).forEach(emitter -> {
             executor.execute(() -> {
                 try {
                     emitter.send("refresh");
@@ -329,33 +336,31 @@ public class QueueService {
     	return false;
     }
     
-    public UserQueueNumberDto enterQueue(String userId, String queueIdStr) {
-        User user = userRepo
-                .findById(Long.parseLong(userId))
-                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
-        long queueId = Long.parseLong(queueIdStr);
-        Queue queue = queueRepo
-                .findById(queueId)
-                .orElseThrow(() -> new RuntimeException("Invalid queue: " + queueId));
+    public boolean enterQueue(String userId, String queueIdStr) {
+    	Long queueId = Long.parseLong(queueIdStr);
+    	
+        Optional<User> user = userRepo.findById(Long.parseLong(userId));        
+        Optional<Queue> queue = queueRepo.findById(queueId);                
 
+        if (user.isEmpty() || queue.isEmpty() || queue.get().getState().equals(io.azuremicroservices.qme.qme.models.Queue.State.CLOSED)) {
+        	return false;
+        }
+        
         QueuePosition queuePosition = new QueuePosition();
         Integer queueNumber = obtainQueueNumber(queueId);
         
         // set all attributes including state
-        queuePosition.setQueue(queue);
+        queuePosition.setQueue(queue.get());
         queuePosition.setQueueStartTime(LocalDateTime.now());
         queuePosition.setQueueEndTime(null);
-        queuePosition.setUser(user);        
-        queuePosition.setQueueNumber(queue.getName().substring(0, 4) + String.valueOf(queueNumber));
+        queuePosition.setUser(user.get());        
+        queuePosition.setQueueNumber(queue.get().getName().substring(0, 4) + String.valueOf(queueNumber));
         queuePosition.setPosition(queueNumber);
         queuePosition.setPriority(0);
         queuePosition.setState(QueuePosition.State.ACTIVE_QUEUE);
         queuePositionRepo.save(queuePosition);
 
-        return new UserQueueNumberDto(
-                user,
-                queuePosition.getQueueNumber(),
-                user.getFirstName() + " " + user.getLastName());
+        return true;
     }
 
     // User decide to leave queue without completing their biz

@@ -33,6 +33,11 @@
     			}
     		}
     	}
+    	
+    	function submitForm(element) {
+    		let form = document.getElementById(element.getAttribute("data-form"));
+    		form.submit();
+    	}
     </script>
 </head>
 <body>
@@ -58,7 +63,7 @@
 		</thead>
 		<tbody th:each="queue : ${queueMap}" th:remove="tag">
 			<tr class="row tablerow d-none" th:attr="data-branch=${queue.key.branch.id}">
-				<td class="col" ><a th:href="@{'/OperateQueue/ViewSelectedQueue/' + ${queue.key.id}}" th:text="${queue.key.name}" /></td>
+				<td class="col" ><a th:href="@{'/OperateQueue/ViewSelectedQueue/' + ${queue.key.id}}" th:text="${queue.key.name}"></a></td>
 				<td class="col" th:text="${queue.value}"></td>
 				<td class="col" th:text="${queue.key.state.getDisplayValue()}"></td>
 				<td class="col">					
@@ -66,10 +71,10 @@
 	                	<a th:href="@{/OperateQueue/UpdateQueueState/{qId}(qId=${queue.key.getId()})}"><i class="fas fa-door-open fa-lg" title="Open Queue"></i></a>
 	               	</th:block>
 	               	<th:block th:if="${queue.key.state.getDisplayValue() == 'Open'}"> 
-	                	<a th:href="@{/OperateQueue/UpdateQueueState/{qId}(qId=${queue.key.getId()})}"><i class="fas fa-door-closed fa-lg" title="Close Queue"></i></a>             						
+	                	<a th:href="@{/OperateQueue/UpdateQueueState/{qId}(qId=${queue.key.getId()})}"><i class="fas fa-door-closed fa-lg" title="Close Queue"></i></a>
 					</th:block>
 					<th:block th:if="${counter == null && counters != null && not #lists.isEmpty(counters.get(queue.key.id))}">
-						<i class="fas fa-sign-in-alt fa-lg clickable" data-toggle="modal" th:data-target="${'#signInCounter' + queue.key.id}" title="Sign In Counter"></i>
+						<i class="fas fa-sign-in-alt fa-lg clickable ml-2" data-toggle="modal" th:data-target="${'#signInCounter' + queue.key.id}" title="Sign In Counter"></i>
 						
 						<div th:unless="${#lists.isEmpty(counters.get(queue.key.id))}" class="modal fade" th:id="${'signInCounter' + queue.key.id}" tabindex="-1" role="dialog" aria-hidden="true">
 							<div class="modal-dialog" role="document">
@@ -98,7 +103,7 @@
 						</div>						
 					</th:block>
 					<th:block th:if="${counter != null && counter.queue.id == queue.key.id}">
-						<i class="fas fa-sign-out-alt fa-lg clickable" data-toggle="modal" th:data-target="${'#signOutCounter' + queue.key.id}" title="Sign out of counter"></i>
+						<i class="fas fa-sign-out-alt fa-lg clickable ml-2" data-toggle="modal" th:data-target="${'#signOutCounter' + queue.key.id}" title="Sign out of counter"></i>
 						
 						<div class="modal fade" th:id="${'signOutCounter' + queue.key.id}" tabindex="-1" role="dialog" aria-hidden="true">
 							<div class="modal-dialog" role="document">
@@ -114,15 +119,23 @@
 								        <button type="button" class="btn btn-mdb-color btn-sm" data-dismiss="modal">Cancel</button>
 								        <form method="post" th:action="@{/OperateQueue/sign-out}">
 								        	<input type="hidden" name="counterId" th:value="${counter.id}">
-								        	<button class="btn btn-danger btn-sm" type="submit">Sign Out</button>
+								        	<button class="btn btn-stodanger btn-sm" type="submit">Sign Out</button>
 								        </form>					        
 							        				
 									</div>
 								</div>
 							</div>
 						</div>						
-					</th:block>	
-
+					</th:block>
+					<i class="fas fa-qrcode fa-lg clickable ml-2" title="Generate QR Code" onclick="submitForm(this)" data-form="qr-code-form"></i>
+					<form id="qr-code-form" target="_blank" method="post" th:action="@{/OperateQueue/qr-code}" class="d-inline">
+						<input type="hidden" id="queueURL" name="queueURL" 
+							th:value="${#httpServletRequest.scheme} + '://' + ${#httpServletRequest.serverName} + ':' + ${#httpServletRequest.serverPort} + 
+							@{/branch/{branchId}?joinQueue={queueId}(branchId=${queue.key.branch.id},queueId=${queue.key.id})}">						
+					</form>
+					<a th:href="@{/OperateQueue/queue-number-screen/{queueId}(queueId=${queue.key.id})}">
+						<i class="fas fa-tv fa-lg ml-2" title="Display Queue Numbers"></i>
+					</a>
 				</td>
 			</tr>
 		</tbody>

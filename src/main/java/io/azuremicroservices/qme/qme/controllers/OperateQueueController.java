@@ -1,14 +1,16 @@
 package io.azuremicroservices.qme.qme.controllers;
 
+import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,17 +18,21 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.google.zxing.WriterException;
+
 import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
+import io.azuremicroservices.qme.qme.helpers.QRCodeGenerator;
 import io.azuremicroservices.qme.qme.models.Branch;
 import io.azuremicroservices.qme.qme.models.Counter;
 import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.models.QueuePosition;
 import io.azuremicroservices.qme.qme.models.QueuePosition.State;
+import io.azuremicroservices.qme.qme.models.QueuePositionDto;
 import io.azuremicroservices.qme.qme.models.User;
 import io.azuremicroservices.qme.qme.models.Vendor;
-import io.azuremicroservices.qme.qme.models.QueuePositionDto;
 import io.azuremicroservices.qme.qme.services.AlertService;
 import io.azuremicroservices.qme.qme.services.AlertService.AlertColour;
 import io.azuremicroservices.qme.qme.services.PermissionService;
@@ -114,6 +120,11 @@ public class OperateQueueController {
     	queueService.signOutCounter(myUserDetails.getUser(), counter.get());
     	alertService.createAlert(AlertColour.GREEN, "Signed out of counter", redirAttr);
     	return "redirect:/OperateQueue/ViewQueue";
+    }
+    
+    @PostMapping(value = "/qr-code", produces = MediaType.IMAGE_PNG_VALUE)
+    public ResponseEntity<byte[]> generateQrCode(@RequestParam("queueURL") String queueURL, Authentication authentication, RedirectAttributes redirAttr) {
+		return ResponseEntity.status(HttpStatus.OK).body(QRCodeGenerator.getQRCodeImage(queueURL, 800, 800));
     }
     
     @GetMapping("/current-counter")
@@ -204,6 +215,7 @@ public class OperateQueueController {
         switch (command) {
         	case "next":
                 String nextNumber = queueService.callNextNumber(counter);
+                queueService.refreshBrowsers(counter.getQueue().getId());
                 if (nextNumber == null) {
                     alertService.createAlert(AlertColour.RED, "Failed to call next number. No people in queue.", redirAttr);
                 } else {
@@ -212,6 +224,7 @@ public class OperateQueueController {
                 break;
         	case "no-show":
                 String noShowNumber = queueService.noShow(counter);
+                queueService.refreshBrowsers(counter.getQueue().getId());
                 if (noShowNumber == null) {
                     alertService.createAlert(AlertColour.RED, "An error occurred. Please try again.", redirAttr);
                 } else {
@@ -233,5 +246,26 @@ public class OperateQueueController {
         }
 
         return "redirect:/OperateQueue/my-counter";
+    }
+
+    @GetMapping("/queue-number-screen/{queueId}")
+    public String queueNumberScreen(@PathVariable String queueId, Model model, RedirectAttributes redirAttr) {
+        Queue queue = queueService.findQueue(Long.valueOf(queueId));
+        List<Counter> counters = queue.getCounters();
+        if (counters.size() == 0) {
+            alertService.createAlert(AlertColour.RED, "Queue has no counters.", redirAttr);
+            return "redirect:/OperateQueue/ViewQueue";
+        }
+        String[] missedQueueNumbers = queuePositionService.findCurrentDayMissedQueueNumbersByQueue(queue);
+        model.addAttribute("missedQueueNumbers", missedQueueNumbers);
+        model.addAttribute("counters", counters);
+        model.addAttribute("queue", queue);
+        return "branch-operator/queue-number-screen";
+        // Screen design currently works best for <= 10 counters
+    }
+
+    @GetMapping("/sse/{queueId}")
+    public SseEmitter registerForLiveQueueUpdate(@PathVariable String queueId) {
+        return queueService.addEmitter(Long.valueOf(queueId));
     }
 }

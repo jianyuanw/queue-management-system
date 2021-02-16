@@ -1,5 +1,7 @@
 package io.azuremicroservices.qme.qme.models;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -26,12 +28,16 @@ public class SupportTicket {
     private User user;
 
     private String title;
-
+    
     private String description;
-
-    private TicketState ticketState;
     
     private String response;
+    
+    private LocalDateTime ticketRaisedTime;
+    
+    private LocalDateTime responseTime;
+    
+    private TicketState ticketState;
 
     public enum TicketState {
         OPEN,

@@ -1,5 +1,6 @@
 package io.azuremicroservices.qme.qme.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +25,8 @@ public class SupportTicketService {
 	public void createSupportTicket(SupportTicket supportTicket) {
 		supportTicket.setResponse(null);
 		supportTicket.setTicketState(TicketState.OPEN);
+		supportTicket.setTicketRaisedTime(LocalDateTime.now());
+		supportTicket.setResponseTime(null);
 		supportTicketRepo.save(supportTicket);
 	}
 	
@@ -41,6 +44,7 @@ public class SupportTicketService {
 	
 	public void updateSupportTicket(SupportTicket supportTicket) {
 		supportTicket.setTicketState(TicketState.CLOSED);
+		supportTicket.setResponseTime(LocalDateTime.now());
 		supportTicketRepo.save(supportTicket);
 	}
 	

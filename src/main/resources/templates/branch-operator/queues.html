@@ -16,11 +16,16 @@
     	.clickable {
     		cursor: pointer;
     	}
+    	
+    	.unclickable {
+    		cursor: none;
+    	}
     </style>
     
     <script type="text/javascript">
     	$(document).ready(function() {
     		updateRows(document.getElementById('selectBranch'));
+    		$('[data-toggle="tooltip"]').tooltip()
     	});
     	
     	function updateRows(element) {
@@ -88,10 +93,14 @@
 									<div class="modal-body">
 										<div class="row row-cols-4">
 											<div class="col" th:each="counter : ${counters.get(queue.key.id)}">
-												<form method="post" th:action="@{/OperateQueue/sign-in}">
+												<form th:if="${counter.user == null}" method="post" th:action="@{/OperateQueue/sign-in}">
 													<input type="hidden" name="counterId" th:value="${counter.id}">
 													<button type="submit" class="btn btn-primary btn-sm" th:text="${counter.name}"></button>
-												</form>										
+												</form>
+												<span th:if="${counter.user != null}" tabindex="0" data-toggle="tooltip" data-placement="top" th:title="${'Occupied by ' + counter.user.firstName}">
+													<button type="submit" class="btn btn-primary btn-sm" disabled
+														th:text="${counter.name}"></button>
+												</span>										
 											</div>
 										</div>
 									</div>
@@ -119,7 +128,7 @@
 								        <button type="button" class="btn btn-mdb-color btn-sm" data-dismiss="modal">Cancel</button>
 								        <form method="post" th:action="@{/OperateQueue/sign-out}">
 								        	<input type="hidden" name="counterId" th:value="${counter.id}">
-								        	<button class="btn btn-stodanger btn-sm" type="submit">Sign Out</button>
+								        	<button class="btn btn-danger btn-sm" type="submit">Sign Out</button>
 								        </form>					        
 							        				
 									</div>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>qMe - Notifications</title>
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+    
+    <style>
+    	.clickable {
+    		cursor: pointer;
+    	}
+    </style>
+    
+    <script type="text/javascript">
+    	function submitForm(element) {
+    		let form = document.getElementById(element.getAttribute("data-form"));
+    		form.submit();
+    	}
+    </script>    
+</head>
+<body>
+    <div th:replace="fragments/layout.html :: mobile-navbar-modal"></div>
+
+    <div class="m-4">
+
+        <h4 class="font-weight-bold text-center mb-4">Your notifications</h4>
+
+        <div class="row row-cols-1">
+            <div class="col border border-info" th:each="notification : ${notifications}">
+            	<div class="row">
+					<h5 class="font-weight-bold" th:text="${notification.title}"></h5>
+            	</div>
+                <div class="row">
+                    <span class="d-inline-block text-truncate" th:text="${notification.body}"></span>
+                </div>
+                <div class="row float-right">
+                	<span class="d-inline-block" th:text="${#temporals.format(notification.timeOfMessage, 'dd MMM yyyy')}"></span>
+					<i class="fas fa-archive fa-lg clickable mx-2" title="Archive Notification" onclick="submitForm(this)" data-form="archive-form"></i>
+					<form id="archive-form" method="post" th:action="@{/notifications}">
+						<input type="hidden" name="messageId" th:value="${notification.id}">
+					</form>                	
+                </div>
+            </div>
+        </div>
+
+<!--         <h5 class="text-center" th:text="${error}"></h5> -->
+
+    </div>
+</body>
+</html>

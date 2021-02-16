@@ -3,7 +3,16 @@ package io.azuremicroservices.qme.qme.services;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.springframework.core.task.AsyncTaskExecutor;
@@ -13,16 +22,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import io.azuremicroservices.qme.qme.models.Branch;
+import io.azuremicroservices.qme.qme.models.BranchQueueDto;
 import io.azuremicroservices.qme.qme.models.Counter;
 import io.azuremicroservices.qme.qme.models.MyQueueDto;
 import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.models.QueuePosition;
 import io.azuremicroservices.qme.qme.models.QueuePosition.State;
+import io.azuremicroservices.qme.qme.models.QueuePositionDto;
 import io.azuremicroservices.qme.qme.models.User;
 import io.azuremicroservices.qme.qme.models.UserQueueNumberDto;
 import io.azuremicroservices.qme.qme.models.Vendor;
-import io.azuremicroservices.qme.qme.models.BranchQueueDto;
-import io.azuremicroservices.qme.qme.models.QueuePositionDto;
 import io.azuremicroservices.qme.qme.repositories.CounterRepository;
 import io.azuremicroservices.qme.qme.repositories.QueuePositionRepository;
 import io.azuremicroservices.qme.qme.repositories.QueueRepository;
@@ -35,19 +44,19 @@ public class QueueService {
     private final QueuePositionRepository queuePositionRepo;
     private final QueueRepository queueRepo;
     private final CounterRepository counterRepo;
-    private final SMSService smsService;
+    private final NotificationService notificationService;
 
     private final Map<Long, List<SseEmitter>> queueEmittersMap;
     private final AsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
 
     public QueueService(UserRepository userRepo, QueuePositionRepository queuePositionRepo,
                         QueueRepository queueRepo, CounterRepository counterRepo,
-                        SMSService smsService) {
+                        NotificationService notificationService) {
     	this.userRepo = userRepo;
         this.queuePositionRepo = queuePositionRepo;
         this.queueRepo = queueRepo;
         this.counterRepo = counterRepo;
-        this.smsService = smsService;
+        this.notificationService = notificationService;
 
         queueEmittersMap = queueRepo.findAll()
                 .stream()
@@ -326,9 +335,27 @@ public class QueueService {
     	
     	if (queuePositions.size() > 0) {
     		Queue queue = queuePositions.get(0).getQueue();
-    		if (queuePositions.size() == queue.getNotificationPosition()) {
-    			// TODO: Send to the user mobile phone, currently it is just proof of concept
-    			smsService.send("+6591003555", "You are currently in position " + queue.getNotificationPosition() + ", please start to make your way back");
+    		Integer notificationPosition = queue.getNotificationPosition();
+    		Double notificationDelay = queue.getNotificationDelay();
+    		if (queuePositions.size() >= notificationPosition) {
+    			User user = queuePositions.get(notificationPosition - 1).getUser();
+    			
+    			ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+    			
+    			Runnable notification = new Runnable() {
+    				public void run() {
+    					notificationService.addNotification(user.getId(), queue.getName() + " Notification",
+    	    					"Dear " + user.getFirstName() + ", \n" + "You are currently at position " + notificationPosition + ", kindly start making your way back to " + 
+    	    					queue.getBranch().getAddress() + ".");
+    				}
+    			};
+    			
+    			if (notificationDelay != 0) {
+    				executorService.execute(notification);
+    			} else {
+    				executorService.schedule(notification, notificationDelay.longValue(), TimeUnit.MINUTES);
+    			}
+    			
     			return true;
     		}
     	}

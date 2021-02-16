@@ -1,8 +1,11 @@
 package io.azuremicroservices.qme.qme.services;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,11 +15,9 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import io.azuremicroservices.qme.qme.models.Counter;
-import io.azuremicroservices.qme.qme.models.MyQueueDto;
 import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.models.QueuePosition;
 import io.azuremicroservices.qme.qme.models.QueuePosition.State;
-import io.azuremicroservices.qme.qme.models.BranchQueueDto;
 import io.azuremicroservices.qme.qme.repositories.CounterRepository;
 import io.azuremicroservices.qme.qme.repositories.QueuePositionRepository;
 
@@ -58,7 +59,7 @@ public class QueuePositionService {
     	return queuePositionRepo.findAllByQueue_IdAndStateInOrderByPositionAscPriorityDesc(queueId, QueuePosition.getQueuingStates());
     }
 
-	public HashMap<Queue, Integer> findAllQueuePositionsInQueues(List<Queue> queuePermissions) {
+	public HashMap<Queue, Integer> countAllQueuePositionsInQueues(List<Queue> queuePermissions) {
 		HashMap<Queue, Integer> queueCount = new HashMap<>();
 
 		for (Queue queue : queuePermissions) {
@@ -90,6 +91,107 @@ public class QueuePositionService {
 
 	public List<QueuePosition> findAllQueuePositionsByQueueIdAndState(Long queueId, State inactiveNoShow) {
 		return queuePositionRepo.findAllByQueue_IdAndState(queueId, inactiveNoShow);
-	}    
+	}
+
+	public List<QueuePosition> findAllQueuePositionsByBranchIdIn(List<Long> branchIds) {
+		return queuePositionRepo.findAllByQueue_Branch_IdIn(branchIds);
+	}
+
+	public Map<String, Integer> generateQueueCountData(List<QueuePosition> queuePositions) {
+		HashMap<String, Integer> queueCountData = new HashMap<>();
+		
+		for (QueuePosition qp : queuePositions) {
+			String formattedDateTime = qp.getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'"));
+			if (queueCountData.containsKey(formattedDateTime)) {
+				queueCountData.put(formattedDateTime, queueCountData.get(formattedDateTime) + 1);
+			} else {
+				queueCountData.put(formattedDateTime, 1);							
+			}
+		}
+		
+		return queueCountData;
+	}
+
+	public Map<String, Long> generateEstimatedWaitingTimeData(List<QueuePosition> queuePositions) {
+		HashMap<String, Long> estWaitingTimeData=  new HashMap<>();
+		
+		for (QueuePosition qp : queuePositions) {
+			if (qp.getQueueEndTime() != null) {
+				long diff = ChronoUnit.MINUTES.between(qp.getQueueEndTime(), qp.getQueueStartTime());
+				estWaitingTimeData.put(
+						qp.getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'")),
+						diff);
+			}
+		}
+		
+		return estWaitingTimeData;
+	}
+
+	public List<QueuePosition> findAllQueuePositionsInQueues(List<Queue> queues) {
+		var queueIds = queues.stream()
+				.map(Queue::getId)				
+				.collect(Collectors.toList());
+		
+		return queuePositionRepo.findAllByQueue_IdIn(queueIds);
+	}
+
+	public Map<String, Long> generateQueueCountForecast(List<QueuePosition> queuePositions, Integer monthBoundary) {
+		var currentDate = LocalDate.now();
+		
+		Map<String, Long> forecastQueueCountData = queuePositions.stream()
+			.filter(qp -> qp.getQueueStartTime().isAfter(currentDate.minusMonths(monthBoundary).with(TemporalAdjusters.firstDayOfMonth()).atStartOfDay()) &&
+						qp.getQueueStartTime().isBefore(currentDate.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth()).atTime(LocalTime.MAX)))
+			.collect(Collectors.groupingBy(qp -> ((QueuePosition) qp).getQueueStartTime()
+					.format(DateTimeFormatter.ofPattern("yyyy-MM")) + "-01'T'00:00:00'+0800'",
+							Collectors.counting()));
+		
+		return forecastQueueCountData;
+	}
+
+	public Map<String, Double> generateEWTCountForecast(List<QueuePosition> queuePositions, Integer monthBoundary) {
+		var currentDate = LocalDate.now();
+		
+		var forecastEWTDataMonthly = queuePositions.stream()
+				.filter(qp -> qp.getQueueStartTime().isAfter(currentDate.minusMonths(monthBoundary).with(TemporalAdjusters.firstDayOfMonth()).atStartOfDay()) &&
+						qp.getQueueStartTime().isBefore(currentDate.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth()).atTime(LocalTime.MAX)))
+				.collect(Collectors.groupingBy(
+						qp -> ((QueuePosition) qp).getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM"))
+								+ "-01'T'00:00:00'+0800'",
+						Collectors.averagingLong(
+								qp -> (ChronoUnit.MINUTES.between(qp.getQueueEndTime(), qp.getQueueStartTime())))));
+		
+		return forecastEWTDataMonthly;
+	}
+
+	public Map<String, List<LocalDateTime>> generateDateIntervals(Integer dayInterval, Integer monthInterval, Integer yearInterval) {
+		Map<String, List<LocalDateTime>> dateBoundaryMapping = new HashMap<>();
+		LocalDateTime currentTime = LocalDateTime.now();
+		
+		List<LocalDateTime> dayList = new ArrayList<>();
+		
+		for (int i = 0; i <= dayInterval; i++) {
+			dayList.add(currentTime.minusDays(i));
+		}
+		
+		dateBoundaryMapping.put("dayInterval", dayList);
+		
+		List<LocalDateTime> monthList = new ArrayList<>();
+		
+		for (int i = 0; i <= monthInterval; i++) {
+			monthList.add(currentTime.minusMonths(i));
+		}
+		
+		dateBoundaryMapping.put("monthInterval", monthList);
+		
+		List<LocalDateTime> yearList = new ArrayList<>();
+		
+		for (int i = 0; i <= yearInterval; i++) {
+			yearList.add(currentTime.minusYears(i));
+		}
+		
+		dateBoundaryMapping.put("yearInterval", yearList);
+		
+		return dateBoundaryMapping;
+	}
 
 }

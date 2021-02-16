@@ -46,39 +46,13 @@ public class OperateQueueController {
     private QueuePositionService queuePositionService;
     @Autowired
     private AlertService alertService;
-    
-
-    private User cUser;
-    private Vendor cVendor;
-    private List<Branch> cBranches;
-    private HashSet<Branch> cUniqueBranches;
-    private List<Queue> cQueues;
-
-    public User getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
-        User user = myUserDetails.getUser();
-        return user;
-    }
-
-    public void pullUpdatedUserVendorBranchesQueues() {
-        cUser = getCurrentUser();
-        cBranches = permissionService.getBranchPermissions(cUser.getId());
-        cVendor = permissionService.getVendorPermission(cUser.getId());
-        cQueues = permissionService.getQueuePermissions(cUser.getId());
-        cUniqueBranches = new HashSet<>(cBranches);
-    }
-
-    public String redirectTo404Page() {
-        return "error/404";
-    }
 
     @GetMapping("/ViewQueue")
     public String operatorViewQueue(Model model, Authentication authentication, RedirectAttributes redirAttr) {
         MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
         List<Queue> queues = permissionService.getQueuePermissions(myUserDetails.getId());
         
-        HashMap<Queue, Integer> queueIdWithCurrentPax = queuePositionService.findAllQueuePositionsInQueues(queues);
+        HashMap<Queue, Integer> queueIdWithCurrentPax = queuePositionService.countAllQueuePositionsInQueues(queues);
 
         if (queues.size() < 1) {
         	alertService.createAlert(AlertColour.YELLOW, "You do not have any queue permissions", redirAttr);
@@ -161,14 +135,13 @@ public class OperateQueueController {
 
     @GetMapping("/ViewSelectedQueue/{queueId}")
     public String viewSelectedQueue(@PathVariable("queueId") Long queueId,Model model) {
-
-        pullUpdatedUserVendorBranchesQueues();
         Queue queue = queueService.findQueue(queueId);
+        Vendor vendor = queue.getBranch().getVendor();
 
-        // List<QueuePosition> qps = queuePositionService.getActiveSortedQueuePositions(queueId);
-        List<QueuePosition> qps = queuePositionService.getAllSortedQueuePositions(queueId);
+        List<QueuePosition> qps = queuePositionService.getActiveSortedQueuePositions(queueId);
+        // List<QueuePosition> qps = queuePositionService.getAllSortedQueuePositions(queueId);
 
-        model.addAttribute("vendor",cVendor.getName());
+        model.addAttribute("vendor",vendor.getName());
         model.addAttribute("state",queue.getState().getDisplayValue());
         model.addAttribute("queue",queue);
         model.addAttribute("positions",qps);
@@ -182,17 +155,21 @@ public class OperateQueueController {
         return "redirect:/OperateQueue/ViewSelectedQueue/"+queueId;
     }
 
-    @GetMapping("/NoShow/{queueId}")
-    public String viewNoShowList(@PathVariable("queueId")Long queueId, Model model) {
+    @GetMapping("/ViewNoShowList/{queueId}")
+    public String viewNoShowList(@PathVariable("queueId")Long queueId, Authentication authentication, Model model) {
+        MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+        User user = myUserDetails.getUser();
 
-        pullUpdatedUserVendorBranchesQueues();
         List<QueuePosition> noShowQP = queuePositionService.findAllQueuePositionsByQueueIdAndState(queueId, State.INACTIVE_NO_SHOW);
         Queue queue = queueService.findQueue(queueId);
+        Vendor vendor = queue.getBranch().getVendor();
+        List<Branch> branches = permissionService.getBranchPermissions(user.getId());
+        List<Queue> queues = permissionService.getQueuePermissions(user.getId());
         model.addAttribute("noShowList",noShowQP);
         model.addAttribute("queue",queue);
-        model.addAttribute("vendor",cVendor.getName());
-        model.addAttribute("branches",cBranches);
-        model.addAttribute("queues",cQueues);
+        model.addAttribute("vendor",vendor.getName());
+        model.addAttribute("branches",branches);
+        model.addAttribute("queues",queues);
         return "branch-operator/noShowListPage";
     }
 

@@ -74,7 +74,7 @@ public class ClientController {
     }
     
     @GetMapping("/branch/{branchId}")
-    public String viewBranch(Model model, @PathVariable("branchId") String branchId, Authentication authentication, RedirectAttributes redirAttr) {
+    public String viewBranch(Model model, @PathVariable("branchId") String branchId, @RequestParam(required = false) String joinQueue, Authentication authentication, RedirectAttributes redirAttr) {
     	MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
     	List<Queue> queues = queueService.findQueuesByBranchId(Long.parseLong(branchId));    	
     	
@@ -84,6 +84,7 @@ public class ClientController {
     	
     	List<BranchQueueDto> viewQueues = queueService.generateBranchQueueDtos(userDetails.getId(), queues);
     	
+		model.addAttribute("joinQueue", joinQueue);
     	model.addAttribute("branch", branchService.findBranchById(Long.parseLong(branchId)).get());
     	model.addAttribute("viewQueues", viewQueues);
     	return "client/branch";
@@ -92,10 +93,14 @@ public class ClientController {
     @PostMapping("/join-queue")
     public String joinQueue(@RequestParam("queueId") String queueId, Authentication authentication, RedirectAttributes redirAttr) {
     	MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+    	boolean joined = queueService.enterQueue(myUserDetails.getId().toString(), queueId); 
     	
-    	queueService.enterQueue(myUserDetails.getId().toString(), queueId);
+    	if (joined) {
+    		alertService.createAlert(AlertColour.GREEN, "Successfully entered queue", redirAttr);
+    	} else {
+    		alertService.createAlert(AlertColour.YELLOW, "Queue closed. Failed to rejoin.", redirAttr);
+    	}    	
     	
-    	alertService.createAlert(AlertColour.GREEN, "Successfully entered queue", redirAttr);
     	return "redirect:/my-queues";
     }
     
@@ -115,7 +120,7 @@ public class ClientController {
         if (rejoined) {
             alertService.createAlert(AlertColour.GREEN, "Successfully rejoined queue", redirAttr);
         } else {
-            alertService.createAlert(AlertColour.RED, "Queue closed. Failed to rejoin.", redirAttr);
+            alertService.createAlert(AlertColour.YELLOW, "Queue closed. Failed to rejoin.", redirAttr);
         }
         return "redirect:/my-queues";
     }

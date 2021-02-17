@@ -10,6 +10,34 @@
 <body>
     <div th:replace="fragments/layout.html :: navbar"></div>
     <h2 class="text-center">Branch Admin Landing Page</h2>
+
+      <div class="row">
+        <div class="col text-center">
+            <a th:href="@{/dashboard}" class="btn btn-block btn-warning">
+                <i class="fa fa-chart-bar fa-5x"></i><br/>
+                Dashboard<br>
+            </a>
+        </div>
+        <div class="col text-center">
+            <a th:href="@{/manage/queue/list}" class="btn btn-block btn-primary">
+              <i class="fa fa-users fa-5x"></i><br/>
+              Manage Queues<br>
+            </a>        	
+        </div>
+        <div class="col text-center">
+            <a th:href="@{/manage/counter/list}" class="btn btn-block btn-success">
+              <i class="fa fa-desktop fa-5x"></i><br/>
+              Manage Counters<br>
+            </a>        
+        </div>
+        <div class="col text-center">
+            <a th:href="@{/manage/branch-operator-account/list}" class="btn btn-block btn-danger">
+              <i class="fa fa-user fa-5x"></i><br/>
+              Manage Branch Operators<br>
+            </a>        
+        </div>        
+	</div>     
+    
     <div th:replace="fragments/layout.html :: footer"></div>
 </body>
 </html>

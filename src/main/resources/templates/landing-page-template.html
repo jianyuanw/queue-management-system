@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>qMe - App Admin</title>
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+</head>
+<body>
+    <div th:replace="fragments/layout.html :: navbar"></div>
+    <h2 class="text-center">App Admin Landing Page</h2>
+    
+      <div class="row">
+        <div class="col-lg-12">
+          <p>
+            <a href="#" class="btn btn-sq-lg btn-primary">
+                <i class="fa fa-user fa-5x"></i><br/>
+                Demo Primary <br>Button
+            </a>
+            <a href="#" class="btn btn-sq-lg btn-success">
+              <i class="fa fa-user fa-5x"></i><br/>
+              Demo Success <br>Button
+            </a>
+            <a href="#" class="btn btn-sq-lg btn-info">
+              <i class="fa fa-user fa-5x"></i><br/>
+              Demo Info <br>Button
+            </a>
+            <a href="#" class="btn btn-sq-lg btn-warning">
+              <i class="fa fa-user fa-5x"></i><br/>
+              Demo Warning <br>Button
+            </a>
+            <a href="#" class="btn btn-sq-lg btn-danger">
+              <i class="fa fa-user fa-5x"></i><br/>
+              Demo Danger <br>Button
+            </a>
+          </p>
+        </div>
+	</div>    
+    
+    <div th:replace="fragments/layout.html :: footer"></div>
+</body>
+</html>

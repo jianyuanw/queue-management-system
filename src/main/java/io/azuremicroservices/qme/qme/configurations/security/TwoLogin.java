@@ -36,12 +36,11 @@ public class TwoLogin {
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            http.antMatcher("/OperateQueue/**")
-                    .authorizeRequests()
-                    .antMatchers("/OperateQueue/**").hasAuthority("BRANCH_OPERATOR")
-                    .antMatchers("/login-admin").permitAll()
+            http.requestMatchers().antMatchers(ADMIN_URLS)
                     .and()
-                    .formLogin();
+                    .authorizeRequests().anyRequest().authenticated()
+                    .and()
+                    .formLogin().permitAll();
 //                    .loginPage("/login-admin")
 //                    .defaultSuccessUrl("/login/success")
 //                    .failureUrl("/login/error")
@@ -68,12 +67,11 @@ public class TwoLogin {
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            http.antMatcher("/home/**")
-                    .authorizeRequests()
-                    .antMatchers("/home/**").hasAuthority("CLIENT")
-                    .antMatchers("/login").permitAll()
+            http.requestMatchers().antMatchers(CLIENT_URLS)
                     .and()
-                    .formLogin();
+                    .authorizeRequests().anyRequest().authenticated()
+                    .and()
+                    .formLogin().permitAll();
 //                    .loginPage("/login")
 //                    .defaultSuccessUrl("/login/success")
 //                    .failureUrl("/login/error")
@@ -83,4 +81,50 @@ public class TwoLogin {
 //                    .logoutSuccessUrl("/login");
         }
     }
+
+    private static final String[] ADMIN_URLS = {
+            "/manage/vendor/**",
+            "/manage/vendor-admin-account/**",
+            "/manage/app-admin-account/**",
+            "/manage/branch/**",
+            "/manage/branch-admin-account/**",
+            "/dashboard",
+            "/manage/queue/**",
+            "/manage/branch-operator-account/**",
+            "/manage/counter/**",
+            "/OperateQueue/**"
+    };
+
+    private static final String[] APP_ADMIN_URLS = {
+            "/manage/vendor/**",
+            "/manage/vendor-admin-account/**",
+            "/manage/app-admin-account/**",
+    };
+
+    private static final String[] VENDOR_ADMIN_URLS = {
+            "/manage/branch/**",
+    		"/manage/branch-admin-account/**",
+    };
+
+    private static final String[] BRANCH_ADMIN_URLS = {
+    		"/dashboard",
+    		"/manage/queue/**",
+    		"/manage/branch-operator-account/**",
+    		"/manage/counter/**",
+    };
+
+    private static final String[] BRANCH_OPERATOR_URLS = {
+    		"/OperateQueue/**",
+    };
+
+    private static final String[] CLIENT_URLS = {
+            "/home",
+            "/search/**",
+            "/branch/**",
+            "/join-queue",
+            "/leave-queue",
+            "/rejoin-queue",
+            "/my-queues",
+            "/support-ticket/**",
+    };
 }

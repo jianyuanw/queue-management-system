@@ -63,7 +63,7 @@ public interface QueuePositionRepository extends JpaRepository<QueuePosition, Lo
 
 	public List<QueuePosition> findAllByQueue_IdAndStateIn(Long id, List<State> activeStates);
 
-	public QueuePosition findTopByQueue_IdOrderByPositionDesc(Long queueId);
+	public QueuePosition findTopByQueue_IdAndQueueStartTimeGreaterThanEqualOrderByPositionDesc(Long queueId, LocalDateTime datetime);
 
 	public List<QueuePosition> findAllByUser_IdAndQueueStartTimeGreaterThanEqualAndStateIn(Long userId, LocalDateTime datetime, List<State> activeStates);
 

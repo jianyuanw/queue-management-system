@@ -63,31 +63,6 @@ public class QueueService {
                 .collect(Collectors.toMap(Queue::getId, x -> new ArrayList<>()));
     }
 
-//    public List<QueuePosition> findActiveQueuePositionsForPrototype(Long queueId) {
-//        Queue queue = queueRepo.findById(queueId).get();
-//        return queuePositionRepo.findAllByQueue(queue)
-//                .stream()
-//                .filter(x -> x.getState() == QueuePosition.State.ACTIVE_QUEUE ||
-//                        x.getState() == QueuePosition.State.ACTIVE_REQUEUE)
-//                .collect(Collectors.toList());
-//    }
-//
-//    public List<QueuePosition> findNoShowStatusQueuePositions(Long queueId) {
-//        Queue queue = queueRepo.findById(queueId).get();
-//        return queuePositionRepo.findAllByQueue(queue)
-//                .stream()
-//                .filter(x -> x.getState() == QueuePosition.State.INACTIVE_NO_SHOW)
-//                .collect(Collectors.toList());
-//    }
-//
-//    public List<QueuePosition> findActiveRejoinStatusQueuePositions(Long queueId) {
-//        Queue queue = queueRepo.findById(queueId).get();
-//        return queuePositionRepo.findAllByQueue(queue)
-//                .stream()
-//                .filter(x -> x.getState() == QueuePosition.State.ACTIVE_REQUEUE)
-//                .collect(Collectors.toList());
-//    }
-
     public Queue findQueue(Long queueId) {
         return queueRepo.findById(queueId).get();
     }
@@ -404,6 +379,7 @@ public class QueueService {
                 .orElseThrow(() -> new RuntimeException("User not found: " + userId));
 
         long queueId = Long.parseLong(queueIdstr);
+        
         Queue queue = queueRepo
                 .findById(queueId)
                 .orElseThrow(() -> new RuntimeException("Invalid queue: " + queueId));
@@ -425,19 +401,9 @@ public class QueueService {
     }
 
 
-//    private String obtainQueueNumber(Long queueId) {
-//        AtomicInteger branchQueueNumberCounter = queueNumberMap.get(queueId);
-//        if (branchQueueNumberCounter == null) {
-//            branchQueueNumberCounter = new AtomicInteger(0);
-//            queueNumberMap.put(queueId, branchQueueNumberCounter);
-//        }
-//        return branchQueueNumberCounter.incrementAndGet() + "";
-//    }
-//
-
     // This is to restart the Queue Number to 1 every new day
     private Integer obtainQueueNumber(Long queueId) {
-        int count = queuePositionRepo.findTopByQueue_IdOrderByPositionDesc(queueId).getPosition();
+        int count = queuePositionRepo.findTopByQueue_IdAndQueueStartTimeGreaterThanEqualOrderByPositionDesc(queueId, LocalDate.now().atStartOfDay()).getPosition();
 
         count = count + 1;
         return count;
@@ -489,7 +455,6 @@ public class QueueService {
                 .reduce((total, current) -> {
                     return total.plus(current);
                 })
-                //                .reduce(Duration::plus)
                 .orElse(Duration.ofMinutes(0));
         //convert to minutes
         int movingAverageInMinutes =
@@ -505,17 +470,6 @@ public class QueueService {
     			userId, 
     			LocalDate.now().atStartOfDay(),
     			QueuePosition.getViewedStates());
-    			
-//    			userRepo.findById(userId)
-//				.get()
-//				.getQueuePositions()
-//				.stream()
-//				.filter(x -> x.getQueueStartTime().getYear() == LocalDateTime.now().getYear() &&
-//						x.getQueueStartTime().getDayOfYear() == LocalDateTime.now().getDayOfYear())
-//				.filter(x -> x.getState() == State.ACTIVE_QUEUE ||
-//						x.getState() == State.ACTIVE_REQUEUE ||
-//						x.getState() == State.INACTIVE_NO_SHOW)
-//				.collect(Collectors.toList());
 
     	for (QueuePosition queuePosition : currentQueuePositions) {
     		List<QueuePosition> queuePositions = queuePositionRepo.findAllByQueue_IdAndStateIn(queuePosition.getQueue().getId(), QueuePosition.getQueuingStates());

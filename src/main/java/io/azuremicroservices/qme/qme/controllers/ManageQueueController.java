@@ -46,6 +46,8 @@ public class ManageQueueController {
 	@GetMapping("/list")
 	public String initManageQueueList(Model model, Authentication authentication) {
 		List<Branch> branches = permissionService.getBranchPermissions(((MyUserDetails) authentication.getPrincipal()).getId());
+		
+		model.addAttribute("branches", branches);
 		model.addAttribute("queues", queueService.findAllQueuesInBranches(branches));
 		return "manage/queue/list";
 	}

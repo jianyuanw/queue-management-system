@@ -24,20 +24,8 @@
     
     <script type="text/javascript">
     	$(document).ready(function() {
-    		updateRows(document.getElementById('selectBranch'));
     		$('[data-toggle="tooltip"]').tooltip()
     	});
-    	
-    	function updateRows(element) {
-    		let elements = document.getElementsByClassName('tablerow')
-    		for (let i = 0; i < elements.length; i++) {
-    			if (elements[i].getAttribute('data-branch') != element.value) {
-    				elements[i].classList.add('d-none');
-    			} else {
-    				elements[i].classList.remove('d-none');
-    			}
-    		}
-    	}
     	
     	function submitForm(element) {
     		let form = document.getElementById(element.getAttribute("data-form"));
@@ -52,13 +40,6 @@
 
 		<h5 class="font-weight-bold mb-4" th:text="${'Vendor: ' + vendor.name}"></h5>
 
-		<form class="form-group form-inline">
-			<label for="selectBranch">Branch: </label>
-			<select class="col-3 form-control ml-2" id="selectBranch" onchange="updateRows(this)">
-				<option th:each="branch : ${branches}" th:value="${branch.id}" th:text="${branch.name}">
-			</select>
-		</form>
-
 		<table id="dataTable" class="table table-striped table-bordered">
 			<thead>
 				<tr class="row">
@@ -69,7 +50,7 @@
 				</tr>
 			</thead>
 			<tbody th:each="queue : ${queueMap}" th:remove="tag">
-				<tr class="row tablerow d-none" th:attr="data-branch=${queue.key.branch.id}">
+				<tr class="row">
 					<td class="col" ><a th:href="@{'/OperateQueue/ViewSelectedQueue/' + ${queue.key.id}}" th:text="${queue.key.name}"></a></td>
 					<td class="col" th:text="${queue.value}"></td>
 					<td class="col" th:text="${queue.key.state.getDisplayValue()}"></td>

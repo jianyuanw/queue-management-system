@@ -5,7 +5,7 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
-    <title>Create Support Ticket</title>
+    <title>qMe - Raise ticket</title>
     <meta charset="UTF-8">
 
     <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
@@ -13,7 +13,7 @@
 <body>
     <div th:replace="fragments/layout.html :: navbar"></div>
 	
-	<form class="text-center border border-light p-5" method="post" th:action="@{/support-ticket/create}" th:object = "${supportTicket}">
+	<form class="text-center border border-light p-5" method="post" th:action="@{/create-ticket}" th:object = "${supportTicket}">
 	
 	    <p class="h4 mb-4">New Support Ticket</p>
 	    
@@ -31,6 +31,5 @@
 	
 	</form>	
 
-    <div th:replace="fragments/layout.html :: footer"></div>
 </body>
 </html>

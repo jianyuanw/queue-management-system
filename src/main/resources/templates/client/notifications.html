@@ -64,7 +64,7 @@
             </div>
         </div>
 
-<!--         <h5 class="text-center" th:text="${error}"></h5> -->
+		<h5 th:if="${#lists.size(notifications) == 0}"class="text-center">No notifications currently</h5>
 
     </div>
 </body>

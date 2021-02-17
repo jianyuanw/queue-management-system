@@ -6,6 +6,13 @@
 <head>
     <title>qMe - Branch Operator</title>
     <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+    
+    <script type="text/javascript">
+    	function submitForm(element) {
+    		document.getElementById(element.getAttribute("data-form")).submit();
+    	}
+    </script>
+    
 </head>
 <body>
     <div th:replace="fragments/layout.html :: navbar"></div>
@@ -32,26 +39,52 @@
 		        </form>
 	        </div>
 	        <div class="col-6">
-				<table class="table">
+				<table class="table table-bordered">
 					<tr class="table-primary">
 						<th>Queue Number</th>
 						<th>Position</th>
 						<th>Duration In Queue</th>
-						<th></th>
-						<th></th>
+						<th>Reassign Position</th>
 					</tr>
 					<tr class="table-light" th:each="qp : ${viewQueuePositions}">
-						<td th:text="${qp.queuePosition.queueNumber}">
+						<td><i class="fas fa-exclamation-circle fa-lg" th:if="${qp.queuePosition.state.displayValue == 'Active Requeue'}" title="Rejoined queue"></i><span class="mx-1" th:text="${qp.queuePosition.queueNumber}"></span></td>
 						<td th:text="${qp.position}">
 						<td th:text="${qp.durationInQueue}">
-						<td>
-							<form method="get" th:action="@{/operate-queue/my-counter/reassign/{rId}(rId=${qp.queuePosition.id})}" >
-								<input type="submit" value="Reassign Position" />
-							</form>
-						</td>
-						<td>
-							<form method="get" th:action="@{/operate-queue/my-counter/cancel-reassign/{rId}(rId=${qp.queuePosition.id})}" >
-								<input type="submit" value="Cancel Reassignment" />
+						<td th:if="${qp.queuePosition.state.displayValue == 'Active Requeue' && qpStat.index != 0}">
+							<button class="btn btn-primary btn-sm" type="button" data-toggle="modal" th:data-target="${'#reassignModal' + qp.queuePosition.id}">Reassign Position</button>
+							
+							<div class="modal fade" th:id="${'reassignModal' + qp.queuePosition.id}" tabindex="-1" role="dialog" aria-hidden="true">
+								<div class="modal-dialog" role="document">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="modal-title" id="modalTitle">Reassign Position</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">&times;</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<div class="row row-cols-4">
+												<form id="reorderForm" method="post" th:action="@{/operate-queue/my-counter/reassign}">
+													<input type="hidden" name="counterId" th:value="${counter.id}">
+													<input type="hidden" name="queuePositionId" th:value="${qp.queuePosition.id}">
+													<span>Reorder to: </span>
+													<select name="position">
+														<option th:each="number: ${#numbers.sequence(1, qp.queuePosition.position - 1)}" th:value="${number}" th:text="${number}">
+													</select>
+												</form>
+											</div>
+										</div>
+										<div class="modal-footer">
+											<button type="submit" class="btn btn-mdb-color btn-sm" data-dismiss="modal">Cancel</button>
+											<button type="submit" class="btn btn-primary btn-sm" onclick="submitForm(this)" data-form="reorderForm">Reassign</button>
+										</div>
+									</div>
+								</div>
+							</div>						
+							
+							<form method="post" th:action="@{operate-queue/my-counter}">
+
+								<input type="hidden" name="counterId" th:value="${counter.id}">
 							</form>
 						</td>
 					</tr>

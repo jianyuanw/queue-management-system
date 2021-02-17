@@ -302,9 +302,8 @@ public class QueueService {
         nextInQueue.setStateChangeTime(LocalDateTime.now());
         nextInQueue.setPosition(null);
         counterRepo.save(counter);
-        queuePositionRepo.save(nextInQueue);
-        // TODO: Notify client / Update TV screen
-        this.notifyBySMS(counter.getQueue().getId());
+        queuePositionRepo.save(nextInQueue); 
+        this.notifyReminderSMS(counter.getQueue().getId());
         return nextInQueue.getQueueNumber();
     }
     
@@ -314,7 +313,7 @@ public class QueueService {
 
     @Transactional
     public String noShow(Counter counter) {
-        QueuePosition currentlyServing = queuePositionRepo.findByQueueNumber(counter.getCurrentlyServingQueueNumber().getQueueNumber());
+        QueuePosition currentlyServing = counter.getCurrentlyServingQueueNumber();
 
         if (currentlyServing != null) {
             currentlyServing.setState(QueuePosition.State.INACTIVE_NO_SHOW);
@@ -322,7 +321,7 @@ public class QueueService {
             queuePositionRepo.save(currentlyServing);
             counter.setCurrentlyServingQueueNumber(null);
             counterRepo.save(counter);
-            this.notifyBySMS(counter.getQueue().getId());
+            this.notifyMissedSMS(currentlyServing);
             return currentlyServing.getQueueNumber();
         } else {
             return null;
@@ -330,7 +329,7 @@ public class QueueService {
     }
     
     @Transactional
-    public boolean notifyBySMS(Long queueId) {
+    public boolean notifyReminderSMS(Long queueId) {
     	List<QueuePosition> queuePositions = this.findAllOngoingQueuePositions(queueId);
     	
     	if (queuePositions.size() > 0) {
@@ -350,7 +349,7 @@ public class QueueService {
     				}
     			};
     			
-    			if (notificationDelay != 0) {
+    			if (notificationDelay == 0) {
     				executorService.execute(notification);
     			} else {
     				executorService.schedule(notification, notificationDelay.longValue(), TimeUnit.MINUTES);
@@ -362,6 +361,14 @@ public class QueueService {
     	
     	return false;
     }
+    
+    public void notifyMissedSMS(QueuePosition queuePosition) {
+    	User user = queuePosition.getUser();
+    	notificationService.addNotification(queuePosition.getUser().getId(), queuePosition.getQueue().getName() + " Notification", 
+				"Dear " + user.getFirstName() + ", \n" + "You have missed your queue number and have dropped out of the queue.");
+    	
+    }    
+    
     
     public boolean enterQueue(String userId, String queueIdStr) {
     	Long queueId = Long.parseLong(queueIdStr);

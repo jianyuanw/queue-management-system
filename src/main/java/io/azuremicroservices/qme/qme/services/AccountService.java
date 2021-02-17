@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 
+import com.google.zxing.aztec.encoder.Encoder;
+
 import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
 import io.azuremicroservices.qme.qme.models.Branch;
 import io.azuremicroservices.qme.qme.models.Queue;
@@ -153,6 +155,14 @@ public class AccountService {
 	}
 	
 	public void updateUser(User user) {
+		User dbUser = userRepo.findById(user.getId()).get();
+		
+		if (user.getPassword() == "") {
+			user.setPassword(dbUser.getPassword());
+		} else {
+			user.setPassword(passwordEncoder.encode(user.getPassword()));
+		}
+		
 		userRepo.save(user);
 		this.invalidateSessions(user.getId());
 	}
@@ -169,7 +179,10 @@ public class AccountService {
 			}
 			if (this.usernameExists(user.getUsername())) {
 				bindingResult.rejectValue("username", "error.username", "Username already exists");
-			}			
+			}
+			if (user.getPassword() == "") {
+				bindingResult.rejectValue("password", "error.password", "Password cannot be empty");
+			}
 		} else {
 			if (userRepo.findByEmailAndIdNot(user.getEmail(), user.getId()) != null) {
 				bindingResult.rejectValue("email", "error.email", "Email already exists");

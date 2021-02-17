@@ -42,6 +42,8 @@
 	    
 	    <input type="hidden" th:field="${user.id}">
 	    <input type="hidden" th:field="${user.role}">
+	    <input type="hidden" th:field="${user.perspective}">
+	    <input type="hidden" th:field="${user.blocked}">
 	    
 	    <div class="form-row mb-4">
 	        <div class="col form-group">
@@ -82,7 +84,7 @@
 	        
 	        <div class="col form-group">
 	        	<label class="form-label" for="branchOperatorAccountPassword">Password</label>
-	            <input type="password" id="branchOperatorAccountPassword" class="form-control" th:field="${user.password}" required>
+	            <input type="password" id="branchOperatorAccountPassword" class="form-control" th:field="${user.password}">
 	            <p class="text-danger text-left" th:if="${#fields.hasErrors('${user.password}')}" th:errors="${user.password}"></p>         
 	        </div>	        
 	    </div>   

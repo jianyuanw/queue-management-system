@@ -72,7 +72,7 @@ public class ManageBranchController {
 	}
 	
 	@PostMapping("/create")
-	public String createBranch(@ModelAttribute @Valid Branch branch, BindingResult bindingResult, RedirectAttributes redirAttr, @RequestParam("branchImage") MultipartFile branchImage)
+	public String createBranch(Model model, @ModelAttribute @Valid Branch branch, BindingResult bindingResult, RedirectAttributes redirAttr, @RequestParam("file") MultipartFile branchImage)
 	throws IOException{
 		
 		if (branchService.branchNameExistsForVendor(branch.getName(), branch.getVendor().getId())) {
@@ -80,25 +80,9 @@ public class ManageBranchController {
 		}
 		if (bindingResult.hasErrors()) {
 			return "manage/branch/create";
-		} 
-		
-		String fileName = StringUtils.cleanPath(branchImage.getOriginalFilename());
-		branch.setBranchImage(fileName);
-		Branch savedBranch = branchService.createBranch(branch);
-		
-		String uploadDir = "./branch-images/" + savedBranch.getId();
-		
-		Path uploadPath = Paths.get(uploadDir);
-		if (!Files.exists(uploadPath)) {
-			Files.createDirectories(uploadPath);
 		}
 		
-		try (InputStream inputStream = branchImage.getInputStream()){
-		Path filePath = uploadPath.resolve(fileName);
-		Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
-		} catch (IOException e) {
-			throw new IOException("Could not save uploaded file:" + fileName);
-		}
+		branchService.createBranch(branchImage, branch);
 		
 		alertService.createAlert(AlertColour.GREEN, "Branch successfully created", redirAttr);
 		return "redirect:/manage/branch/list";
@@ -120,12 +104,12 @@ public class ManageBranchController {
 	}
 
 	@PostMapping("/update")
-	public String updateBranch(@ModelAttribute @Valid Branch branch, BindingResult bindingResult, @PathParam("branchId") Long branchId, RedirectAttributes redirAttr) {
+	public String updateBranch(@ModelAttribute Branch branch, BindingResult bindingResult, @PathParam("branchId") Long branchId, RedirectAttributes redirAttr, @RequestParam("file") MultipartFile branchImage) throws IOException {
 		if (bindingResult.hasErrors()) {
 			return "manage/branch/update";
 		} 
 
-		branchService.updateBranch(branch);
+		branchService.updateBranch(branchImage, branch);
 		alertService.createAlert(AlertColour.GREEN, "Branch successfully updated", redirAttr);
 		return "redirect:/manage/branch/list";
 	}

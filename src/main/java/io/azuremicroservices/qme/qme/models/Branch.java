@@ -61,6 +61,6 @@ public class Branch {
 		if (branchImage == null || id == null) return null;
 		
 		return "/branch-images/" + id + "/" + branchImage;
-	}
+	} 
 
 }

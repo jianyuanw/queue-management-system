@@ -16,6 +16,8 @@
 	<form class="text-center border border-light p-5" method="post" th:action="@{/manage/branch/create}" th:object="${branch}" enctype="multipart/form-data">
 	
 	    <p class="h4 mb-4">New Branch</p>
+	    
+	    <input type="hidden" th:field="*{id}">
 	
 		<input type="hidden" th:field="*{vendor}">
 	
@@ -45,8 +47,8 @@
 	        </div>
 	        
 	         <div class="col form-group">
-	        	<label class="form-label" for="branchImage">Image Upload</label>
-	        	<input class = "form-control border-0" type = "file" name = branchImage id = branchImage accept = "image/png, image/jpeg"/>         
+	        	<label class="form-label">Image Upload</label>
+	        	<input class = "form-control border-0" type = "file" name = file id =file accept = "image/png, image/jpeg"/>         
 	        </div>	        
 	    </div>
 	    
@@ -60,8 +62,8 @@
 	    
 	    <button class="btn btn-info my-4 btn-block" type="submit">Submit</button>
 	
-	</form>	
-
+	</form>
+	
     <div th:replace="fragments/layout.html :: footer"></div>
 </body>
 </html>

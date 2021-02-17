@@ -1,4 +1,4 @@
-package io.azuremicroservices.qme.qme.configuration.mvc;
+package io.azuremicroservices.qme.qme.configurations.security;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

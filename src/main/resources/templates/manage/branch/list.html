@@ -28,8 +28,8 @@
 		</thead>
 		<tbody th:each="branch : ${branches}" th:remove="tag">
 			<tr class="row">
-				<td class = "col">
-					<img th:src = "@{${branch.branchImagePath}}">
+				<td class = "col" align="center">
+					<img style= "width:100px; height: 70px" th:src = "@{${branch.branchImagePath}}">
 				</td>
 				<td class="col" th:text="${branch.name}"></td>
 				<td class="col" th:text="${branch.address}"></td>

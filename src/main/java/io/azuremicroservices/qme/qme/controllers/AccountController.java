@@ -28,6 +28,28 @@ public class AccountController {
         this.alertService = alertService;
     }
 
+	@GetMapping("/")
+	public String landingRedirector(HttpServletRequest request) {
+		var principal = request.getUserPrincipal();
+		
+		if (principal == null) {
+			return "redirect:/login";
+		}
+		
+		User user = accountService.findUserByUsername(request.getUserPrincipal().getName());
+        if (user.getPerspective() == User.Role.APP_ADMIN) {
+            return "redirect:/manage/vendor/list";
+        } else if (user.getPerspective() == User.Role.VENDOR_ADMIN) {
+            return "redirect:/manage/branch/list";
+        } else if (user.getPerspective() == User.Role.BRANCH_ADMIN) {
+            return "redirect:/dashboard";
+        } else if (user.getPerspective() == User.Role.BRANCH_OPERATOR) {
+            return "redirect:/OperateQueue/ViewQueue";
+        } else {
+            return "redirect:/home";
+        }	
+	}
+
     @GetMapping("/login")
     public String loginClient(@ModelAttribute("error") String error, Model model) {
         if (!error.equals("")) {
@@ -46,23 +68,26 @@ public class AccountController {
 
     @GetMapping("/login/success")
     public String loginSuccess(HttpServletRequest request, RedirectAttributes redirAttr) {
-        User user = accountService.findUserByUsername(request.getUserPrincipal().getName());
-        if (user != null) {
-            alertService.createAlert(AlertService.AlertColour.GREEN, "Login successful", redirAttr);
-            if (user.getRole() == User.Role.APP_ADMIN) {
-                return "redirect:/manage/vendor/list";
-            } else if (user.getRole() == User.Role.VENDOR_ADMIN) {
-                return "redirect:/manage/branch/list";
-            } else if (user.getRole() == User.Role.BRANCH_ADMIN) {
-                return "redirect:/dashboard";
-            } else if (user.getRole() == User.Role.BRANCH_OPERATOR) {
-                return "redirect:/OperateQueue/ViewQueue";
-            } else {
-                return "redirect:/home";
-            }
+		var principal = request.getUserPrincipal();
+		
+		if (principal == null) {
+			return "redirect:/login/error";
+		}
+		
+		User user = accountService.findUserByUsername(request.getUserPrincipal().getName());
+		alertService.createAlert(AlertService.AlertColour.GREEN, "Login successful", redirAttr);
+
+        if (user.getPerspective() == User.Role.APP_ADMIN) {
+            return "redirect:/manage/vendor/list";
+        } else if (user.getPerspective() == User.Role.VENDOR_ADMIN) {
+            return "redirect:/manage/branch/list";
+        } else if (user.getPerspective() == User.Role.BRANCH_ADMIN) {
+            return "redirect:/dashboard";
+        } else if (user.getPerspective() == User.Role.BRANCH_OPERATOR) {
+            return "redirect:/OperateQueue/ViewQueue";
         } else {
-            return "redirect:/login/error";
-        }
+            return "redirect:/home";
+        }	
     }
 
     @GetMapping("/login/error")

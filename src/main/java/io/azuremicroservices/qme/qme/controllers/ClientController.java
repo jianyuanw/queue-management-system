@@ -55,10 +55,10 @@ public class ClientController {
 
     @GetMapping("/home")
     public String clientLandingPage(Model model, Authentication authentication) {
-    	List<String> categories = new ArrayList<>();
+    	List<BranchCategory> categories = new ArrayList<>();
 
     	for (BranchCategory branchCategory : BranchCategory.values()) {
-    		categories.add(branchCategory.getDisplayValue());
+    		categories.add(branchCategory);
     	}
 
         model.addAttribute("categories", categories);

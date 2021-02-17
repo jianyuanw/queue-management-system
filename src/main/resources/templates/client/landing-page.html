@@ -26,10 +26,10 @@
         <h5 class="text-center font-weight-bold mb-4">Can't find your queue? Try these!</h5>
 
         <div class="row row-cols-3 justify-content-center">
-            <a th:each="category : ${categories}" th:href="@{/search?category={category}(category=${category})}">
+            <a th:each="category : ${categories}" th:href="@{/search?category={category}(category=${category.displayValue})}">
                 <div class="col px-2 border border-info">
-                    <div class="mt-1"><img class="img-fluid rounded" th:src="@{/images/logos/placeholder_image.png}"></div>
-                    <div class="text-center"><span class="p text-muted" th:text="${category}"></span></div>
+                	<div class="mt-1 text-center"><i class="fas fa-3x" th:classappend="${category.iconClass}"></i></div>
+                    <div class="text-center text-truncate"><span class="p text-muted" th:text="${category.displayValue}"></span></div>
                 </div>
             </a>
         </div>

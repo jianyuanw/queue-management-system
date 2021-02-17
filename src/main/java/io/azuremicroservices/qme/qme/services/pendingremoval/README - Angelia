@@ -1,7 +1,0 @@
-5 Feb 2021 Push
-ManageuserQueue controller = to manage (control) enter and leave queue
-userqueuenumberdto = for data transfer object of enter and leave queue UI 
-Queuepositionrepository = neccesary param are inside 
-Manageuserqueueservice = service class for enter and leave queue
-Queueestimaionservice = estimate waiting time (to be called by "view queue" before enter quueu)
-templates - manage -user-queue = UI for enter and leave queue

@@ -15,6 +15,10 @@ public class MvcConfig implements WebMvcConfigurer {
 		Path branchUploadDir = Paths.get("src/main/resources/branch-images");
 		String branchUploadPath = branchUploadDir.toFile().getAbsolutePath();
 		
+		Path vendorUploadDir = Paths.get("src/main/resources/vendor-images");
+		String vendorUploadPath = vendorUploadDir.toFile().getAbsolutePath();
+		
+		registry.addResourceHandler("/vendor-images/**").addResourceLocations("file:/" + vendorUploadPath + "/");
 		registry.addResourceHandler("/branch-images/**").addResourceLocations("file:/" + branchUploadPath + "/");
 	}
 

@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
@@ -44,5 +45,14 @@ public class Vendor {
 	@OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL)
 	@Exclude
 	private List<UserVendorPermission> userVendorPermissions = new ArrayList<>();
+	
+	private String vendorImage;
+	
+	@Transient
+	public String getVendorImagePath() {
+		if (vendorImage == null || id == null) return null;
+		
+		return "/vendor-images/" + id + "/" + vendorImage;
+	} 
 
 }

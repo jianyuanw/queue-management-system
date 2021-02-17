@@ -1,5 +1,7 @@
 package io.azuremicroservices.qme.qme.controllers;
 
+import java.io.IOException;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import io.azuremicroservices.qme.qme.models.Vendor;
@@ -45,7 +49,7 @@ public class ManageVendorController {
 	}
 	
 	@PostMapping("/create")
-	public String createVendor(@Valid @ModelAttribute Vendor vendor, BindingResult bindingResult, RedirectAttributes redirAttr) {
+	public String createVendor(@Valid @ModelAttribute Vendor vendor, BindingResult bindingResult, RedirectAttributes redirAttr, @RequestParam("file") MultipartFile vendorImage) throws IOException {
 		if (vendorService.companyUidExists(vendor.getCompanyUid())) {
 			bindingResult.rejectValue("companyUid", "error.companyUid", "Company UID already exists");
 		}
@@ -53,7 +57,7 @@ public class ManageVendorController {
 			return "manage/vendor/create";
 		}
 		
-		vendorService.createVendor(vendor);		
+		vendorService.createVendor(vendorImage, vendor);		
 		alertService.createAlert(AlertColour.GREEN, "Vendor successfully created", redirAttr);
 		
 		return "redirect:/manage/vendor/list";
@@ -73,18 +77,18 @@ public class ManageVendorController {
 	}
 	
 	@PostMapping("/update")
-	public String updateVendor(@ModelAttribute @Valid Vendor vendor, BindingResult bindingResult, RedirectAttributes redirAttr) {
+	public String updateVendor(@ModelAttribute @Valid Vendor vendor, BindingResult bindingResult, RedirectAttributes redirAttr, @RequestParam("file") MultipartFile vendorImage) throws IOException {
 		if (bindingResult.hasErrors()) {
 			return "manage/vendor/update";
 		}
 		
-		vendorService.updateVendor(vendor);
+		vendorService.updateVendor(vendorImage, vendor);
 		alertService.createAlert(AlertColour.GREEN, "Vendor successfully updated", redirAttr);
 		return "redirect:/manage/vendor/list";
 	}
 	
 	@GetMapping("/delete/{vendorId}")
-	public String deleteVendor(@PathVariable("vendorId") Long vendorId, RedirectAttributes redirAttr) {
+	public String deleteVendor(@PathVariable("vendorId") Long vendorId, RedirectAttributes redirAttr) throws IOException{
 		var vendor = vendorService.findVendorById(vendorId); 
 
 		if (vendor.isEmpty()) {

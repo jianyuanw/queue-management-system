@@ -29,7 +29,7 @@
     <div class="m-4">
 		<div class="row">
 			<div class="col text-center">
-				<img width="200px" class="img-fluid rounded" th:src="@{/images/logos/placeholder_image.png}">
+				<img width="200px" class="img-fluid rounded" th:src="@{/images/branch-images/__${branch.id}__/__${branch.branchImage}__}">
 			</div>
 		</div>
 		<div class="row">
@@ -48,20 +48,18 @@
             	th:classappend="${viewQueue.queue.state.getDisplayValue() == 'Closed' || viewQueue.userInQueue ? '' : 'linkbox'}"
             	th:attr="data-toggle=${viewQueue.queue.state.getDisplayValue() == 'Closed' || viewQueue.userInQueue ? '' : 'modal'}">
                 <div class="row" th:classappend="${viewQueue.queue.state.getDisplayValue() == 'Closed' || viewQueue.userInQueue ? 'bg-light' : ''}">
-                    <div class="col-3 p-1">
-                        <img class="img-fluid rounded" th:src="@{/images/logos/placeholder_image.png}">
-                    </div>
+                	<div class="col-2"></div>
                     <div class="col-8">
                     	<div class="row">
-                    		<div class="col">                    		
+                    		<div class="col text-center">                    		
                  				<p class="mb-1 font-weight-bold" th:text="${viewQueue.queue.name}"></p>
                  			</div>                 		
                     	</div>
                     	<div class="row" th:if="${viewQueue.queue.state.getDisplayValue() == 'Open'}">
-                    		<div class="col">
+                    		<div class="col text-center">
                     			<p class="m-0"><i class="fas fa-users pr-1"></i><span th:text="${viewQueue.inLine + ' in line'}"></span></p>
                     		</div>
-                    		<div class="col">   
+                    		<div class="col text-center">   
                     			<p class="m-0"><i class="fas fa-clock pr-1"></i><span th:text="${viewQueue.waitingTime + ' min'}"></span></p>
                     		</div>
                     	</div>

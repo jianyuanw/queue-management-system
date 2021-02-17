@@ -55,10 +55,7 @@
 							<i class="fas fa-edit fa-lg" title="Edit Branch"></i>
 						</a>
 
-						<a href="#"><i class="fas fa-trash-alt fa-lg ml-2" data-toggle="modal" th:data-target="${'#deleteConfirm' + branch.id}" title="Delete Branch"></i></a>
-						
-						<a th:href="@{/manage/branch/upload/__${branch.id}__}" data-toggle="modal" th:data-target="${'#uploadImage' + branch.id}"><i class="fas fa-file-image fa-lg ml-2" title="Upload Image"></i></a>
-						
+						<a href="#"><i class="fas fa-trash-alt fa-lg ml-2" data-toggle="modal" th:data-target="${'#deleteConfirm' + branch.id}" title="Delete Branch"></i></a>																
 					
 						<a th:href="@{/manage/branch-admin-account/create/__${branch.id}__}"><i class="fas fa-user-plus fa-lg ml-2" title="Add Branch Admin Account"></i></a>
 
@@ -66,31 +63,7 @@
 							th:with="modalId=${'deleteConfirm' + branch.id},modalTitle=${'Confirm Deletion'},modalBody=${'Are you sure you want to delete ' + branch.name + '?'},
 								modalConfirm=${'Delete'},confirmUrl=${'/manage/branch/delete/' + branch.id}">
 						</th:block>
-						
-						<div class="modal fade" th:id="${'uploadImage' + branch.id}" tabindex="-1" role="dialog" aria-hidden="true">
-							<div class="modal-dialog" role="document">
-								<div class="modal-content">
-									<div class="modal-header">
-										<h5 class="modal-title" id="modalTitle">Upload Image</h5>
-										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-											<span aria-hidden="true">&times;</span>
-										</button>
-									</div>
-									<div class="modal-body">
-										<img class="img-fluid" id="previewHolder" />
-										<input type="file" class="form-control-file" onchange="loadPreview(this)">
-									</div>
-									<div class="modal-footer">
-										<button type="button" class="btn btn-mdb-color btn-sm" data-dismiss="modal">Cancel</button>
-										<form method="post" th:action="@{/OperateQueue/sign-out}">
-											<input type="hidden" name="counterId">
-											<button class="btn btn-primary btn-sm" type="submit">Upload Image</button>
-										</form>
-
-									</div>
-								</div>
-							</div>
-						</div>						
+											
 					</td>
 				</tr>
 			</tbody>

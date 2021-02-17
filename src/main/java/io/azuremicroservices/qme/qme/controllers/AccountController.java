@@ -5,7 +5,9 @@ import io.azuremicroservices.qme.qme.models.User.Role;
 import io.azuremicroservices.qme.qme.services.AccountService;
 import io.azuremicroservices.qme.qme.services.AlertService;
 import io.azuremicroservices.qme.qme.services.AlertService.AlertColour;
+import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,14 +31,14 @@ public class AccountController {
     }
 
 	@GetMapping("/")
-	public String landingRedirector(HttpServletRequest request) {
-		var principal = request.getUserPrincipal();
-		
-		if (principal == null) {
+	public String landingRedirector(Authentication authentication) {
+		if (authentication == null) {
 			return "redirect:/login";
 		}
 		
-		User user = accountService.findUserByUsername(request.getUserPrincipal().getName());
+		MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
+		
+		User user = userDetails.getUser();
         if (user.getPerspective() == User.Role.APP_ADMIN) {
             return "redirect:/manage/vendor/list";
         } else if (user.getPerspective() == User.Role.VENDOR_ADMIN) {

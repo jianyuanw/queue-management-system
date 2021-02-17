@@ -46,16 +46,20 @@ public class ManageCounterController {
 	
 	@GetMapping("/list")
 	public String initManageCounterList(Model model, Authentication authentication) {
-		List<Queue> queues = permissionService.getQueuePermissions(((MyUserDetails) authentication.getPrincipal()).getId());
+		MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
 		
+		List<Queue> queues = permissionService.getQueuePermissions(userDetails.getId());
+		
+		model.addAttribute("branches", permissionService.getBranchPermissions(userDetails.getId()));
 		model.addAttribute("counters", counterService.findAllCountersInQueues(queues));
 		
 		return "manage/counter/list";
 	}
 	
 	@GetMapping("/create")
-	public String initCreatCounterForm(Model model, Authentication authentication) {
+	public String initCreateCounterForm(Model model, Authentication authentication) {
 		List<Queue> queues = permissionService.getQueuePermissions(((MyUserDetails) authentication.getPrincipal()).getId());
+		
 		model.addAttribute("queues", queues);
 		model.addAttribute("counter", new Counter());
 		return "manage/counter/create";

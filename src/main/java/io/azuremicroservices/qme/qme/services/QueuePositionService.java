@@ -6,10 +6,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -89,8 +86,22 @@ public class QueuePositionService {
 		return queuePositionRepo.findAllByQueue_IdAndStateIn(queueId, QueuePosition.getQueuingStates());
 	}
 
-	public List<QueuePosition> findAllQueuePositionsByQueueIdAndState(Long queueId, State inactiveNoShow) {
-		return queuePositionRepo.findAllByQueue_IdAndState(queueId, inactiveNoShow);
+	public Map<String, String> findQueuePositionForNoShowListDisplaying(Long queueId) {
+    	List<QueuePosition> noshow = queuePositionRepo.findAllByQueue_IdAndState(queueId, State.INACTIVE_NO_SHOW);
+    	noshow.sort(new Comparator<QueuePosition>() {
+			@Override
+			public int compare(QueuePosition o1, QueuePosition o2) {
+				if(o1.getStateChangeTime().isBefore(o2.getStateChangeTime()))
+					return 1;
+				else
+					return -1;
+			}
+		});
+    	Map<String, String> noshowNumberAndTime = new LinkedHashMap<>();
+    	for(QueuePosition qp: noshow) {
+    		noshowNumberAndTime.put(qp.getQueueNumber(),qp.getStateChangeTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd h:mm a")));
+		}
+    	return noshowNumberAndTime;
 	}
 
 	public List<QueuePosition> findAllQueuePositionsByBranchIdIn(List<Long> branchIds) {

@@ -148,12 +148,13 @@ public class OperateQueueController {
     public String viewSelectedQueue(@PathVariable("queueId") Long queueId,Model model) {
         Queue queue = queueService.findQueue(queueId);
         Vendor vendor = queue.getBranch().getVendor();
+        Branch branch = queue.getBranch();
 
         List<QueuePosition> qps = queuePositionService.getActiveSortedQueuePositions(queueId);
         // List<QueuePosition> qps = queuePositionService.getAllSortedQueuePositions(queueId);
 
-        model.addAttribute("vendor",vendor.getName());
-        model.addAttribute("state",queue.getState().getDisplayValue());
+        model.addAttribute("vendor",vendor);
+        model.addAttribute("branch", branch);
         model.addAttribute("queue",queue);
         model.addAttribute("positions",qps);
         return "branch-operator/viewSelectedQueuePage";
@@ -167,20 +168,17 @@ public class OperateQueueController {
     }
 
     @GetMapping("/ViewNoShowList/{queueId}")
-    public String viewNoShowList(@PathVariable("queueId")Long queueId, Authentication authentication, Model model) {
-        MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
-        User user = myUserDetails.getUser();
+    public String viewNoShowList(@PathVariable("queueId")Long queueId, Model model) {
 
-        List<QueuePosition> noShowQP = queuePositionService.findAllQueuePositionsByQueueIdAndState(queueId, State.INACTIVE_NO_SHOW);
+        Map<String, String> noShowQP = queuePositionService.findQueuePositionForNoShowListDisplaying(queueId);
         Queue queue = queueService.findQueue(queueId);
-        Vendor vendor = queue.getBranch().getVendor();
-        List<Branch> branches = permissionService.getBranchPermissions(user.getId());
-        List<Queue> queues = permissionService.getQueuePermissions(user.getId());
+        Branch branch = queue.getBranch();
+        Vendor vendor = branch.getVendor();
+
         model.addAttribute("noShowList",noShowQP);
         model.addAttribute("queue",queue);
-        model.addAttribute("vendor",vendor.getName());
-        model.addAttribute("branches",branches);
-        model.addAttribute("queues",queues);
+        model.addAttribute("vendor",vendor);
+        model.addAttribute("branch",branch);
         return "branch-operator/noShowListPage";
     }
 

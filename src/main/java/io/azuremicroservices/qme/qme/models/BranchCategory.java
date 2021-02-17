@@ -1,16 +1,17 @@
 package io.azuremicroservices.qme.qme.models;
 
 public enum BranchCategory {
-    HEALTHCARE,
-    FINANCE,
-    DINING,
-    TECHNOLOGY,
-    RETAIL,
-    GOVERNMENTAL;
+    HEALTHCARE("fa-clinic-medical"),
+    FINANCE("fa-piggy-bank"),
+    DINING("fa-utensils"),
+    TECHNOLOGY("fa-sim-card"),
+    RETAIL("fa-shopping-bag"),
+    GOVERNMENTAL("fa-landmark");
 
     private final String displayValue;
-
-    BranchCategory() {
+    private final String iconClass;
+    
+    BranchCategory(String iconClass) {
         // Generalized constructor that converts capitalized enum values to TitleCase
         StringBuilder sb = new StringBuilder();
 
@@ -19,7 +20,9 @@ public enum BranchCategory {
         }
 
         this.displayValue = sb.toString().trim();
+        this.iconClass = iconClass;
     }
 
     public String getDisplayValue() { return displayValue; }
+    public String getIconClass() { return iconClass; }
 }

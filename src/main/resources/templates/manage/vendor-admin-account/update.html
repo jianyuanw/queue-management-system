@@ -18,7 +18,9 @@
 	    <p class="h4 mb-4">Update Vendor Account</p>
 	    
 	    <input type="hidden" th:field="*{id}">
-	   	<input type="hidden" th:field="*{role}">
+	    <input type="hidden" th:field="*{role}">
+	    <input type="hidden" th:field="*{perspective}">
+	    <input type="hidden" th:field="*{blocked}">
 	    
 	    <div class="form-row mb-4">
 	        <div class="col form-group">
@@ -57,7 +59,7 @@
 	        
 	        <div class="col form-group">
 	        	<label class="form-label" for="vendorAdminAccountPassword">Password</label>
-	            <input type="password" id="vendorAdminAccountPassword" class="form-control" th:field="*{password}" required>
+	            <input type="password" id="vendorAdminAccountPassword" class="form-control" th:field="*{password}">
 	            <p class="text-danger text-left" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>         
 	        </div>	        
 	    </div>	     	     

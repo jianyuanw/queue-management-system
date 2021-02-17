@@ -34,7 +34,6 @@ public class User {
     @Pattern(regexp = "[A-Za-z0-9._]+", message = "Username must only contain alphanumeric characters, periods and underscores")
     private String username;
 
-    @NotEmpty(message = "Password must not be empty")
     private String password;
 
     @Email(message = "Email must be valid")

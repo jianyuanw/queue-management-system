@@ -71,7 +71,7 @@ public class ManageVendorAdminAccountController {
 		accountService.createUser(user, vendor);
 		alertService.createAlert(AlertColour.GREEN, "Vendor Admin Account successfully created", redirAttr);
 		
-		return "redirect:/manage/vendor-admin-account/list";
+		return "redirect:/manage/user-account/list";
 		
 	}
 	

@@ -52,6 +52,7 @@ public class ManageBranchOperatorAccountController {
     	
     	List<Branch> branches = permissionService.getBranchPermissions(user.getId());		
 		
+    	model.addAttribute("branches", branches);
 		model.addAttribute("branchOperators", accountService.findAllUsersByRoleAndBranchIn(Role.BRANCH_OPERATOR, branches));
 		return "manage/branch-operator-account/list";
 	}

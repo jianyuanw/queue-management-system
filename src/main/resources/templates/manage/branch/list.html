@@ -15,48 +15,53 @@
 <body>
 	<div th:replace="fragments/layout.html :: navbar"></div>
 
-	<table id="dataTable" class="table table-striped table-bordered">
-		<thead>
-			<tr class="row">
-				<th class="col">Branch Name</th>
-				<th class="col">Address</th>
-				<th class="col">Description</th>
-				<th class="col">Category</th>
-				<th class="col">Actions</th>
-			</tr>
-		</thead>
-		<tbody th:each="branch : ${branches}" th:remove="tag">
-			<tr class="row">
-				<td class="col" th:text="${branch.name}"></td>
-				<td class="col" th:text="${branch.address}"></td>
-				<td class="col" th:text="${branch.description}"></td>
-				<td class="col" th:text="${branch.category.getDisplayValue()}"></td>
-				<td class="col">
-					<a th:href="@{/manage/branch/update/__${branch.id}__}">
-						<i class="fas fa-edit fa-lg" title="Edit Branch"></i>
-					</a>
-					
-      				<a href="#"><i class="fas fa-trash-alt fa-lg" data-toggle="modal" th:data-target="${'#deleteConfirm' + branch.id}" title="Delete Branch"></i></a>
-      				
-      				<a th:href="@{/manage/branch-admin-account/create/__${branch.id}__}"><i class="fas fa-user-plus fa-lg" title="Add Branch Admin Account"></i></a>
-      				
-      				<a th:href="@{/manage/branch/upload/__${branch.id}__}"><i class="fas fa-file-img fa-lg" title="Upload Image"></i></a>
-      				
-					<th:block th:insert="fragments/support-elements.html :: modalbox-red"
-						th:with="modalId=${'deleteConfirm' + branch.id},modalTitle=${'Confirm Deletion'},modalBody=${'Are you sure you want to delete ' + branch.name + '?'},
-							modalConfirm=${'Delete'},confirmUrl=${'/manage/branch/delete/' + branch.id}">
-					</th:block>
-				</td>
-			</tr>
-		</tbody>
-		<tfoot>
-			<tr class="row">
-				<td class="col">
-					<a th:href="@{/manage/branch/create}"><button class="btn btn-info btn-block">Create New Branch</button></a>
-				</td>
-			</tr>
-		</tfoot>
-	</table>	
+	<div class="m-4">
+
+		<h1 class="font-weight-bold">Branch List</h1>
+
+		<table id="dataTable" class="table table-striped table-bordered">
+			<thead>
+				<tr class="row">
+					<th class="col">Branch Name</th>
+					<th class="col">Address</th>
+					<th class="col">Description</th>
+					<th class="col">Category</th>
+					<th class="col">Actions</th>
+				</tr>
+			</thead>
+			<tbody th:each="branch : ${branches}" th:remove="tag">
+				<tr class="row">
+					<td class="col" th:text="${branch.name}"></td>
+					<td class="col" th:text="${branch.address}"></td>
+					<td class="col" th:text="${branch.description}"></td>
+					<td class="col" th:text="${branch.category.getDisplayValue()}"></td>
+					<td class="col">
+						<a th:href="@{/manage/branch/update/__${branch.id}__}">
+							<i class="fas fa-edit fa-lg" title="Edit Branch"></i>
+						</a>
+
+						<a href="#"><i class="fas fa-trash-alt fa-lg ml-2" data-toggle="modal" th:data-target="${'#deleteConfirm' + branch.id}" title="Delete Branch"></i></a>
+						
+						<a th:href="@{/manage/branch/upload/__${branch.id}__}"><i class="fas fa-file-img fa-lg" title="Upload Image"></i></a>
+
+						<a th:href="@{/manage/branch-admin-account/create/__${branch.id}__}"><i class="fas fa-user-plus fa-lg ml-2" title="Add Branch Admin Account"></i></a>
+
+						<th:block th:insert="fragments/support-elements.html :: modalbox-red"
+							th:with="modalId=${'deleteConfirm' + branch.id},modalTitle=${'Confirm Deletion'},modalBody=${'Are you sure you want to delete ' + branch.name + '?'},
+								modalConfirm=${'Delete'},confirmUrl=${'/manage/branch/delete/' + branch.id}">
+						</th:block>
+					</td>
+				</tr>
+			</tbody>
+			<tfoot>
+				<tr class="row">
+					<td class="col">
+						<a th:href="@{/manage/branch/create}"><button class="btn btn-info btn-block">Create New Branch</button></a>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
 
 	<div th:replace="fragments/layout.html :: footer"></div>
 </body>

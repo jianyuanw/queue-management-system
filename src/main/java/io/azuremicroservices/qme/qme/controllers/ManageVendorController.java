@@ -20,7 +20,7 @@ import io.azuremicroservices.qme.qme.services.AlertService.AlertColour;
 import io.azuremicroservices.qme.qme.services.VendorService;
 
 @Controller
-@RequestMapping("manage/vendor")
+@RequestMapping("/admin/manage/vendor")
 public class ManageVendorController {
 	private final VendorService vendorService;
 	private final AccountService accountService;

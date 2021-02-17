@@ -36,18 +36,35 @@ public class TwoLogin {
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            http.requestMatchers().antMatchers(ADMIN_URLS)
+            http.antMatcher("/admin/**")
+                    .authorizeRequests()
+                    .antMatchers("/admin/login/**", "/admin/logout/**").permitAll()
+                    .anyRequest().authenticated()
                     .and()
-                    .authorizeRequests().anyRequest().authenticated()
+                    .formLogin()
+                    .loginPage("/admin/login")
+                    .loginProcessingUrl("/admin/login")
+                    .defaultSuccessUrl("/admin/login/success")
+                    .failureUrl("/admin/login/error")
                     .and()
-                    .formLogin().permitAll();
-//                    .loginPage("/login-admin")
-//                    .defaultSuccessUrl("/login/success")
-//                    .failureUrl("/login/error")
+                    .logout()
+                    .logoutUrl("/admin/logout")
+                    .logoutSuccessUrl("/admin/logout/success");
 //                    .and()
-//                    .logout()
-//                    .logoutUrl("/logout")
-//                    .logoutSuccessUrl("/login-admin");
+//                    .csrf().disable();
+
+//            http.antMatcher("/test/**")
+//                    .authorizeRequests()
+//                    .antMatchers("/test/login").permitAll()
+//                    .antMatchers("/test/logout").permitAll()
+//                    .anyRequest().authenticated()
+//                    .and()
+//                    .formLogin()
+//                    .loginPage("/login-admin").permitAll()
+//                    .loginProcessingUrl("/test/login").permitAll()
+//                    .failureUrl("/login.jsp?error=yes")
+//                    .and()
+//                    .logout().permitAll().logoutUrl("/test/logout").permitAll();
         }
     }
 
@@ -67,18 +84,18 @@ public class TwoLogin {
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            http.requestMatchers().antMatchers(CLIENT_URLS)
+            http.authorizeRequests()
+                    .antMatchers("/login/**", "/logout/**").permitAll()
+                    .anyRequest().authenticated()
                     .and()
-                    .authorizeRequests().anyRequest().authenticated()
+                    .formLogin().permitAll()
+                    .loginPage("/login").permitAll()
+                    .loginProcessingUrl("/login").permitAll()
+                    .failureUrl("/login/error").permitAll()
                     .and()
-                    .formLogin().permitAll();
-//                    .loginPage("/login")
-//                    .defaultSuccessUrl("/login/success")
-//                    .failureUrl("/login/error")
-//                    .and()
-//                    .logout()
-//                    .logoutUrl("/logout")
-//                    .logoutSuccessUrl("/login");
+                    .logout().permitAll()
+                    .logoutUrl("/logout").permitAll()
+                    .logoutSuccessUrl("/login").permitAll();
         }
     }
 

@@ -33,7 +33,7 @@ public class DashboardController {
 		this.queueService = queueService;
 	}
 
-	@GetMapping("/dashboard")
+	@GetMapping("/admin/dashboard")
 	public String dashboard(Model model, Authentication authentication) {
 		MyUserDetails user = (MyUserDetails) authentication.getPrincipal();
 		

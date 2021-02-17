@@ -28,15 +28,15 @@ public class AccountController {
         this.alertService = alertService;
     }
 
-//    @GetMapping("/login")
-//    public String loginClient(@ModelAttribute("error") String error, Model model) {
-//        if (!error.equals("")) {
-//            model.addAttribute("error", error);
-//        }
-//        return "account/login-client";
-//    }
+    @GetMapping("/login")
+    public String loginClient(@ModelAttribute("error") String error, Model model) {
+        if (!error.equals("")) {
+            model.addAttribute("error", error);
+        }
+        return "account/login-client";
+    }
 
-    @GetMapping("/login-admin")
+    @GetMapping("/admin/login")
     public String loginAdmin(@ModelAttribute("error") String error, Model model) {
         if (!error.equals("")) {
             model.addAttribute("error", error);
@@ -44,31 +44,31 @@ public class AccountController {
         return "account/login-admin";
     }
 
-    @GetMapping("/login/success")
+    @GetMapping("/admin/login/success")
     public String loginSuccess(HttpServletRequest request, RedirectAttributes redirAttr) {
         User user = accountService.findUserByUsername(request.getUserPrincipal().getName());
         if (user != null) {
             alertService.createAlert(AlertService.AlertColour.GREEN, "Login successful", redirAttr);
             if (user.getRole() == User.Role.APP_ADMIN) {
-                return "redirect:/manage/vendor/list";
+                return "redirect:/admin/manage/vendor/list";
             } else if (user.getRole() == User.Role.VENDOR_ADMIN) {
                 return "redirect:/manage/branch/list";
             } else if (user.getRole() == User.Role.BRANCH_ADMIN) {
-                return "redirect:/dashboard";
+                return "redirect:/admin/dashboard";
             } else if (user.getRole() == User.Role.BRANCH_OPERATOR) {
                 return "redirect:/OperateQueue/ViewQueue";
             } else {
                 return "redirect:/home";
             }
         } else {
-            return "redirect:/login/error";
+            return "redirect:/admin/login/error";
         }
     }
 
-    @GetMapping("/login/error")
+    @GetMapping("/admin/login/error")
     public String loginError(RedirectAttributes redirAttr) {
         redirAttr.addFlashAttribute("error", "Incorrect username or password");
-        return "redirect:/login";
+        return "redirect:/admin/login";
     }
 
     @GetMapping("/login/expired")
@@ -84,10 +84,10 @@ public class AccountController {
         return "account/logout";
     }
 
-    @GetMapping("/logout/success")
+    @GetMapping("/admin/logout/success")
     public String logoutSuccess(RedirectAttributes redirAttr) {
         alertService.createAlert(AlertService.AlertColour.GREEN, "Logout successful", redirAttr);
-        return "redirect:/login";
+        return "redirect:/admin/login";
     }
 
     @GetMapping("/register")

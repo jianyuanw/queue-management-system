@@ -213,4 +213,8 @@ public class QueuePositionService {
 				.map(QueuePosition::getQueueNumber)
 				.toArray(String[]::new);
 	}
+	
+	public List<QueuePosition> findAllQueuePositionsByBranchId(Long branchId) {
+		return queuePositionRepo.findAllByQueue_Branch_Id(branchId);
+	}
 }

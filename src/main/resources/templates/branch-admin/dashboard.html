@@ -18,6 +18,16 @@
 	<span th:text="${#temporals.format(today, 'yyyy-MM-dd ''T''')}"></span>
 	
 	<div class="container">
+	
+		<div class = "row">
+			<form class="text-center" method="post" th:action="@{/filter}" name="branchId">
+				<select  class="form-select form-control" onchange="this.form.submit()">
+					<option value="">Overall</option>
+					<option th:each="branch:${branches}" th:text="${branch.name}" th:value="${branch.id}">
+				</select>
+			</form>
+		</div>
+	
 		<div class="row">
 
 			<!-- Queue Count Chart here -->

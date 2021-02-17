@@ -2,14 +2,14 @@ package io.azuremicroservices.qme.qme.controllers;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
 import io.azuremicroservices.qme.qme.models.Branch;
@@ -38,6 +38,7 @@ public class DashboardController {
 		MyUserDetails user = (MyUserDetails) authentication.getPrincipal();
 		
 		List<Branch> branches = permissionService.getBranchPermissions(user.getId());
+		model.addAttribute("branches", branches);
 		
 		List<Queue> queues = queueService.findAllQueuesInBranches(branches);
 		System.out.println(queues.size());
@@ -81,6 +82,34 @@ public class DashboardController {
 		
 		model.addAttribute("intervalMap", intervalMap);
 		
-		return "prototype/dashboard-proto";
+		return "branch-admin/dashboard";
 	}
+	
+	@PostMapping("/filter")
+	public String filterDashboardByBranch(Model model, @RequestParam String branchId) {
+		if(branchId == null) {
+			return "branch-admin/dashboard";
+		}
+		
+		Long lBranchId = Long.parseLong(branchId);
+		List<QueuePosition> queuePositions = queuePositionService.findAllQueuePositionsByBranchId(lBranchId);
+		
+		Map<String, Integer> queueCountData = queuePositionService.generateQueueCountData(queuePositions);
+		Map<String, Long> estWaitingTimeData = queuePositionService.generateEstimatedWaitingTimeData(queuePositions);
+
+		model.addAttribute("queueCountData", queueCountData);
+		model.addAttribute("estWaitingTimeData", estWaitingTimeData);
+
+		// To add in services for actual
+		var forecastQcDataMonthly = queuePositionService.generateQueueCountForecast(queuePositions, 10);
+		var forecastEWTDataMonthly = queuePositionService.generateEWTCountForecast(queuePositions, 10);
+				
+		model.addAttribute("forecastQcDataMonthly", forecastQcDataMonthly);
+		model.addAttribute("forecastEWTDataMonthly", forecastEWTDataMonthly);
+		
+		
+		return "branch-admin/dashboard";
+		
+	}
+	
 }

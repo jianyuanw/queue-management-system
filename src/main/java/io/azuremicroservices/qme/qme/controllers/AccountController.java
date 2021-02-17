@@ -39,22 +39,31 @@ public class AccountController {
 	public String landingRedirector(Authentication authentication) {
 		if (authentication == null) {
 			return "redirect:/login";
+		} else {
+			return "redirect:/landing-page";
+		}
+	}
+	
+	@GetMapping("/landing-page")
+	public String landingPage(Authentication authentication) {
+		if (authentication == null) {
+			return "redirect:/login";
 		}
 		
 		MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
 		
 		User user = userDetails.getUser();
         if (user.getPerspective() == User.Role.APP_ADMIN) {
-            return "redirect:/manage/vendor/list";
+            return "app-admin/landing-page";
         } else if (user.getPerspective() == User.Role.VENDOR_ADMIN) {
-            return "redirect:/manage/branch/list";
+            return "vendor-admin/landing-page";
         } else if (user.getPerspective() == User.Role.BRANCH_ADMIN) {
-            return "redirect:/dashboard";
+            return "branch-admin/landing-page";
         } else if (user.getPerspective() == User.Role.BRANCH_OPERATOR) {
             return "redirect:/operate-queue/view-queue";
         } else {
             return "redirect:/home";
-        }	
+        }		
 	}
 
     @GetMapping("/login")
@@ -82,16 +91,16 @@ public class AccountController {
 		alertService.createAlert(AlertService.AlertColour.GREEN, "Login successful", redirAttr);
 
         if (user.getPerspective() == User.Role.APP_ADMIN) {
-            return "redirect:/manage/vendor/list";
+            return "app-admin/landing-page";
         } else if (user.getPerspective() == User.Role.VENDOR_ADMIN) {
-            return "redirect:/manage/branch/list";
+            return "vendor-admin/landing-page";
         } else if (user.getPerspective() == User.Role.BRANCH_ADMIN) {
-            return "redirect:/dashboard";
+            return "branch-admin/landing-page";
         } else if (user.getPerspective() == User.Role.BRANCH_OPERATOR) {
             return "redirect:/operate-queue/view-queue";
         } else {
             return "redirect:/home";
-        }	
+        }		
     }
 
     @GetMapping("/login/error")

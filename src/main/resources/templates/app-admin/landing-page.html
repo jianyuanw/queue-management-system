@@ -10,6 +10,28 @@
 <body>
     <div th:replace="fragments/layout.html :: navbar"></div>
     <h2 class="text-center">App Admin Landing Page</h2>
+    
+      <div class="row">
+        <div class="col text-center">
+            <a th:href="@{/support-ticket}" class="btn btn-block btn-warning">
+                <i class="fa fa-question-circle fa-5x"></i><br/>
+                Support Tickets<br>
+            </a>
+        </div>
+        <div class="col text-center">
+            <a th:href="@{/manage/vendor/list}" class="btn btn-block btn-primary">
+              <i class="fa fa-building fa-5x"></i><br/>
+              Manage Vendors<br>
+            </a>        	
+        </div>
+        <div class="col text-center">
+            <a th:href="@{/manage/user-account/list}" class="btn btn-block btn-success">
+              <i class="fa fa-user fa-5x"></i><br/>
+              Manage Users<br>
+            </a>        
+        </div>
+	</div>    
+    
     <div th:replace="fragments/layout.html :: footer"></div>
 </body>
 </html>

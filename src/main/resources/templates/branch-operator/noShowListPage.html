@@ -6,10 +6,40 @@
 <head>
     <title>qMe - Branch Operator</title>
     <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap-table" />
+
+    <style>
+        .clickable {
+            cursor: pointer;
+        }
+    </style>
+
 </head>
 <body>
+
 <div th:replace="fragments/layout.html :: navbar"></div>
-<h2 class="text-center">To do: no show list page</h2>
+<div class="m-4">
+<p><b>Vendor: </b><span th:text="${vendor.getName()}">vendor</span></p>
+<p><b>Branch: </b><span th:text="${branch.getName()}">branch</span></p>
+<p><b>Queue: </b><span th:text="${queue.getName()}">queue</span></p>
+
+<p><b><u>List of no-shows</u></b></p>
+
+<table id="selectedQueuePageTable" class="table table-striped table-bordered">
+    <thead>
+    <tr>
+        <td >Queue Number</td>
+        <td >Time Of No-Show</td>
+    </tr>
+    </thead>
+    <tbody th:each="noshow:${noShowList}">
+    <tr >
+        <td ><span th:text="${noshow.getKey()}">QueueNumber</span></td>
+        <td ><span th:text="${noshow.getValue()}">Time Of No-show</span></td>
+    </tr>
+    </tbody>
+</table>
+</div>
 <div th:replace="fragments/layout.html :: footer"></div>
 </body>
 </html>

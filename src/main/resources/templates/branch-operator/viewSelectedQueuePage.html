@@ -6,6 +6,7 @@
 <head>
     <title>qMe - Branch Operator</title>
     <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap-table" />
 
     <style>
         .clickable {
@@ -34,16 +35,12 @@
 
 <div th:replace="fragments/layout.html :: navbar"></div>
 
-<h1>Notice: for easy testing, web page will display all queue positions no matter active or not.</h1>
-
-<p><b>Vendor: </b><span th:text="${vendor}">VENDOR</span></p>
-
-<!--Not implement drop down branch list-->
-<!--Not implement drop down queue list-->
-
-<p><b>Status: </b><span th:text="${state}">Closed</span></p>
-
-<!--Not implement attend to counter go button-->
+<div class="m-4">
+  
+<p><b>Vendor: </b><span th:text="${vendor.getName()}">vendor</span></p>
+<p><b>Branch: </b><span th:text="${branch.getName()}">branch</span></p>
+<p><b>Queue: </b><span th:text="${queue.getName()}">queue</span></p>
+<p><b>Status: </b><span th:text="${queue.getState().getDisplayValue()}">Closed</span></p>
 
 <form method="get" th:action="@{/OperateQueue/ViewNoShowList/{qId}(qId=${queue.getId()})}" >
     <input type="submit" value="View No-show List" />
@@ -54,7 +51,6 @@
     <tr>
         <td >Queue Number</td>
         <td >Position</td>
-        <td >Duration In Queue</td>
         <td >Rejoined?</th>
         <td ></td>
     </tr>
@@ -63,7 +59,6 @@
     <tr >
         <td ><span th:text="${position.getQueueNumber()}">QueueNumber</span></td>
         <td ><span >postion</span></td>
-        <td ><span >duration</span></td>
         <td ><span th:if="${position.getState().ordinal()==1}" text="Yes">Yes</span><span th:if="${position.getState().ordinal()!=1}" text="No">No</span></td>
         <td >
             <form method="get" th:action="@{/OperateQueue/ViewSelectedQueue/{qId}/{rId}(qId=${queue.getId()},rId=${position.getId()})}" >
@@ -73,6 +68,9 @@
     </tr>
     </tbody>
 </table>
+
+</div>
+
 
 <div th:replace="fragments/layout.html :: footer"></div>
 </body>

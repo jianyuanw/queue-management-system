@@ -41,8 +41,8 @@ public class TwoLogin {
                     .antMatchers("/OperateQueue/**").hasAuthority("BRANCH_OPERATOR")
                     .antMatchers("/login-admin").permitAll()
                     .and()
-                    .formLogin()
-                    .loginPage("/login-admin");
+                    .formLogin();
+//                    .loginPage("/login-admin")
 //                    .defaultSuccessUrl("/login/success")
 //                    .failureUrl("/login/error")
 //                    .and()
@@ -73,8 +73,8 @@ public class TwoLogin {
                     .antMatchers("/home/**").hasAuthority("CLIENT")
                     .antMatchers("/login").permitAll()
                     .and()
-                    .formLogin()
-                    .loginPage("/login");
+                    .formLogin();
+//                    .loginPage("/login")
 //                    .defaultSuccessUrl("/login/success")
 //                    .failureUrl("/login/error")
 //                    .and()

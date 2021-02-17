@@ -28,13 +28,13 @@ public class AccountController {
         this.alertService = alertService;
     }
 
-    @GetMapping("/login")
-    public String loginClient(@ModelAttribute("error") String error, Model model) {
-        if (!error.equals("")) {
-            model.addAttribute("error", error);
-        }
-        return "account/login-client";
-    }
+//    @GetMapping("/login")
+//    public String loginClient(@ModelAttribute("error") String error, Model model) {
+//        if (!error.equals("")) {
+//            model.addAttribute("error", error);
+//        }
+//        return "account/login-client";
+//    }
 
     @GetMapping("/login-admin")
     public String loginAdmin(@ModelAttribute("error") String error, Model model) {

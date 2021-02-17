@@ -12,7 +12,7 @@ public class MvcConfig implements WebMvcConfigurer {
 	
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		Path branchUploadDir = Paths.get("./branch-images");
+		Path branchUploadDir = Paths.get("src/main/resources/branch-images");
 		String branchUploadPath = branchUploadDir.toFile().getAbsolutePath();
 		
 		registry.addResourceHandler("/branch-images/**").addResourceLocations("file:/" + branchUploadPath + "/");

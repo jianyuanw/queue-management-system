@@ -115,7 +115,7 @@ public class ManageBranchController {
 	}
 	
 	@GetMapping("/delete/{branchId}")
-	public String deleteBranch(@PathVariable("branchId") Long branchId, Authentication authentication, RedirectAttributes redirAttr) {
+	public String deleteBranch(@PathVariable("branchId") Long branchId, Authentication authentication, RedirectAttributes redirAttr) throws IOException {
 		var branch = branchService.findBranchById(branchId);
 		
 		MyUserDetails user = (MyUserDetails) authentication.getPrincipal();

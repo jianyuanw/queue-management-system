@@ -53,6 +53,7 @@
         <td >Position</td>
         <td >Rejoined?</th>
         <td ></td>
+        <td ></td>
     </tr>
     </thead>
     <tbody th:each="position:${positions}">
@@ -63,6 +64,11 @@
         <td >
             <form method="get" th:action="@{/OperateQueue/ViewSelectedQueue/{qId}/{rId}(qId=${queue.getId()},rId=${position.getId()})}" >
                 <input type="submit" value="Reassign Position" />
+            </form>
+        </td>
+        <td >
+            <form method="get" th:action="@{/OperateQueue/ViewSelectedQueue/cancel-reassign/{qId}/{rId}(qId=${queue.getId()},rId=${position.getId()})}" >
+                <input type="submit" value="Cancel Reassignment" />
             </form>
         </td>
     </tr>

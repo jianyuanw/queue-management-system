@@ -40,7 +40,7 @@ public class BranchService {
 		String fileName = StringUtils.cleanPath(branchImage.getOriginalFilename());
 		branch.setBranchImage(fileName);
 		Branch savedBranch = branchRepo.save(branch);
-		String uploadDir = "src/main/resources/branch-images/" + savedBranch.getId();
+		String uploadDir = "src/main/resources/static/images/branch-images/" + savedBranch.getId();
 		
 		Path uploadPath = Paths.get(uploadDir);
 		if (!Files.exists(uploadPath)) {
@@ -59,7 +59,7 @@ public class BranchService {
 		String fileName = StringUtils.cleanPath(branchImage.getOriginalFilename());
 		branch.setBranchImage(fileName);
 		Branch savedBranch = branchRepo.save(branch);
-		String uploadDir = "src/main/resources/branch-images/" + savedBranch.getId();
+		String uploadDir = "src/main/resources/static/images/branch-images/" + savedBranch.getId();
 		
 		if(branch.getBranchImage() != null) {
 		FileUtils.deleteDirectory(new File(uploadDir));
@@ -93,7 +93,7 @@ public class BranchService {
 	@Transactional
 	public void deleteBranch(Branch branch) throws IOException {
 		if(branch.getBranchImagePath() != null) {
-		String uploadDir = "src/main/resources/branch-images/" + branch.getId();
+		String uploadDir = "src/main/resources/static/images/branch-images/" + branch.getId();
 		
 		FileUtils.deleteDirectory(new File(uploadDir));
 		}

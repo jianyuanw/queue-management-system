@@ -46,7 +46,7 @@ public class VendorService {
 		String fileName = StringUtils.cleanPath(vendorImage.getOriginalFilename());
 		vendor.setVendorImage(fileName);
 		Vendor savedVendor = vendorRepo.save(vendor);
-		String uploadDir = "src/main/resources/vendor-images/" + savedVendor.getId();
+		String uploadDir = "src/main/resources/static/images/vendor-images/" + savedVendor.getId();
 		
 		Path uploadPath = Paths.get(uploadDir);
 		if (!Files.exists(uploadPath)) {
@@ -65,7 +65,7 @@ public class VendorService {
 		String fileName = StringUtils.cleanPath(vendorImage.getOriginalFilename());
 		vendor.setVendorImage(fileName);
 		Vendor savedVendor = vendorRepo.save(vendor);
-		String uploadDir = "src/main/resources/vendor-images/" + savedVendor.getId();
+		String uploadDir = "src/main/resources/static/images/vendor-images/" + savedVendor.getId();
 		
 		if(vendor.getVendorImage() != null) {
 			FileUtils.deleteDirectory(new File(uploadDir));
@@ -86,7 +86,7 @@ public class VendorService {
 
 	public void deleteVendor(Vendor vendor) throws IOException {
 		if(vendor.getVendorImagePath() != null) {
-			String uploadDir = "src/main/resources/vendor-images/" + vendor.getId();
+			String uploadDir = "src/main/resources/static/images/vendor-images/" + vendor.getId();
 			
 			FileUtils.deleteDirectory(new File(uploadDir));
 			}

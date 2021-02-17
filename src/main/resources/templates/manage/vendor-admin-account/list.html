@@ -15,40 +15,46 @@
 <body>
 	<div th:replace="fragments/layout.html :: navbar"></div>
 
-	<table id="dataTable" class="table table-striped table-bordered">
-		<thead>
-			<tr class="row">
-				<th class="col">First Name</th>
-				<th class="col">Last Name</th>
-				<th class="col">Handphone Number</th>
-				<th class="col">Username</th>
-				<th class="col">Role</th>
-				<th class="col">Actions</th>
-			</tr>
-		</thead>
-		<tbody th:each="vendorAdmin : ${vendorAdminAccounts}" th:remove="tag">
-			<tr class="row">
-				<td class="col" th:text="${vendorAdmin.firstName}"></td>
-				<td class="col" th:text="${vendorAdmin.lastName}"></td>
-				<td class="col" th:text="${vendorAdmin.handphoneNo}"></td>
-				<td class="col" th:text="${vendorAdmin.username}"></td>
-				<td class="col" th:text="${vendorAdmin.role.getDisplayValue()}"></td>
-				<td class="col">
-					
-					<a th:href="@{/manage/vendor-admin-account/update/__${vendorAdmin.id}__}">
-						<i class="fas fa-edit fa-lg" title="Edit Vendor Admin Account"></i>
-					</a>
-					
-      				<a href="#"><i class="fas fa-trash-alt fa-lg" data-toggle="modal" th:data-target="${'#deleteConfirm' + vendorAdmin.id}" title="Delete Vendor Account"></i></a>
-      				
-					<th:block th:insert="fragments/support-elements.html :: modalbox-red"
-						th:with="modalId=${'deleteConfirm' + vendorAdmin.id},modalTitle=${'Confirm Deletion'},modalBody=${'Are you sure you want to delete ' + vendorAdmin.username + '?'},
-							modalConfirm=${'Delete'},confirmUrl=${'/manage/vendor-admin-account/delete/' + vendorAdmin.id}">
-					</th:block>
-				</td>
-			</tr>
-		</tbody>
-	</table>	
+	<div class="m-4">
+
+		<h1 class="font-weight-bold">Vendor Admin Account List</h1>
+
+		<table id="dataTable" class="table table-striped table-bordered">
+			<thead>
+				<tr class="row">
+					<th class="col">First Name</th>
+					<th class="col">Last Name</th>
+					<th class="col">Handphone Number</th>
+					<th class="col">Username</th>
+					<th class="col">Role</th>
+					<th class="col">Actions</th>
+				</tr>
+			</thead>
+			<tbody th:each="vendorAdmin : ${vendorAdminAccounts}" th:remove="tag">
+				<tr class="row">
+					<td class="col" th:text="${vendorAdmin.firstName}"></td>
+					<td class="col" th:text="${vendorAdmin.lastName}"></td>
+					<td class="col" th:text="${vendorAdmin.handphoneNo}"></td>
+					<td class="col" th:text="${vendorAdmin.username}"></td>
+					<td class="col" th:text="${vendorAdmin.role.getDisplayValue()}"></td>
+					<td class="col">
+
+						<a th:href="@{/manage/vendor-admin-account/update/__${vendorAdmin.id}__}">
+							<i class="fas fa-edit fa-lg" title="Edit Vendor Admin Account"></i>
+						</a>
+
+						<a href="#"><i class="fas fa-trash-alt fa-lg ml-2" data-toggle="modal" th:data-target="${'#deleteConfirm' + vendorAdmin.id}" title="Delete Vendor Account"></i></a>
+
+						<th:block th:insert="fragments/support-elements.html :: modalbox-red"
+							th:with="modalId=${'deleteConfirm' + vendorAdmin.id},modalTitle=${'Confirm Deletion'},modalBody=${'Are you sure you want to delete ' + vendorAdmin.username + '?'},
+								modalConfirm=${'Delete'},confirmUrl=${'/manage/vendor-admin-account/delete/' + vendorAdmin.id}">
+						</th:block>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+	</div>
 
 	<div th:replace="fragments/layout.html :: footer"></div>
 </body>

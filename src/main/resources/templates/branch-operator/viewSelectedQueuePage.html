@@ -34,45 +34,49 @@
 
 <div th:replace="fragments/layout.html :: navbar"></div>
 
+<div class="m-4">
+
 <h1>Notice: for easy testing, web page will display all queue positions no matter active or not.</h1>
 
-<p><b>Vendor: </b><span th:text="${vendor}">VENDOR</span></p>
+    <p><b>Vendor: </b><span th:text="${vendor}">VENDOR</span></p>
 
-<!--Not implement drop down branch list-->
-<!--Not implement drop down queue list-->
+    <!--Not implement drop down branch list-->
+    <!--Not implement drop down queue list-->
 
-<p><b>Status: </b><span th:text="${state}">Closed</span></p>
+    <p><b>Status: </b><span th:text="${state}">Closed</span></p>
 
-<!--Not implement attend to counter go button-->
+    <!--Not implement attend to counter go button-->
 
-<form method="get" th:action="@{/OperateQueue/ViewNoShowList/{qId}(qId=${queue.getId()})}" >
-    <input type="submit" value="View No-show List" />
-</form>
+    <form method="get" th:action="@{/OperateQueue/ViewNoShowList/{qId}(qId=${queue.getId()})}" >
+        <input type="submit" value="View No-show List" />
+    </form>
 
-<table id="selectedQueuePageTable" class="table table-striped table-bordered">
-    <thead>
-    <tr>
-        <td >Queue Number</td>
-        <td >Position</td>
-        <td >Duration In Queue</td>
-        <td >Rejoined?</th>
-        <td ></td>
-    </tr>
-    </thead>
-    <tbody th:each="position:${positions}">
-    <tr >
-        <td ><span th:text="${position.getQueueNumber()}">QueueNumber</span></td>
-        <td ><span >postion</span></td>
-        <td ><span >duration</span></td>
-        <td ><span th:if="${position.getState().ordinal()==1}" text="Yes">Yes</span><span th:if="${position.getState().ordinal()!=1}" text="No">No</span></td>
-        <td >
-            <form method="get" th:action="@{/OperateQueue/ViewSelectedQueue/{qId}/{rId}(qId=${queue.getId()},rId=${position.getId()})}" >
-                <input type="submit" value="Reassign Position" />
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
+    <table id="selectedQueuePageTable" class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <td >Queue Number</td>
+            <td >Position</td>
+            <td >Duration In Queue</td>
+            <td >Rejoined?</th>
+            <td ></td>
+        </tr>
+        </thead>
+        <tbody th:each="position:${positions}">
+        <tr >
+            <td ><span th:text="${position.getQueueNumber()}">QueueNumber</span></td>
+            <td ><span >postion</span></td>
+            <td ><span >duration</span></td>
+            <td ><span th:if="${position.getState().ordinal()==1}" text="Yes">Yes</span><span th:if="${position.getState().ordinal()!=1}" text="No">No</span></td>
+            <td >
+                <form method="get" th:action="@{/OperateQueue/ViewSelectedQueue/{qId}/{rId}(qId=${queue.getId()},rId=${position.getId()})}" >
+                    <input type="submit" value="Reassign Position" />
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
 
 <div th:replace="fragments/layout.html :: footer"></div>
 </body>

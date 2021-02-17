@@ -1,6 +1,5 @@
 package io.azuremicroservices.qme.qme.controllers;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,15 +20,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.google.zxing.WriterException;
-
 import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
 import io.azuremicroservices.qme.qme.helpers.QRCodeGenerator;
 import io.azuremicroservices.qme.qme.models.Branch;
 import io.azuremicroservices.qme.qme.models.Counter;
 import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.models.QueuePosition;
-import io.azuremicroservices.qme.qme.models.QueuePosition.State;
 import io.azuremicroservices.qme.qme.models.QueuePositionDto;
 import io.azuremicroservices.qme.qme.models.User;
 import io.azuremicroservices.qme.qme.models.Vendor;
@@ -142,6 +138,20 @@ public class OperateQueueController {
     	model.addAttribute("viewQueuePositions", viewQueuePositions);
     	
     	return "branch-operator/current-counter";
+    }
+    
+    @PostMapping("/my-counter/reassign")
+    public String reorderClient(@RequestParam("queuePositionId") Long queuePositionId, @RequestParam("counterId") Long counterId, @RequestParam("position") Integer position, 
+    		Authentication authentication, RedirectAttributes redirAttr) {
+    	MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+    	
+    	if (!queuePositionService.reassignPosition(counterId, queuePositionId, myUserDetails.getId(), position)) {
+    		alertService.createAlert(AlertColour.YELLOW, "Failed to reassign queue position", redirAttr);		
+    	} else {
+    		alertService.createAlert(AlertColour.GREEN, "Successfully reassigned queue position", redirAttr);
+    	}
+    	
+    	return "redirect:/operate-queue/my-counter";
     }
 
     @GetMapping("/view-selected-queue/{queueId}")

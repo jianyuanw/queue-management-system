@@ -264,18 +264,19 @@ public class QueueService {
             return null;
         }
 
-        QueuePosition nextInQueue = counter.getQueue()
-                .getQueuePositions()
-                .stream()
-                .filter(x -> x.getState() == QueuePosition.State.ACTIVE_QUEUE ||
-                        x.getState() == QueuePosition.State.ACTIVE_REQUEUE)
-                .min(Comparator.comparingInt(QueuePosition::getPosition))
-                .get();
+        QueuePosition nextInQueue = queuePositionRepo.findTopByQueue_IdAndStateInOrderByPositionAscPriorityDesc(counter.getQueue().getId(), QueuePosition.getQueuingStates()); 
+        		
+//        		counter.getQueue()
+//                .getQueuePositions()
+//                .stream()
+//                .filter(x -> x.getState() == QueuePosition.State.ACTIVE_QUEUE ||
+//                        x.getState() == QueuePosition.State.ACTIVE_REQUEUE)
+//                .min(Comparator.comparingInt(QueuePosition::getPosition).then))
+//                .get();
 
         counter.setCurrentlyServingQueueNumber(nextInQueue);
         nextInQueue.setState(QueuePosition.State.INACTIVE_CALLED);
         nextInQueue.setStateChangeTime(LocalDateTime.now());
-        nextInQueue.setPosition(null);
         counterRepo.save(counter);
         queuePositionRepo.save(nextInQueue); 
         this.notifyReminderSMS(counter.getQueue().getId());
@@ -403,9 +404,16 @@ public class QueueService {
 
     // This is to restart the Queue Number to 1 every new day
     private Integer obtainQueueNumber(Long queueId) {
-        int count = queuePositionRepo.findTopByQueue_IdAndQueueStartTimeGreaterThanEqualOrderByPositionDesc(queueId, LocalDate.now().atStartOfDay()).getPosition();
+        QueuePosition queuePosition = queuePositionRepo.findTopByQueue_IdAndQueueStartTimeGreaterThanEqualOrderByPositionDesc(queueId, LocalDate.now().atStartOfDay());
+        
+        Integer count;
+        
+        if (queuePosition == null) {
+        	count = 1;
+        } else {
+        	count = queuePosition.getPosition() + 1;
+        }
 
-        count = count + 1;
         return count;
     }
     

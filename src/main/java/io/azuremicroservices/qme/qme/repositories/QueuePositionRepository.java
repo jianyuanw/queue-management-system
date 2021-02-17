@@ -51,7 +51,7 @@ public interface QueuePositionRepository extends JpaRepository<QueuePosition, Lo
 
 	public List<QueuePosition> findAllByQueue_IdAndStateInOrderByPositionAscPriorityDesc(Long queueId, List<State> list);
 
-	public QueuePosition findTopByQueue_IdAndStateInOrderByPositionAscPriorityDesc(Long id, State[] activeStates);
+	public QueuePosition findTopByQueue_IdAndStateInOrderByPositionAscPriorityDesc(Long id, List<State> activeStates);
 
 	public Integer countByQueue_Id(Long queueId);
 
@@ -77,4 +77,10 @@ public interface QueuePositionRepository extends JpaRepository<QueuePosition, Lo
 	public List<QueuePosition> findAllByQueue_IdIn(@Param("queueIds") List<Long> queueIds);
 
 	public List<QueuePosition> findAllByQueueAndStateAndQueueStartTimeAfter(Queue queue, State state, LocalDateTime dateTime);
+
+	public QueuePosition findTopByQueue_IdAndStateInAndPositionAndQueueStartTimeGreaterThanEqualOrderByPriorityDesc(Long id, List<State> activeStates, Integer position, LocalDateTime datetime);			
+
+	public QueuePosition findByUser_IdAndQueue_Id(Long userId, Long queueId);
+
+	public QueuePosition findByUser_IdAndQueue_IdAndQueueStartTimeGreaterThanEqual(Long userId, Long queueId, LocalDateTime datetime);
 }

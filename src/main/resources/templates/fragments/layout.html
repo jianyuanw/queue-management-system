@@ -13,11 +13,11 @@
 <body>
 
     <div th:fragment="mobile-navbar-modal">
-        <nav class="navbar navbar-expand-md navbar-dark blue mb-3">
-            <div class="container-fluid">
-                <button type="button" class="navbar-toggler" data-toggle="modal" data-target="#modalMenu">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+        <nav class="navbar navbar-dark blue mb-3">
+            <div class="container-fluid">	
+               	<button type="button" class="navbar-toggler" data-toggle="modal" data-target="#modalMenu">
+                   	<span class="navbar-toggler-icon"></span>
+               	</button>
                 <span class="navbar-brand mr-3 font-weight-bold">
                     <img width="40" class="mr-1" th:src="@{/images/logos/qMe_logo.png}"> qMe+<sup>+</sup>
                 </span>
@@ -33,7 +33,7 @@
                                 <a th:href="@{/home}"><h2>Home</h2></a>
                                 <a th:href="@{/my-queues}"><h2>My Queues</h2></a>
                                 <a th:href="@{/notifications}"><span th:if="${newNotifications > 0}" class="badge badge-pill badge-danger align-top" th:text="${newNotifications}"></span><h2 class="d-inline-block">Notifications</h2></a>
-                                <a th:href="@{/support-ticket/my-tickets}"><h2>Contact Us</h2></a>
+                                <a th:href="@{/my-tickets}"><h2>Support Tickets</h2></a>
                                 <a th:href="@{/logout}"><h2>Logout</h2></a>
                             </div>
                         </div>
@@ -172,10 +172,11 @@
                         </button>
                     </div>
                     <div class="modal-footer">
+                        <button type="button" class="btn btn-mdb-color btn-sm" data-dismiss="modal">Cancel</button>
+                        
                         <form th:action="@{/logout}" method="post">
-                            <button type="submit" class="btn btn-danger">Yes</button>
-                        </form>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-danger btn-sm">Yes</button>
+                        </form>                        
                     </div>
                 </div>
             </div>

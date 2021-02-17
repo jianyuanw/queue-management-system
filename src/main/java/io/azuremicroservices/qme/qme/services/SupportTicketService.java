@@ -31,7 +31,7 @@ public class SupportTicketService {
 	}
 	
 	public List<SupportTicket> viewMySupportTickets(User user){
-		return supportTicketRepo.findAllByUserAndTicketState(user, TicketState.ARCHIVED);
+		return supportTicketRepo.findAllByUserAndTicketStateNot(user, TicketState.ARCHIVED);
 	}
 	
 	public SupportTicket viewSupportTicket(Long id) {
@@ -59,7 +59,7 @@ public class SupportTicketService {
 	public boolean archiveSupportTicket(Long ticketId, User user) {
 		Optional<SupportTicket> supportTicket = supportTicketRepo.findById(ticketId);
 		
-		if (supportTicket.isEmpty() || supportTicket.get().getUser().getId() != user.getId()) {
+		if (supportTicket.isEmpty() || supportTicket.get().getUser().getId() != user.getId() || supportTicket.get().getTicketState() != TicketState.CLOSED) {
 			return false;
 		}
 		

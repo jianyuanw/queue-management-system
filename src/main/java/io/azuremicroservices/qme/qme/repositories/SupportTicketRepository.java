@@ -12,4 +12,6 @@ public interface SupportTicketRepository extends JpaRepository<SupportTicket, Lo
 	List<SupportTicket> findAllByUser(User user);
 
 	List<SupportTicket> findAllByUserAndTicketState(User user, TicketState state);
+
+	List<SupportTicket> findAllByUserAndTicketStateNot(User user, TicketState state);
 }

@@ -217,10 +217,15 @@ public class ClientController {
 	}
 	
 	@PostMapping("/my-tickets")
-	public String archiveTicket(@RequestParam("ticketId") Long ticketId, Authentication authentication) {
+	public String archiveTicket(@RequestParam("ticketId") Long ticketId, Authentication authentication, RedirectAttributes redirAttr) {
 		User user = ((MyUserDetails) authentication.getPrincipal()).getUser();
 		
-		supportTicketService.archiveSupportTicket(ticketId, user);
+    	if (supportTicketService.archiveSupportTicket(ticketId, user)) { 
+    		alertService.createAlert(AlertColour.GREEN, "Ticket archived", redirAttr);
+    	} else {
+    		alertService.createAlert(AlertColour.YELLOW, "Ticket not found or cannot be archived", redirAttr);
+    	}		
+
 		return "redirect:/my-tickets";
 	}	
 	

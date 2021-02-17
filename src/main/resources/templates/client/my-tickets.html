@@ -6,6 +6,12 @@
 <head>
     <title>qMe - My Support Tickets</title>
     <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+    
+    <script type="text/javascript">
+    	function submitForm(element) {
+    		document.getElementById(element.getAttribute("data-form")).submit()
+    	}
+    </script>
 </head>
 <body>
     <div th:replace="fragments/layout.html :: mobile-navbar-modal"></div>
@@ -28,24 +34,27 @@
 	                    </div>                    
 	                </div>
 	                <div class="row">
-	                	<div class="d-flex align-items-left text-truncate">
-	                		<p class="px-2 m-0" th:text="${'Description: ' + ticket.description}"></p>
+	                	<div class="d-inline-block text-truncate">
+	                		<p class="px-1 m-0" th:text="${'Description: ' + ticket.description}"></p>
 	                	</div>
 	                </div>
 	                <div class="row" th:if="${ticket.response != null}">
-	                	<div class="d-flex align-items-left text-truncate">
+	                	<div class="d-flex align-items-left text-wrap">
 	                		<p class="px-2 m-0" th:text="${'Response: ' + ticket.response}"></p>
 	                	</div>
 	                </div>
-	                <div class="row float-right">
-	                	<span th:if="${ticket.response == null}" class="d-inline-block" th:text="${#temporals.format(ticket.ticketRaisedTime, 'dd MMM yyyy')}"></span>
-	                	<span th:if="${ticket.response != null}" class="d-inline-block" th:text="${#temporals.format(ticket.responseTime, 'dd MMM yyyy')}"></span>
+                </div>
+                <div class="row float-right mt-3">
+                	<span th:if="${ticket.response == null}" class="d-inline-block" th:text="${#temporals.format(ticket.ticketRaisedTime, 'dd MMM yyyy')}"></span>
+                	<span th:if="${ticket.response != null}" class="d-inline-block" th:text="${#temporals.format(ticket.responseTime, 'dd MMM yyyy')}"></span>
+                	<th:block th:if="${ticket.ticketState.displayValue != 'Closed'}">
 						<i class="fas fa-archive fa-lg clickable mx-2" title="Archive Notification" onclick="submitForm(this)" data-form="archive-form"></i>
 						<form id="archive-form" method="post" th:action="@{/my-tickets}">
 							<input type="hidden" name="ticketId" th:value="${ticket.id}">
-						</form>                	
-	                </div>	                               
-                </div> 
+						</form>
+					</th:block>               	
+                </div>	                               
+                 
 				<div class="modal fade" th:id="${'viewTicket' + ticket.id}" tabindex="-1" role="dialog" aria-hidden="true">
 					<div class="modal-dialog" role="document">
 						<div class="modal-content">
@@ -66,9 +75,9 @@
             </div>
         </div>
 
-		<a th:href="@{/support-ticket/create}"><button class="btn btn-info btn-block my-2">Raise Support Ticket</button></a>
-
         <h5 th:if="${#lists.size(myTickets) == 0}"class="text-center">No tickets currently</h5>
+
+		<a th:href="@{/create-ticket}"><button class="btn btn-info btn-block my-2">Raise Support Ticket</button></a>
 
     </div>
 </body>

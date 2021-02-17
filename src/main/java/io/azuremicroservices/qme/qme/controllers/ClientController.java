@@ -117,6 +117,7 @@ public class ClientController {
     	
     	if (joined) {
     		alertService.createAlert(AlertColour.GREEN, "Successfully entered queue", redirAttr);
+    		queueService.refreshBrowsers(Long.valueOf(queueId));
     	} else {
     		alertService.createAlert(AlertColour.YELLOW, "Queue closed. Failed to rejoin.", redirAttr);
     	}    	
@@ -129,7 +130,7 @@ public class ClientController {
     	MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
     	    	
     	queueService.leaveQueue(myUserDetails.getId().toString(), queueId);
-    	
+		queueService.refreshBrowsers(Long.valueOf(queueId));
     	alertService.createAlert(AlertColour.GREEN, "Successfully left queue", redirAttr);
     	return "redirect:/my-queues";
     }
@@ -138,6 +139,7 @@ public class ClientController {
     public String rejoinQueue(@RequestParam String queuePositionId, RedirectAttributes redirAttr) {
         boolean rejoined = queueService.rejoinQueue(Long.valueOf(queuePositionId));
         if (rejoined) {
+			queueService.refreshBrowsers(queueService.findQueueIdByQueuePositionId(queuePositionId));
             alertService.createAlert(AlertColour.GREEN, "Successfully rejoined queue", redirAttr);
         } else {
             alertService.createAlert(AlertColour.YELLOW, "Queue closed. Failed to rejoin.", redirAttr);

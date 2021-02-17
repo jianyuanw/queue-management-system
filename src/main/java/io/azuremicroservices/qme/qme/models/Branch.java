@@ -54,5 +54,7 @@ public class Branch {
 	@OneToMany(mappedBy = "branch", cascade = CascadeType.ALL)
 	@Exclude
 	private List<UserBranchPermission> userBranchPermissions;
+	
+	private String branchImage;
 
 }

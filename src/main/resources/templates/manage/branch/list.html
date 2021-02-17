@@ -40,6 +40,8 @@
       				
       				<a th:href="@{/manage/branch-admin-account/create/__${branch.id}__}"><i class="fas fa-user-plus fa-lg" title="Add Branch Admin Account"></i></a>
       				
+      				<a th:href="@{/manage/branch/upload/__${branch.id}__}"><i class="fas fa-file-img fa-lg" title="Upload Image"></i></a>
+      				
 					<th:block th:insert="fragments/support-elements.html :: modalbox-red"
 						th:with="modalId=${'deleteConfirm' + branch.id},modalTitle=${'Confirm Deletion'},modalBody=${'Are you sure you want to delete ' + branch.name + '?'},
 							modalConfirm=${'Delete'},confirmUrl=${'/manage/branch/delete/' + branch.id}">

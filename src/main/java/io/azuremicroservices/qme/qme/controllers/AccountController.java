@@ -46,7 +46,7 @@ public class AccountController {
         } else if (user.getPerspective() == User.Role.BRANCH_ADMIN) {
             return "redirect:/dashboard";
         } else if (user.getPerspective() == User.Role.BRANCH_OPERATOR) {
-            return "redirect:/OperateQueue/ViewQueue";
+            return "redirect:/operate-queue/view-queue";
         } else {
             return "redirect:/home";
         }	
@@ -86,7 +86,7 @@ public class AccountController {
         } else if (user.getPerspective() == User.Role.BRANCH_ADMIN) {
             return "redirect:/dashboard";
         } else if (user.getPerspective() == User.Role.BRANCH_OPERATOR) {
-            return "redirect:/OperateQueue/ViewQueue";
+            return "redirect:/operate-queue/view-queue";
         } else {
             return "redirect:/home";
         }	

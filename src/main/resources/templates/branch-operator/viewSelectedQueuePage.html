@@ -42,7 +42,7 @@
 <p><b>Queue: </b><span th:text="${queue.getName()}">queue</span></p>
 <p><b>Status: </b><span th:text="${queue.getState().getDisplayValue()}">Closed</span></p>
 
-<form method="get" th:action="@{/OperateQueue/ViewNoShowList/{qId}(qId=${queue.getId()})}" >
+<form method="get" th:action="@{/operate-queue/view-no-show-list/{qId}(qId=${queue.getId()})}" >
     <input type="submit" value="View No-show List" />
 </form>
 
@@ -62,12 +62,12 @@
         <td ><span >postion</span></td>
         <td ><span th:if="${position.getState().ordinal()==1}" text="Yes">Yes</span><span th:if="${position.getState().ordinal()!=1}" text="No">No</span></td>
         <td >
-            <form method="get" th:action="@{/OperateQueue/ViewSelectedQueue/{qId}/{rId}(qId=${queue.getId()},rId=${position.getId()})}" >
+            <form method="get" th:action="@{/operate-queue/view-selected-queue/{qId}/{rId}(qId=${queue.getId()},rId=${position.getId()})}" >
                 <input type="submit" value="Reassign Position" />
             </form>
         </td>
         <td >
-            <form method="get" th:action="@{/OperateQueue/ViewSelectedQueue/cancel-reassign/{qId}/{rId}(qId=${queue.getId()},rId=${position.getId()})}" >
+            <form method="get" th:action="@{/operate-queue/view-selected-queue/cancel-reassign/{qId}/{rId}(qId=${queue.getId()},rId=${position.getId()})}" >
                 <input type="submit" value="Cancel Reassignment" />
             </form>
         </td>

@@ -41,7 +41,8 @@ public class SupportTicket {
 
     public enum TicketState {
         OPEN,
-        CLOSED;
+        CLOSED,
+        ARCHIVED;
 
         private final String displayValue;
 

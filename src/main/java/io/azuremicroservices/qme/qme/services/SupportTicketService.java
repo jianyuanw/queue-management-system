@@ -31,7 +31,7 @@ public class SupportTicketService {
 	}
 	
 	public List<SupportTicket> viewMySupportTickets(User user){
-		return supportTicketRepo.findAllByUser(user);
+		return supportTicketRepo.findAllByUserAndTicketStateNot(user, TicketState.ARCHIVED);
 	}
 	
 	public SupportTicket viewSupportTicket(Long id) {
@@ -54,6 +54,19 @@ public class SupportTicketService {
 	
 	public void deleteSupportTicket(SupportTicket supportTicket) {
 		supportTicketRepo.delete(supportTicket);
+	}
+
+	public boolean archiveSupportTicket(Long ticketId, User user) {
+		Optional<SupportTicket> supportTicket = supportTicketRepo.findById(ticketId);
+		
+		if (supportTicket.isEmpty() || supportTicket.get().getUser().getId() != user.getId() || supportTicket.get().getTicketState() != TicketState.CLOSED) {
+			return false;
+		}
+		
+		SupportTicket ticket = supportTicket.get();
+		ticket.setTicketState(TicketState.ARCHIVED);
+		supportTicketRepo.save(ticket);
+		return true;
 	}
 
 }

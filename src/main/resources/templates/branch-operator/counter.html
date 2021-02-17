@@ -61,6 +61,18 @@
 
     </div>
 
+	<input type="hidden" id="queueId" th:value="${counter.queue.id}">
+
     <div th:replace="fragments/layout.html :: footer"></div>
+
+	<script>
+		const queueId = document.getElementById("queueId").value;
+		const eventSource = new EventSource("/operate-queue/sse/" + queueId);
+		eventSource.onmessage = function (event) {
+			if (event.data === "refresh") {
+				location.reload();
+			}
+		}
+	</script>
 </body>
 </html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>qMe - My Support Tickets</title>
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+    
+    <script type="text/javascript">
+    	function submitForm(element) {
+    		document.getElementById(element.getAttribute("data-form")).submit()
+    	}
+    </script>
+</head>
+<body>
+    <div th:replace="fragments/layout.html :: mobile-navbar-modal"></div>
+
+    <div class="m-4">
+
+        <h4 class="font-weight-bold text-center mb-4">Your Support Tickets</h4>
+
+        <div class="row row-cols-1">
+            <div class="col border border-info my-1" th:each="ticket : ${myTickets}">
+            	<div data-toggle="modal" th:data-target="${'#viewTicket' + ticket.id}">
+	                <div class="row">
+	                    <div class="col-8 px-2 d-flex align-items-left">
+	                        <div>
+	                            <p class="m-0 font-weight-bold" th:text="${'Title: ' + ticket.title}"></p>
+	                        </div>
+	                    </div>
+	                    <div class="col-4 px-2 d-flex float-right">
+	                    	<p th:text="${'Status: ' + ticket.ticketState.displayValue}">
+	                    </div>                    
+	                </div>
+	                <div class="row">
+	                	<div class="d-inline-block text-truncate">
+	                		<p class="px-1 m-0" th:text="${'Description: ' + ticket.description}"></p>
+	                	</div>
+	                </div>
+	                <div class="row" th:if="${ticket.response != null}">
+	                	<div class="d-flex align-items-left text-wrap">
+	                		<p class="px-2 m-0" th:text="${'Response: ' + ticket.response}"></p>
+	                	</div>
+	                </div>
+                </div>
+                <div class="row float-right mt-3">
+                	<span th:if="${ticket.response == null}" class="d-inline-block" th:text="${#temporals.format(ticket.ticketRaisedTime, 'dd MMM yyyy')}"></span>
+                	<span th:if="${ticket.response != null}" class="d-inline-block" th:text="${#temporals.format(ticket.responseTime, 'dd MMM yyyy')}"></span>
+                	<th:block th:if="${ticket.ticketState.displayValue != 'Closed'}">
+						<i class="fas fa-archive fa-lg clickable mx-2" title="Archive Notification" onclick="submitForm(this)" data-form="archive-form"></i>
+						<form id="archive-form" method="post" th:action="@{/my-tickets}">
+							<input type="hidden" name="ticketId" th:value="${ticket.id}">
+						</form>
+					</th:block>               	
+                </div>	                               
+                 
+				<div class="modal fade" th:id="${'viewTicket' + ticket.id}" tabindex="-1" role="dialog" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="modalTitle" th:text="${ticket.title}"></h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body" th:text="${'Question: ' + ticket.description}"></div>
+							<div th:if="${ticket.response != null}" class="modal-body" th:text="${'Response: ' + ticket.response}"></div>
+							<div class="modal-footer">
+						        <button type="button" class="btn btn-mdb-color btn-sm" data-dismiss="modal">Cancel</button>
+							</div>
+						</div>
+					</div>
+				</div>                 
+            </div>
+        </div>
+
+        <h5 th:if="${#lists.size(myTickets) == 0}"class="text-center">No tickets currently</h5>
+
+		<a th:href="@{/create-ticket}"><button class="btn btn-info btn-block my-2">Raise Support Ticket</button></a>
+
+    </div>
+</body>
+</html>

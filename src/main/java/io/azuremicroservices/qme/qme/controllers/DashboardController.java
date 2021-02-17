@@ -57,12 +57,20 @@ public class DashboardController {
 		model.addAttribute("queueCountData", queueCountData);
 		model.addAttribute("estWaitingTimeData", estWaitingTimeData);
 
-		// To add in services for actual
+		
 		var forecastQcDataMonthly = queuePositionService.generateQueueCountForecast(queuePositions, 10);
 		var forecastEWTDataMonthly = queuePositionService.generateEWTCountForecast(queuePositions, 10);
+		var forecastQcDataDaily = queuePositionService.generateDailyQueueCountForecast(queuePositions, 8);
+		var forecastEWTDataDaily = queuePositionService.generateDailyEWTCountForecast(queuePositions, 10);
+		var forecastQcDataHourly = queuePositionService.generateHourlyQueueCountForecast(queuePositions, 10);
+		var forecastEWTDataHourly = queuePositionService.generateHourlyEWTCountForecast(queuePositions, 10);
 				
 		model.addAttribute("forecastQcDataMonthly", forecastQcDataMonthly);
 		model.addAttribute("forecastEWTDataMonthly", forecastEWTDataMonthly);
+		model.addAttribute("forecastQcDataDaily", forecastQcDataDaily);
+		model.addAttribute("forecastEWTDataDaily", forecastEWTDataDaily);
+		model.addAttribute("forecastQcDataHourly", forecastQcDataHourly);
+		model.addAttribute("forecastEWTDataHourly", forecastEWTDataHourly);
 
 		// Under consideration
 		/*
@@ -91,10 +99,15 @@ public class DashboardController {
 	}
 	
 	@PostMapping("/filter")
-	public String filterDashboardByBranch(Model model, @RequestParam String branchId) {
-		if(branchId == null) {
-			return "branch-admin/dashboard";
+	public String filterDashboardByBranch(Model model, Authentication authentication, @RequestParam String branchId) {
+		if(branchId == "-1") {
+			return "redirect:/dashboard";
 		}
+		
+		MyUserDetails user = (MyUserDetails) authentication.getPrincipal();
+		
+		List<Branch> branches = permissionService.getBranchPermissions(user.getId());
+		model.addAttribute("branches", branches);
 		
 		Long lBranchId = Long.parseLong(branchId);
 		List<QueuePosition> queuePositions = queuePositionService.findAllQueuePositionsByBranchId(lBranchId);
@@ -111,6 +124,10 @@ public class DashboardController {
 				
 		model.addAttribute("forecastQcDataMonthly", forecastQcDataMonthly);
 		model.addAttribute("forecastEWTDataMonthly", forecastEWTDataMonthly);
+		
+		var intervalMap = queuePositionService.generateDateIntervals(2, 2, 2);
+		
+		model.addAttribute("intervalMap", intervalMap);
 		
 		
 		return "branch-admin/dashboard";

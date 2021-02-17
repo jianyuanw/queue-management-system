@@ -3,10 +3,13 @@ package io.azuremicroservices.qme.qme.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,12 +24,15 @@ import io.azuremicroservices.qme.qme.models.BranchQueueDto;
 import io.azuremicroservices.qme.qme.models.Message;
 import io.azuremicroservices.qme.qme.models.MyQueueDto;
 import io.azuremicroservices.qme.qme.models.Queue;
+import io.azuremicroservices.qme.qme.models.SupportTicket;
+import io.azuremicroservices.qme.qme.models.User;
 import io.azuremicroservices.qme.qme.services.AlertService;
 import io.azuremicroservices.qme.qme.services.AlertService.AlertColour;
 import io.azuremicroservices.qme.qme.services.BranchService;
 import io.azuremicroservices.qme.qme.services.NotificationService;
 import io.azuremicroservices.qme.qme.services.QueuePositionService;
 import io.azuremicroservices.qme.qme.services.QueueService;
+import io.azuremicroservices.qme.qme.services.SupportTicketService;
 
 @Controller
 public class ClientController {
@@ -36,13 +42,15 @@ public class ClientController {
     private final QueuePositionService queuePositionService;
     private final NotificationService notificationService;
     private final AlertService alertService;
+    private final SupportTicketService supportTicketService;
 
     @Autowired
     public ClientController(BranchService branchService, QueueService queueService, QueuePositionService queuePositionService, 
-    		NotificationService notificationService, AlertService alertService) {
+    		NotificationService notificationService, SupportTicketService supportTicketService, AlertService alertService) {
         this.branchService = branchService;
         this.queueService = queueService;
         this.queuePositionService = queuePositionService;
+        this.supportTicketService = supportTicketService;
         this.notificationService = notificationService;
         this.alertService = alertService;        
     }
@@ -109,6 +117,7 @@ public class ClientController {
     	
     	if (joined) {
     		alertService.createAlert(AlertColour.GREEN, "Successfully entered queue", redirAttr);
+    		queueService.refreshBrowsers(Long.valueOf(queueId));
     	} else {
     		alertService.createAlert(AlertColour.YELLOW, "Queue closed. Failed to rejoin.", redirAttr);
     	}    	
@@ -121,7 +130,7 @@ public class ClientController {
     	MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
     	    	
     	queueService.leaveQueue(myUserDetails.getId().toString(), queueId);
-    	
+		queueService.refreshBrowsers(Long.valueOf(queueId));
     	alertService.createAlert(AlertColour.GREEN, "Successfully left queue", redirAttr);
     	return "redirect:/my-queues";
     }
@@ -130,6 +139,7 @@ public class ClientController {
     public String rejoinQueue(@RequestParam String queuePositionId, RedirectAttributes redirAttr) {
         boolean rejoined = queueService.rejoinQueue(Long.valueOf(queuePositionId));
         if (rejoined) {
+			queueService.refreshBrowsers(queueService.findQueueIdByQueuePositionId(queuePositionId));
             alertService.createAlert(AlertColour.GREEN, "Successfully rejoined queue", redirAttr);
         } else {
             alertService.createAlert(AlertColour.YELLOW, "Queue closed. Failed to rejoin.", redirAttr);
@@ -198,5 +208,47 @@ public class ClientController {
     	notificationService.addNotification(userId, title, body);
     	    	
     	return "redirect:/home";
-    }    
+    }
+    
+	@GetMapping("/my-tickets")
+	public String mySupportTickets(Model model, Authentication authentication) {
+		User user = ((MyUserDetails) authentication.getPrincipal()).getUser();
+		
+		model.addAttribute("myTickets",supportTicketService.viewMySupportTickets(user));
+		return "client/my-tickets";
+	}
+	
+	@PostMapping("/my-tickets")
+	public String archiveTicket(@RequestParam("ticketId") Long ticketId, Authentication authentication, RedirectAttributes redirAttr) {
+		User user = ((MyUserDetails) authentication.getPrincipal()).getUser();
+		
+    	if (supportTicketService.archiveSupportTicket(ticketId, user)) { 
+    		alertService.createAlert(AlertColour.GREEN, "Ticket archived", redirAttr);
+    	} else {
+    		alertService.createAlert(AlertColour.YELLOW, "Ticket not found or cannot be archived", redirAttr);
+    	}		
+
+		return "redirect:/my-tickets";
+	}	
+	
+	@GetMapping("/create-ticket")
+	public String supportTicketForm(Model model){
+		model.addAttribute("supportTicket",new SupportTicket());
+		
+		return "client/create-ticket";		
+	}
+	
+	@PostMapping("/create-ticket")
+	public String createSupportTicket(@ModelAttribute @Valid SupportTicket supportTicket, BindingResult bindingResult, RedirectAttributes redirAttr, Authentication authentication) {
+		if (bindingResult.hasErrors()) {
+			return "/client/create-ticket";
+		} else {
+			User user = ((MyUserDetails) authentication.getPrincipal()).getUser();
+			supportTicket.setUser(user);
+			supportTicketService.createSupportTicket(supportTicket);
+		}
+		
+		alertService.createAlert(AlertColour.GREEN, "Ticket successfully raised", redirAttr);
+		return "redirect:/my-tickets";
+	}    
 }

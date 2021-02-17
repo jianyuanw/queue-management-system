@@ -41,7 +41,7 @@ import io.azuremicroservices.qme.qme.services.QueueService;
 
 
 @Controller
-@RequestMapping(value = {"/operate-queue","/OperateQueue"})
+@RequestMapping("/operate-queue")
 public class OperateQueueController {
 
     @Autowired
@@ -53,7 +53,7 @@ public class OperateQueueController {
     @Autowired
     private AlertService alertService;
 
-    @GetMapping(value = {"/ViewQueue","/view-queue"})
+    @GetMapping("/view-queue")
     public String operatorViewQueue(Model model, Authentication authentication, RedirectAttributes redirAttr) {
         MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
         List<Queue> queues = permissionService.getQueuePermissions(myUserDetails.getId());
@@ -77,7 +77,7 @@ public class OperateQueueController {
         return "branch-operator/queues";
     }
 
-    @GetMapping(value={"/update-queue-state/{queueId}","/UpdateQueueState/{queueId}"})
+    @GetMapping("/update-queue-state/{queueId}")
     public String updateQueueState(@PathVariable("queueId") Long queueId, Authentication authentication, RedirectAttributes redirAttr) {
     	MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
     	var queue = queueService.findQueueById(queueId);
@@ -144,7 +144,7 @@ public class OperateQueueController {
     	return "branch-operator/current-counter";
     }
 
-    @GetMapping(value={"/view-selected-queue/{queueId}","/ViewSelectedQueue/{queueId}"})
+    @GetMapping("/view-selected-queue/{queueId}")
     public String viewSelectedQueue(@PathVariable("queueId") Long queueId,Model model) {
         Queue queue = queueService.findQueue(queueId);
         Vendor vendor = queue.getBranch().getVendor();
@@ -157,24 +157,24 @@ public class OperateQueueController {
         model.addAttribute("branch", branch);
         model.addAttribute("queue",queue);
         model.addAttribute("positions",qps);
-        return "branch-operator/viewSelectedQueuePage";
+        return "branch-operator/view-selected-queue";
     }
 
-    @GetMapping(value={"/view-selected-queue/{queueId}/{reassignedId}","/ViewSelectedQueue/{queueId}/{reassignedId}"})
+    @GetMapping("/view-selected-queue/{queueId}/{reassignedId}")
     public String reassign(@PathVariable("queueId") Long queueId, @PathVariable("reassignedId")Long reassignedId) {
 
         queuePositionService.updateReassignedIdPriority(reassignedId);
         return "redirect:/operate-queue/view-selected-queue/"+queueId;
     }
 
-    @GetMapping(value={"/view-selected-queue/cancel-reassign/{queueId}/{reassignedId}","/ViewSelectedQueue/cancel-reassign/{queueId}/{reassignedId}"})
+    @GetMapping("/view-selected-queue/cancel-reassign/{queueId}/{reassignedId}")
     public String cancelReassign(@PathVariable("queueId") Long queueId, @PathVariable("reassignedId")Long reassignedId) {
 
         queuePositionService.setDefaultPriorityFor(reassignedId);
         return "redirect:/operate-queue/view-selected-queue/"+queueId;
     }
 
-    @GetMapping(value ={"/view-no-show-list/{queueId}","/ViewNoShowList/{queueId}"})
+    @GetMapping("/no-show-list/{queueId}")
     public String viewNoShowList(@PathVariable("queueId")Long queueId, Model model) {
 
         Map<String, String> noShowQP = queuePositionService.findQueuePositionForNoShowListDisplaying(queueId);
@@ -186,7 +186,7 @@ public class OperateQueueController {
         model.addAttribute("queue",queue);
         model.addAttribute("vendor",vendor);
         model.addAttribute("branch",branch);
-        return "branch-operator/noShowListPage";
+        return "branch-operator/no-show-list";
     }
 
     @GetMapping("/my-counter")

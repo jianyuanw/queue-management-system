@@ -20,9 +20,10 @@
 	<div class="container">
 	
 		<div class = "row">
-			<form class="text-center" method="post" th:action="@{/filter}" name="branchId">
-				<select  class="form-select form-control" onchange="this.form.submit()">
-					<option value="">Overall</option>
+			<form class="text-center" method="post" th:action="@{/filter}">
+				<select  class="form-select form-control" onchange="this.form.submit()" name="branchId">
+					<option value="">Select A Branch</option>
+					<option th:value="-1">All Branches</option>
 					<option th:each="branch:${branches}" th:text="${branch.name}" th:value="${branch.id}">
 				</select>
 			</form>
@@ -85,7 +86,7 @@
 											<div id="daily_actual_div"></div>
 										</div>
 										<div class="tab-pane" id="TwoB">
-											<div id="daily_actual_forecast_div">Under Consideration</div>
+											<div id="daily_actual_forecast_div"></div>
 										</div>
 									</div>
 								</div>
@@ -108,8 +109,7 @@
 											<div id="hourly_actual_div"></div>
 										</div>
 										<div class="tab-pane" id="ThreeB">
-											<div id="hourly_actual_forecast_div">Under
-												Consideration</div>
+											<div id="hourly_actual_forecast_div"></div>
 										</div>
 									</div>
 								</div>
@@ -175,7 +175,9 @@
 											</select>
 											<div id="estTime_daily_actual_div"></div>
 										</div>
-										<div class="tab-pane" id="FiveB">Under Consideration</div>
+										<div class="tab-pane" id="FiveB">
+											<div id="daily_ewt_forecast_div"></div>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -196,7 +198,9 @@
 											</select>
 											<div id="estTime_hourly_actual_div"></div>
 										</div>
-										<div class="tab-pane" id="SixB">Under Consideration</div>
+										<div class="tab-pane" id="SixB">
+											<div id="hourly_ewt_forecast_div"></div>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -207,9 +211,10 @@
 		</div>
 	</div>
 
-	<!-- For Checking
-<div th:each="forecastEWTDataMonthlys:${forecastEWTDataMonthly}"><p th:text="${forecastEWTDataMonthlys}"></p></div>
--->
+	 
+<div th:each="forecastEWTDataMonthlys:${forecastEWTDataHourly}"><p th:text="${forecastEWTDataMonthlys}"></p></div>
+
+
 	<div th:replace="fragments/layout.html :: footer"></div>
 
 	<script th:inline="javascript">
@@ -217,10 +222,10 @@
 		var est_data = /*[[${estWaitingTimeData}]]*/'noValue';
 		var forecast_qc_data_monthly = /*[[${forecastQcDataMonthly}]]*/'noValue';
 		var forecast_ewt_data_monthly = /*[[${forecastEWTDataMonthly}]]*/'noValue';
-
-		//Under consideration
-		// var forecast_qc_data_daily = /*[[${forecastQcDataDaily}]]*/'noValue';
-		// var forecast_qc_data_hourly = /*[[${forecastQcDataHourly}]]*/'noValue';
+		var forecast_qc_data_daily = /*[[${forecastQcDataDaily}]]*/'noValue';
+		var forecast_ewt_data_daily = /*[[${forecastEWTDataDaily}]]*/'noValue';
+		var forecast_qc_data_hourly = /*[[${forecastQcDataHourly}]]*/'noValue';
+		var forecast_ewt_data_hourly = /*[[${forecastEWTDataHourly}]]*/'noValue';
 
 		$(document).ready(function() {
 
@@ -234,12 +239,13 @@
 				drawEstTimeActualMonthlyChart(new Date());
 				drawEstTimeActualDailyChart(new Date());
 				drawEstTimeActualHourlyChart(new Date());
+				
 				drawActualMonthlyForecastChart();
 				drawEstTimeMonthlyForecastChart();
-
-				//Under consideration
-				/*drawActualDailyForecastChart();
-				drawActualHourlyForecastChart(); */
+				drawActualDailyForecastChart();
+				drawEstTimeDailyForecastChart();
+				drawActualHourlyForecastChart();
+				drawEstTimeHourlyForecastChart();
 			});
 		});
 
@@ -636,7 +642,7 @@
 			final_data.addColumn('datetime', 'Date');
 			final_data.addColumn('number', 'Queues');
 
-			var slidingWindow = 10;
+			var slidingWindow = data.getNumberOfRows();
 
 			for (var i = 0; i < 3; i++) {
 				var avg = 0;
@@ -695,7 +701,7 @@
 			final_data.addColumn('datetime', 'Date');
 			final_data.addColumn('number', 'Average waiting minutes');
 
-			var slidingWindow = 10;
+			var slidingWindow = data.getNumberOfRows();
 
 			for (var i = 0; i < 3; i++) {
 				var avg = 0;
@@ -738,105 +744,247 @@
 			chart.draw(final_data, options);
 		}
 
-		//Under consideration
-		/*
-		 function drawActualDailyForecastChart() {
-		     var data = new google.visualization.DataTable();
-		  
-		     data.addColumn('datetime', 'Date');
-		     data.addColumn('number', 'Queues');
-		     Object.keys(forecast_qc_data_daily).forEach(function(key) {
-		         data.addRow([ new Date(key), forecast_qc_data_daily[key] ]);
-		     });
-		     
-		     data.sort({column:0});
-		     
-			var final_data = new google.visualization.DataTable();
-		     
-		     final_data.addColumn('datetime', 'Date');
-		     final_data.addColumn('number', 'Queues');
-		     
-			var currDate = new Date();
-		     var slidingWindow = 10;
-			
-			for(var i = 0; i< 3; i++){
-		     	var avg = 0;
-		     	var total = 0;
-		     	for(var j=i; j < i + slidingWindow; j++){
-		     		total += data.getValue(j, 1);
-		     	}
-		     	avg = total/slidingWindow;
-		     	
-		     	//Need to fix
-		     	data.addRow([new Date(currDate.setDate(currDate.getDate()+i)), avg]);
-		     	final_data.addRow([new Date(currDate.setDate(currDate.getDate()+i)), avg]);
-		     }
-		     
-		     
-		     var options = {
-		         title : 'Queue Stats',
-		         hAxis : {
-		             title : 'Month',
+		
+		
+		function drawActualDailyForecastChart() {
+			var data = new google.visualization.DataTable();
 
-		         },
-		         vAxis : {
-		             title : 'Queue Count'
-		         },
-		         chartArea: {  width: "50%", height: "70%" }
-		     };
-		     var chart = new google.visualization.ColumnChart(document
-		         .getElementById('daily_actual_forecast_div'));
-		     chart.draw(final_data, options);
-		 }
+			data.addColumn('datetime', 'Date');
+			data.addColumn('number', 'Customers');
+			Object.keys(forecast_qc_data_daily).forEach(function(key) {
+				data.addRow([ new Date(key), forecast_qc_data_daily[key] ]);
+			});
+
+			data.sort({
+				column : 0
+			});
+
+			var final_data = new google.visualization.DataTable();
+
+			final_data.addColumn('datetime', 'Date');
+			final_data.addColumn('number', 'Queues');
+
+			var slidingWindow = data.getNumberOfRows();
+
+			for (var i = 0; i < 3; i++) {
+				var avg = 0;
+				var total = 0;
+				for (var j = i; j < i + slidingWindow; j++) {
+					total += data.getValue(j, 1);
+				}
+				avg = total / slidingWindow;
+
+				data
+						.addRow([
+								new Date(new Date().setDate(new Date()
+										.getDate()
+										+ i)), avg ]);
+				final_data
+						.addRow([
+								new Date(new Date().setDate(new Date()
+										.getDate()
+										+ i)), avg ]);
+			}
+
+			var options = {
+				title : 'Forecast Queue Stats',
+				hAxis : {
+					title : 'Day',
+					format: 'dd,MMM,yy'
+
+				},
+				vAxis : {
+					title : 'Queue Count'
+				},
+				chartArea : {
+					width : "50%",
+					height : "70%"
+				}
+			};
+			var chart = new google.visualization.ColumnChart(document
+					.getElementById('daily_actual_forecast_div'));
+			chart.draw(final_data, options);
+		}
+		
+		function drawEstTimeDailyForecastChart() {
+			var data = new google.visualization.DataTable();
+
+			data.addColumn('datetime', 'Date');
+			data.addColumn('number', 'Queues');
+			Object.keys(forecast_ewt_data_daily).forEach(function(key) {
+				data.addRow([ new Date(key), forecast_ewt_data_daily[key] ]);
+			});
+
+			data.sort({
+				column : 0
+			});
+
+			var final_data = new google.visualization.DataTable();
+
+			final_data.addColumn('datetime', 'Date');
+			final_data.addColumn('number', 'Average waiting minutes');
+
+			var slidingWindow = data.getNumberOfRows();
+
+			for (var i = 0; i < 3; i++) {
+				var avg = 0;
+				var total = 0;
+				for (var j = i; j < i + slidingWindow; j++) {
+					total += data.getValue(j, 1);
+				}
+				avg = total / slidingWindow;
+
+				//Need to fix
+				data
+						.addRow([
+								new Date(new Date().setDate(new Date()
+										.getDate()
+										+ i)), avg ]);
+				final_data
+						.addRow([
+								new Date(new Date().setDate(new Date()
+										.getDate()
+										+ i)), avg ]);
+			}
+
+			var options = {
+				title : 'Forecast Estimated Wait Time',
+				hAxis : {
+					title : 'Day',
+					format : 'dd, MMM, yy'
+
+				},
+				vAxis : {
+					title : 'Avg Est Time'
+				},
+				chartArea : {
+					width : "50%",
+					height : "70%"
+				}
+			};
+			var chart = new google.visualization.ColumnChart(document
+					.getElementById('daily_ewt_forecast_div'));
+			chart.draw(final_data, options);
+		}
 		 
-		 function drawActualHourlyForecastChart() {
-		     var data = new google.visualization.DataTable();
-		  
-		     data.addColumn('datetime', 'Date');
-		     data.addColumn('number', 'Queues');
-		     Object.keys(forecast_qc_data_hourly).forEach(function(key) {
-		         data.addRow([ new Date(key), forecast_qc_data_hourly[key] ]);
-		     });
-		     
-		     data.sort({column:0});
-		     
-			var final_data = new google.visualization.DataTable();
-		     
-		     final_data.addColumn('datetime', 'Date');
-		     final_data.addColumn('number', 'Queues');
-		     
-			var currDate = new Date();
-		     var slidingWindow = 10;
-			
-			for(var i = 0; i< 3; i++){
-		     	var avg = 0;
-		     	var total = 0;
-		     	for(var j=i; j < i + slidingWindow; j++){
-		     		total += data.getValue(j, 1);
-		     	}
-		     	avg = total/slidingWindow;
-		     	
-		     	//Need to fix
-		     	data.addRow([new Date(currDate.setHours(currDate.getHours()+i)), avg]);
-		     	final_data.addRow([new Date(currDate.setHours(currDate.getHours()+i)), avg]);
-		     }
-		     
-		     
-		     var options = {
-		         title : 'Queue Stats',
-		         hAxis : {
-		             title : 'Month',
+		function drawActualHourlyForecastChart() {
+			var data = new google.visualization.DataTable();
 
-		         },
-		         vAxis : {
-		             title : 'Queue Count'
-		         },
-		         chartArea: {  width: "50%", height: "70%" }
-		     };
-		     var chart = new google.visualization.ColumnChart(document
-		         .getElementById('hourly_actual_forecast_div'));
-		     chart.draw(final_data, options);
-		 } */
+			data.addColumn('datetime', 'Date');
+			data.addColumn('number', 'Customers');
+			Object.keys(forecast_qc_data_hourly).forEach(function(key) {
+				data.addRow([ new Date(key), forecast_qc_data_hourly[key] ]);
+			});
+
+			data.sort({
+				column : 0
+			});
+
+			var final_data = new google.visualization.DataTable();
+
+			final_data.addColumn('datetime', 'Date');
+			final_data.addColumn('number', 'Queues');
+
+			var slidingWindow = data.getNumberOfRows();
+
+			for (var i = 0; i < 3; i++) {
+				var avg = 0;
+				var total = 0;
+				for (var j = i; j < i + slidingWindow; j++) {
+					total += data.getValue(j, 1);
+				}
+				avg = total / slidingWindow;
+
+				data
+						.addRow([
+								new Date(new Date().setHours(new Date()
+										.getHours()
+										+ i)), avg ]);
+				final_data
+						.addRow([
+								new Date(new Date().setHours(new Date()
+										.getHours()
+										+ i)), avg ]);
+			}
+
+			var options = {
+				title : 'Forecast Queue Stats',
+				hAxis : {
+					title : 'Hour',
+
+				},
+				vAxis : {
+					title : 'Queue Count'
+				},
+				chartArea : {
+					width : "50%",
+					height : "70%"
+				}
+			};
+			var chart = new google.visualization.ColumnChart(document
+					.getElementById('hourly_actual_forecast_div'));
+			chart.draw(final_data, options);
+		}
+		
+		function drawEstTimeHourlyForecastChart() {
+			var data = new google.visualization.DataTable();
+
+			data.addColumn('datetime', 'Date');
+			data.addColumn('number', 'Queues');
+			Object.keys(forecast_ewt_data_hourly).forEach(function(key) {
+				data.addRow([ new Date(key), forecast_ewt_data_hourly[key] ]);
+			});
+
+			data.sort({
+				column : 0
+			});
+
+			var final_data = new google.visualization.DataTable();
+
+			final_data.addColumn('datetime', 'Date');
+			final_data.addColumn('number', 'Average waiting minutes');
+
+			var slidingWindow = data.getNumberOfRows();
+
+			for (var i = 0; i < 3; i++) {
+				var avg = 0;
+				var total = 0;
+				for (var j = i; j < i + slidingWindow; j++) {
+					total += data.getValue(j, 1);
+				}
+				avg = total / slidingWindow;
+
+				//Need to fix
+				data
+						.addRow([
+								new Date(new Date().setHours(new Date()
+										.getHours()
+										+ i)), avg ]);
+				final_data
+						.addRow([
+								new Date(new Date().setHours(new Date()
+										.getHours()
+										+ i)), avg ]);
+			}
+
+			var options = {
+				title : 'Forecast Estimated Wait Time',
+				hAxis : {
+					title : 'Hour'
+
+				},
+				vAxis : {
+					title : 'Avg Est Time'
+				},
+				chartArea : {
+					width : "50%",
+					height : "70%"
+				}
+			};
+			var chart = new google.visualization.ColumnChart(document
+					.getElementById('hourly_ewt_forecast_div'));
+			chart.draw(final_data, options);
+		}
 	</script>
 
 </body>

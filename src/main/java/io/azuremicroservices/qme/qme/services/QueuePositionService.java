@@ -173,6 +173,60 @@ public class QueuePositionService {
 		
 		return forecastEWTDataMonthly;
 	}
+	
+	public Map<String, Long> generateDailyQueueCountForecast(List<QueuePosition> queuePositions, Integer dayBoundary) {
+		var currentDate = LocalDateTime.now();
+		
+		Map<String, Long> forecastDailyQueueCountData = queuePositions.stream()
+			.filter(qp -> qp.getQueueStartTime().isAfter(currentDate.minusDays(dayBoundary)))
+			.collect(Collectors.groupingBy(qp -> ((QueuePosition) qp).getQueueStartTime()
+					.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "'T'00:00:00'+0800'",
+							Collectors.counting()));
+		
+		return forecastDailyQueueCountData;
+	}
+	
+	public Map<String, Double> generateDailyEWTCountForecast(List<QueuePosition> queuePositions, Integer dayBoundary) {
+		var currentDate = LocalDateTime.now();
+		
+		var forecastEWTDataDaily = queuePositions.stream()
+				.filter(qp -> qp.getQueueStartTime().isAfter(currentDate.minusDays(dayBoundary)))
+				.collect(Collectors.groupingBy(
+						qp -> ((QueuePosition) qp).getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+								+ "'T'00:00:00'+0800'",
+						Collectors.averagingLong(
+								qp -> (ChronoUnit.MINUTES.between(qp.getQueueEndTime(), qp.getQueueStartTime())))));
+		
+		return forecastEWTDataDaily;
+	}
+	
+	public Map<String, Long> generateHourlyQueueCountForecast(List<QueuePosition> queuePositions, Integer hourBoundary) {
+		var currentDate = LocalDateTime.now();
+		
+		Map<String, Long> forecastHourlyQueueCountData = queuePositions.stream()
+			.filter(qp -> qp.getQueueStartTime().isAfter(currentDate.minusHours(hourBoundary)))
+			.collect(Collectors.groupingBy(qp -> ((QueuePosition) qp).getQueueStartTime()
+					.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH")) + ":00:00'+0800'",
+							Collectors.counting()));
+		
+		return forecastHourlyQueueCountData;
+	}
+	
+	public Map<String, Double> generateHourlyEWTCountForecast(List<QueuePosition> queuePositions, Integer hourBoundary) {
+		var currentDate = LocalDateTime.now();
+		
+		var forecastEWTDataHourly = queuePositions.stream()
+				.filter(qp -> qp.getQueueStartTime().isAfter(currentDate.minusHours(hourBoundary)))
+				.collect(Collectors.groupingBy(
+						qp -> ((QueuePosition) qp).getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH"))
+								+ ":00:00'+0800'",
+						Collectors.averagingLong(
+								qp -> (ChronoUnit.MINUTES.between(qp.getQueueEndTime(), qp.getQueueStartTime())))));
+		
+		return forecastEWTDataHourly;
+	}
+
+	
 
 	public Map<String, List<LocalDateTime>> generateDateIntervals(Integer dayInterval, Integer monthInterval, Integer yearInterval) {
 		Map<String, List<LocalDateTime>> dateBoundaryMapping = new HashMap<>();

@@ -63,7 +63,7 @@
 
     <script>
         const queueId = document.getElementById("queueId").value;
-        const eventSource = new EventSource("/OperateQueue/sse/" + queueId);
+        const eventSource = new EventSource("/operate-queue/sse/" + queueId);
         eventSource.onmessage = function (event) {
             if (event.data === "refresh") {
                 location.reload();

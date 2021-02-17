@@ -81,6 +81,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final String[] BRANCH_OPERATOR_URLS = {
     		"/OperateQueue/**",
+            "/operate-queue/**"
     };
 
     private final String[] CLIENT_URLS = {

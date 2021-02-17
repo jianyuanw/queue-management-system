@@ -39,15 +39,15 @@
 		</div>
 	</div>
 	<div class="row ml-4">
-		<form th:if="${counter.queuePosition == null}" method="post" th:action="@{/OperateQueue/current-counter}">
+		<form th:if="${counter.queuePosition == null}" method="post" th:action="@{/operate-queue/current-counter}">
 			<input type="hidden" name="command" value="call">
 			<button type="submit" class="btn btn-primary btn-sm">Call Next</button>
 		</form>
-		<form th:if="${counter.queuePosition != null}" method="post" th:action="@{/OperateQueue/current-counter}">
+		<form th:if="${counter.queuePosition != null}" method="post" th:action="@{/operate-queue/current-counter}">
 			<input type="hidden" name="command" value="advance">
 			<button type="submit" class="btn btn-success btn-sm">Advance Queue</button>
 		</form>
-		<form th:if="${counter.queuePosition != null}" method="post" th:action="@{/OperateQueue/current-counter}">
+		<form th:if="${counter.queuePosition != null}" method="post" th:action="@{/operate-queue/current-counter}">
 			<input type="hidden" name="command" value="no-show">
 			<button type="submit" class="btn btn-danger btn-sm">No-Show</button>
 		</form>				

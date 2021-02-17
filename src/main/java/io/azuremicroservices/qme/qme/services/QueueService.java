@@ -559,6 +559,10 @@ public class QueueService {
 	}
 
 	return viewQueues;
-}	
+}
+
+	public List<Queue> findAllQueuesByBranch_Id(Long branchId) {
+		return queueRepo.findAllByBranch_Id(branchId);
+	}	
 	
 }

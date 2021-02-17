@@ -4,11 +4,11 @@
 	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
-<meta charset="UTF-8">
-<title>Dashboard Prototype</title>
-<!--Load the AJAX API-->
-<th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
-<th:block th:replace="fragments/sourcebundle.html :: google-charts" />
+	<meta charset="UTF-8">
+	<title>qMe - Dashboard</title>
+	<!--Load the AJAX API-->
+	<th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+	<th:block th:replace="fragments/sourcebundle.html :: google-charts" />
 
 </head>
 <body>
@@ -20,10 +20,11 @@
 	<div class="container">
 	
 		<div class = "row">
-			<form class="text-center" method="post" th:action="@{/filter}" name="branchId">
-				<select  class="form-select form-control" onchange="this.form.submit()">
+			<form class="text-center" method="get" th:action="@{/dashboard}">
+				<select name="branchId" class="form-select form-control" onchange="this.form.submit()">
 					<option value="">Overall</option>
-					<option th:each="branch:${branches}" th:text="${branch.name}" th:value="${branch.id}">
+					<option th:each="branch:${branches}" th:text="${branch.name}" th:value="${branch.id}"
+						th:selected="${selectedBranch != null && branch.id == selectedBranch}">
 				</select>
 			</form>
 		</div>

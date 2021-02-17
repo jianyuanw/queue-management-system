@@ -34,17 +34,22 @@ public class DashboardController {
 	}
 
 	@GetMapping("/dashboard")
-	public String dashboard(Model model, Authentication authentication) {
+	public String dashboard(@RequestParam(required = false, value = "branchId") Long branchId, Model model, Authentication authentication) {
 		MyUserDetails user = (MyUserDetails) authentication.getPrincipal();
 		
 		List<Branch> branches = permissionService.getBranchPermissions(user.getId());
 		model.addAttribute("branches", branches);
 		
-		List<Queue> queues = queueService.findAllQueuesInBranches(branches);
-		System.out.println(queues.size());
+		List<Queue> queues = null;
+		
+		if (branchId != null) {
+			queueService.findAllQueuesByBranch_Id(branchId);
+			model.addAttribute("selectedBranch", branchId);
+		} else {
+			queueService.findAllQueuesInBranches(branches);
+		}
 		
 		List<QueuePosition> queuePositions = queuePositionService.findAllQueuePositionsInQueues(queues);
-		System.out.println(queuePositions.size());
 
 		Map<String, Integer> queueCountData = queuePositionService.generateQueueCountData(queuePositions);
 		Map<String, Long> estWaitingTimeData = queuePositionService.generateEstimatedWaitingTimeData(queuePositions);

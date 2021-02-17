@@ -15,47 +15,53 @@
 <body>
 	<div th:replace="fragments/layout.html :: navbar"></div>
 
-	<table id="dataTable" class="table table-striped table-bordered">
-		<thead>
-			<tr class="row">
-				<th class="col">Vendor Name</th>
-				<th class="col">Company Uid</th>
-				<th class="col">Description</th>
-				<th class="col">Actions</th>
-			</tr>
-		</thead>
-		<tbody th:each="vendor : ${vendors}" th:remove="tag">
-			<tr class="row">
-				<td class="col" th:text="${vendor.name}"></td>
-				<td class="col" th:text="${vendor.companyUid}"></td>
-				<td class="col" th:text="${vendor.description}"></td>
-				<td class="col">
-					<a th:href="@{/manage/vendor/update/__${vendor.id}__}">
-						<i class="fas fa-edit fa-lg" title="Edit Vendor"></i>
-					</a>
-					
-      				<a href="#">
-      					<i class="fas fa-trash-alt fa-lg" data-toggle="modal" th:data-target="${'#deleteConfirm' + vendor.id}" title="Delete Vendor"></i>
-      				</a>
-      				<a th:href="@{~/manage/vendor-admin-account/create/__${vendor.id}__}"><i class="fas fa-user-plus fa-lg" title="Add Vendor Account"></i></a>
-      				
-      				
-      				
-					<th:block th:insert="fragments/support-elements.html :: modalbox-red"
-						th:with="modalId=${'deleteConfirm' + vendor.id},modalTitle=${'Confirm Deletion'},modalBody=${'Are you sure you want to delete ' + vendor.name + '?'},
-							modalConfirm=${'Delete'},confirmUrl=${'/manage/vendor/delete/' + vendor.id}">
-					</th:block>
-				</td>
-			</tr>
-		</tbody>
-		<tfoot>
-			<tr class="row">
-				<td class="col">
-					<a th:href="@{/manage/vendor/create}"><button class="btn btn-info btn-block">Create New Vendor</button></a>
-				</td>
-			</tr>
-		</tfoot>
-	</table>	
+	<div class="m-4">
+
+		<h1 class="font-weight-bold">Vendor List</h1>
+
+		<table id="dataTable" class="table table-striped table-bordered">
+			<thead>
+				<tr class="row">
+					<th class="col">Vendor Name</th>
+					<th class="col">Company Uid</th>
+					<th class="col">Description</th>
+					<th class="col">Actions</th>
+				</tr>
+			</thead>
+			<tbody th:each="vendor : ${vendors}" th:remove="tag">
+				<tr class="row">
+					<td class="col" th:text="${vendor.name}"></td>
+					<td class="col" th:text="${vendor.companyUid}"></td>
+					<td class="col" th:text="${vendor.description}"></td>
+					<td class="col">
+						<a th:href="@{/manage/vendor/update/__${vendor.id}__}">
+							<i class="fas fa-edit fa-lg" title="Edit Vendor"></i>
+						</a>
+
+						<a href="#">
+							<i class="fas fa-trash-alt fa-lg ml-2" data-toggle="modal" th:data-target="${'#deleteConfirm' + vendor.id}" title="Delete Vendor"></i>
+						</a>
+						<a th:href="@{~/manage/vendor-admin-account/create/__${vendor.id}__}"><i class="fas fa-user-plus fa-lg ml-2" title="Add Vendor Account"></i></a>
+
+
+
+						<th:block th:insert="fragments/support-elements.html :: modalbox-red"
+							th:with="modalId=${'deleteConfirm' + vendor.id},modalTitle=${'Confirm Deletion'},modalBody=${'Are you sure you want to delete ' + vendor.name + '?'},
+								modalConfirm=${'Delete'},confirmUrl=${'/manage/vendor/delete/' + vendor.id}">
+						</th:block>
+					</td>
+				</tr>
+			</tbody>
+			<tfoot>
+				<tr class="row">
+					<td class="col">
+						<a th:href="@{/manage/vendor/create}"><button class="btn btn-info btn-block">Create New Vendor</button></a>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+
+	</div>
 
 	<div th:replace="fragments/layout.html :: footer"></div>
 </body>

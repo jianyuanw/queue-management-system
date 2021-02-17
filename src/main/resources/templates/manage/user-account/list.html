@@ -15,53 +15,59 @@
 <body>
 	<div th:replace="fragments/layout.html :: navbar"></div>
 
-	<table id="dataTable" class="table table-striped">
-		<thead>
-			<tr class="row">
-				<th class="col">First Name</th>
-				<th class="col">Last Name</th>
-				<th class="col">Handphone Number</th>
-				<th class="col">Username</th>
-				<th class="col">Role</th>
-				<th class="col">Actions</th>
-			</tr>
-		</thead>
-		<tbody th:each="account : ${accounts}" th:remove="tag">
-			<tr class="row">
-				<td class="col" th:text="${account.firstName}"></td>
-				<td class="col" th:text="${account.lastName}"></td>
-				<td class="col" th:text="${account.handphoneNo}"></td>
-				<td class="col" th:text="${account.username}"></td>
-				<td class="col" th:text="${account.role.getDisplayValue()}"></td>
-				<td class="col">
-					
-					<a th:href="@{/manage/user-account/update/__${account.id}__}">
-						<i class="fas fa-edit fa-lg" title="Edit Account"></i>
-					</a>
-					
-					<a th:href="@{/manage/user-account/block/__${account.id}__}">
-						<i th:if="${!account.blocked}" class="fas fa-user-times fa-lg" title="Block Account"></i>
-						<i th:if="${account.blocked}" class="fas fa-user-check fa-lg" title="Unblock Account"></i>
-					</a>									
-					
-      				<a href="#"><i class="fas fa-trash-alt fa-lg" data-toggle="modal" th:data-target="${'#deleteConfirm' + account.id}" title="Delete User Account"></i></a>
-      				
-					<th:block th:insert="fragments/support-elements.html :: modalbox-red"
-						th:with="modalId=${'deleteConfirm' + account.id},modalTitle=${'Confirm Deletion'},modalBody=${'Are you sure you want to delete ' + account.username + '?'},
-							modalConfirm=${'Delete'},confirmUrl=${'/manage/user-account/delete/' + account.id}">
-					</th:block>
-				</td>
-			</tr>
-		</tbody>
-		
-		<tfoot>
-			<tr class="row">
-				<td class="col">
-					<a th:href="@{/manage/app-admin-account/create}"><button class="btn btn-info btn-block">Create App Admin</button></a>
-				</td>
-			</tr>
-		</tfoot>		
-	</table>
+	<div class="m-4">
+
+		<h1 class="font-weight-bold">User Account List</h1>
+
+		<table id="dataTable" class="table table-striped">
+			<thead>
+				<tr class="row">
+					<th class="col">First Name</th>
+					<th class="col">Last Name</th>
+					<th class="col">Handphone Number</th>
+					<th class="col">Username</th>
+					<th class="col">Role</th>
+					<th class="col">Actions</th>
+				</tr>
+			</thead>
+			<tbody th:each="account : ${accounts}" th:remove="tag">
+				<tr class="row">
+					<td class="col" th:text="${account.firstName}"></td>
+					<td class="col" th:text="${account.lastName}"></td>
+					<td class="col" th:text="${account.handphoneNo}"></td>
+					<td class="col" th:text="${account.username}"></td>
+					<td class="col" th:text="${account.role.getDisplayValue()}"></td>
+					<td class="col">
+
+						<a th:href="@{/manage/user-account/update/__${account.id}__}">
+							<i class="fas fa-edit fa-lg" title="Edit Account"></i>
+						</a>
+
+						<a th:href="@{/manage/user-account/block/__${account.id}__}">
+							<i th:if="${!account.blocked}" class="fas fa-user-times fa-lg ml-2" title="Block Account"></i>
+							<i th:if="${account.blocked}" class="fas fa-user-check fa-lg ml-2" title="Unblock Account"></i>
+						</a>
+
+						<a href="#"><i class="fas fa-trash-alt fa-lg ml-2" data-toggle="modal" th:data-target="${'#deleteConfirm' + account.id}" title="Delete User Account"></i></a>
+
+						<th:block th:insert="fragments/support-elements.html :: modalbox-red"
+							th:with="modalId=${'deleteConfirm' + account.id},modalTitle=${'Confirm Deletion'},modalBody=${'Are you sure you want to delete ' + account.username + '?'},
+								modalConfirm=${'Delete'},confirmUrl=${'/manage/user-account/delete/' + account.id}">
+						</th:block>
+					</td>
+				</tr>
+			</tbody>
+
+			<tfoot>
+				<tr class="row">
+					<td class="col">
+						<a th:href="@{/manage/app-admin-account/create}"><button class="btn btn-info btn-block">Create App Admin</button></a>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+
+	</div>
 
 	<div th:replace="fragments/layout.html :: footer"></div>
 </body>

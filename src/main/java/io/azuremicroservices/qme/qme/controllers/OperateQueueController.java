@@ -167,6 +167,13 @@ public class OperateQueueController {
         return "redirect:/OperateQueue/ViewSelectedQueue/"+queueId;
     }
 
+    @GetMapping("/ViewSelectedQueue/cancel-reassign/{queueId}/{reassignedId}")
+    public String cancelReassign(@PathVariable("queueId") Long queueId, @PathVariable("reassignedId")Long reassignedId) {
+
+        queuePositionService.setDefaultPriorityFor(reassignedId);
+        return "redirect:/OperateQueue/ViewSelectedQueue/"+queueId;
+    }
+
     @GetMapping("/ViewNoShowList/{queueId}")
     public String viewNoShowList(@PathVariable("queueId")Long queueId, Model model) {
 
@@ -198,6 +205,18 @@ public class OperateQueueController {
     	model.addAttribute("viewQueuePositions", viewQueuePositions);        
         model.addAttribute("queueLength", viewQueuePositions.size());
         return "branch-operator/counter";
+    }
+
+    @GetMapping("/my-counter/reassign/{rId}")
+    public String reassignInMyCounter(@PathVariable Long rId) {
+        queuePositionService.updateReassignedIdPriority(rId);
+        return "redirect:/OperateQueue/my-counter";
+    }
+
+    @GetMapping("/my-counter/cancel-reassign/{rId}")
+    public String cancelReassignInMyCounter(@PathVariable Long rId) {
+        queuePositionService.setDefaultPriorityFor(rId);
+        return "redirect:/OperateQueue/my-counter";
     }
 
     @PostMapping("/my-counter")

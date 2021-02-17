@@ -41,7 +41,7 @@ import io.azuremicroservices.qme.qme.services.QueueService;
 
 
 @Controller
-@RequestMapping("/OperateQueue")
+@RequestMapping(value = {"/operate-queue","/OperateQueue"})
 public class OperateQueueController {
 
     @Autowired
@@ -53,7 +53,7 @@ public class OperateQueueController {
     @Autowired
     private AlertService alertService;
 
-    @GetMapping("/ViewQueue")
+    @GetMapping(value = {"/ViewQueue","/view-queue"})
     public String operatorViewQueue(Model model, Authentication authentication, RedirectAttributes redirAttr) {
         MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
         List<Queue> queues = permissionService.getQueuePermissions(myUserDetails.getId());
@@ -77,19 +77,19 @@ public class OperateQueueController {
         return "branch-operator/queues";
     }
 
-    @GetMapping("/UpdateQueueState/{queueId}")
+    @GetMapping(value={"/update-queue-state/{queueId}","/UpdateQueueState/{queueId}"})
     public String updateQueueState(@PathVariable("queueId") Long queueId, Authentication authentication, RedirectAttributes redirAttr) {
     	MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
     	var queue = queueService.findQueueById(queueId);
     	
     	if (queue.isEmpty() || !permissionService.authenticateQueue(myUserDetails.getUser(), queueService.findQueue(queueId))) {
     		alertService.createAlert(AlertColour.YELLOW, "Queue not found", redirAttr);
-    		return "redirect:/OperateQueue";
+    		return "redirect:/operate-queue";
     	}
     	
         queueService.updateQueueState(queueId);
         alertService.createAlert(AlertColour.GREEN, "Queue state updated", redirAttr);
-        return "redirect:/OperateQueue/ViewQueue";
+        return "redirect:/operate-queue/view-queue";
     }
     
     @PostMapping("/sign-in")
@@ -99,12 +99,12 @@ public class OperateQueueController {
     	
     	if (counter.isEmpty() || !permissionService.authenticateQueue(myUserDetails.getUser(), counter.get().getQueue())) {
     		alertService.createAlert(AlertColour.YELLOW, "Counter not found", redirAttr);
-    		return "redirect:/OperateQueue/ViewQueue";
+    		return "redirect:/operate-queue/view-queue";
     	}
     	
     	queueService.signInCounter(myUserDetails.getUser(), counter.get());
     	alertService.createAlert(AlertColour.GREEN, "Signed in to counter", redirAttr);
-    	return "redirect:/OperateQueue/ViewQueue";
+    	return "redirect:/operate-queue/view-queue";
     }
     
     @PostMapping("/sign-out")
@@ -114,12 +114,12 @@ public class OperateQueueController {
     	
     	if (counter.isEmpty() || !permissionService.authenticateQueue(myUserDetails.getUser(), counter.get().getQueue())) {
     		alertService.createAlert(AlertColour.YELLOW, "Counter not found", redirAttr);
-    		return "redirect:/OperateQueue/ViewQueue";
+    		return "redirect:/operate-queue/view-queue";
     	}
     	
     	queueService.signOutCounter(myUserDetails.getUser(), counter.get());
     	alertService.createAlert(AlertColour.GREEN, "Signed out of counter", redirAttr);
-    	return "redirect:/OperateQueue/ViewQueue";
+    	return "redirect:/operate-queue/view-queue";
     }
     
     @PostMapping(value = "/qr-code", produces = MediaType.IMAGE_PNG_VALUE)
@@ -134,7 +134,7 @@ public class OperateQueueController {
     	
     	if (counter == null) {
     		alertService.createAlert(AlertColour.YELLOW, "You are not signed into a counter", redirAttr);
-    		return "redirect:/OperateQueue/ViewQueue";
+    		return "redirect:/operate-queue/view-queue";
     	}
     	
     	List<QueuePositionDto> viewQueuePositions = queueService.generateViewQueuePositions(counter);
@@ -144,7 +144,7 @@ public class OperateQueueController {
     	return "branch-operator/current-counter";
     }
 
-    @GetMapping("/ViewSelectedQueue/{queueId}")
+    @GetMapping(value={"/view-selected-queue/{queueId}","/ViewSelectedQueue/{queueId}"})
     public String viewSelectedQueue(@PathVariable("queueId") Long queueId,Model model) {
         Queue queue = queueService.findQueue(queueId);
         Vendor vendor = queue.getBranch().getVendor();
@@ -160,14 +160,21 @@ public class OperateQueueController {
         return "branch-operator/viewSelectedQueuePage";
     }
 
-    @GetMapping("/ViewSelectedQueue/{queueId}/{reassignedId}")
+    @GetMapping(value={"/view-selected-queue/{queueId}/{reassignedId}","/ViewSelectedQueue/{queueId}/{reassignedId}"})
     public String reassign(@PathVariable("queueId") Long queueId, @PathVariable("reassignedId")Long reassignedId) {
 
         queuePositionService.updateReassignedIdPriority(reassignedId);
-        return "redirect:/OperateQueue/ViewSelectedQueue/"+queueId;
+        return "redirect:/operate-queue/view-selected-queue/"+queueId;
     }
 
-    @GetMapping("/ViewNoShowList/{queueId}")
+    @GetMapping(value={"/view-selected-queue/cancel-reassign/{queueId}/{reassignedId}","/ViewSelectedQueue/cancel-reassign/{queueId}/{reassignedId}"})
+    public String cancelReassign(@PathVariable("queueId") Long queueId, @PathVariable("reassignedId")Long reassignedId) {
+
+        queuePositionService.setDefaultPriorityFor(reassignedId);
+        return "redirect:/operate-queue/view-selected-queue/"+queueId;
+    }
+
+    @GetMapping(value ={"/view-no-show-list/{queueId}","/ViewNoShowList/{queueId}"})
     public String viewNoShowList(@PathVariable("queueId")Long queueId, Model model) {
 
         Map<String, String> noShowQP = queuePositionService.findQueuePositionForNoShowListDisplaying(queueId);
@@ -189,7 +196,7 @@ public class OperateQueueController {
     	
     	if (counter == null) {
     		alertService.createAlert(AlertColour.YELLOW, "You are not signed into a counter", redirAttr);
-    		return "redirect:/OperateQueue/ViewQueue";
+    		return "redirect:/operate-queue/view-queue";
     	}
     	
     	List<QueuePositionDto> viewQueuePositions = queueService.generateViewQueuePositions(counter);
@@ -200,6 +207,18 @@ public class OperateQueueController {
         return "branch-operator/counter";
     }
 
+    @GetMapping("/my-counter/reassign/{rId}")
+    public String reassignInMyCounter(@PathVariable Long rId) {
+        queuePositionService.updateReassignedIdPriority(rId);
+        return "redirect:/operate-queue/my-counter";
+    }
+
+    @GetMapping("/my-counter/cancel-reassign/{rId}")
+    public String cancelReassignInMyCounter(@PathVariable Long rId) {
+        queuePositionService.setDefaultPriorityFor(rId);
+        return "redirect:/operate-queue/my-counter";
+    }
+
     @PostMapping("/my-counter")
     public String callNextNumber(@RequestParam("command") String command, Authentication authentication, RedirectAttributes redirAttr) {
         User user = ((MyUserDetails) authentication.getPrincipal()).getUser();
@@ -207,7 +226,7 @@ public class OperateQueueController {
 
         if (counter == null) {
             alertService.createAlert(AlertColour.RED, "An error occurred. Please try again.", redirAttr);
-            return "redirect:/OperateQueue/my-counter";
+            return "redirect:/operate-queue/my-counter";
         }        
         
         switch (command) {
@@ -231,7 +250,7 @@ public class OperateQueueController {
         		break;
         }
         
-        return "redirect:/OperateQueue/my-counter";
+        return "redirect:/operate-queue/my-counter";
     }
 
     @PostMapping("/no-show")
@@ -240,10 +259,10 @@ public class OperateQueueController {
         Counter counter = queueService.findCounterByUser(user);
         if (counter == null) {
             alertService.createAlert(AlertColour.RED, "An error occurred. Please try again.", redirAttr);
-            return "redirect:/OperateQueue/my-counter";
+            return "redirect:/operate-queue/my-counter";
         }
 
-        return "redirect:/OperateQueue/my-counter";
+        return "redirect:/operate-queue/my-counter";
     }
 
     @GetMapping("/queue-number-screen/{queueId}")
@@ -252,7 +271,7 @@ public class OperateQueueController {
         List<Counter> counters = queue.getCounters();
         if (counters.size() == 0) {
             alertService.createAlert(AlertColour.RED, "Queue has no counters.", redirAttr);
-            return "redirect:/OperateQueue/ViewQueue";
+            return "redirect:/operate-queue/view-queue";
         }
         String[] missedQueueNumbers = queuePositionService.findCurrentDayMissedQueueNumbersByQueue(queue);
         model.addAttribute("missedQueueNumbers", missedQueueNumbers);

@@ -7,7 +7,11 @@ import io.azuremicroservices.qme.qme.services.AlertService;
 import io.azuremicroservices.qme.qme.services.AlertService.AlertColour;
 import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
 
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 @Controller
@@ -46,7 +51,7 @@ public class AccountController {
         } else if (user.getPerspective() == User.Role.BRANCH_ADMIN) {
             return "redirect:/dashboard";
         } else if (user.getPerspective() == User.Role.BRANCH_OPERATOR) {
-            return "redirect:/OperateQueue/ViewQueue";
+            return "redirect:/operate-queue/view-queue";
         } else {
             return "redirect:/home";
         }	
@@ -61,10 +66,7 @@ public class AccountController {
     }
 
     @GetMapping("/login-admin")
-    public String loginAdmin(@ModelAttribute("error") String error, Model model) {
-        if (!error.equals("")) {
-            model.addAttribute("error", error);
-        }
+    public String loginAdmin() {
         return "account/login-admin";
     }
 
@@ -86,15 +88,27 @@ public class AccountController {
         } else if (user.getPerspective() == User.Role.BRANCH_ADMIN) {
             return "redirect:/dashboard";
         } else if (user.getPerspective() == User.Role.BRANCH_OPERATOR) {
-            return "redirect:/OperateQueue/ViewQueue";
+            return "redirect:/operate-queue/view-queue";
         } else {
             return "redirect:/home";
         }	
     }
 
     @GetMapping("/login/error")
-    public String loginError(RedirectAttributes redirAttr) {
-        redirAttr.addFlashAttribute("error", "Incorrect username or password");
+    public String loginError(HttpServletRequest request, RedirectAttributes redirAttr) {
+        String error = "An error occured. Please try again.";
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            AuthenticationException ex = (AuthenticationException) session
+                    .getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+            if (ex instanceof BadCredentialsException) {
+                error = "Incorrect username or password";
+            }
+            if (ex instanceof LockedException) {
+                error = "Your account is locked";
+            }
+        }
+        redirAttr.addFlashAttribute("error", error);
         return "redirect:/login";
     }
 
@@ -109,12 +123,6 @@ public class AccountController {
     @GetMapping("/logout")
     public String logout() {
         return "account/logout";
-    }
-
-    @GetMapping("/logout/success")
-    public String logoutSuccess(RedirectAttributes redirAttr) {
-        alertService.createAlert(AlertService.AlertColour.GREEN, "Logout successful", redirAttr);
-        return "redirect:/login";
     }
 
     @GetMapping("/register")

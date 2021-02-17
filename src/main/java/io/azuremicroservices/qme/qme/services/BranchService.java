@@ -1,17 +1,25 @@
 package io.azuremicroservices.qme.qme.services;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.aspectj.weaver.patterns.HasMemberTypePatternForPerThisMatching;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import io.azuremicroservices.qme.qme.models.Branch;
 import io.azuremicroservices.qme.qme.models.BranchCategory;
-import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.repositories.BranchRepository;
 
 @Service
@@ -28,12 +36,46 @@ public class BranchService {
 		return branchRepo.findAll();
 	}
 
-	public void createBranch(Branch branch) {
-		branchRepo.save(branch);
+	public void createBranch(MultipartFile branchImage, Branch branch) throws IOException {
+		String fileName = StringUtils.cleanPath(branchImage.getOriginalFilename());
+		branch.setBranchImage(fileName);
+		Branch savedBranch = branchRepo.save(branch);
+		String uploadDir = "src/main/resources/branch-images/" + savedBranch.getId();
+		
+		Path uploadPath = Paths.get(uploadDir);
+		if (!Files.exists(uploadPath)) {
+			Files.createDirectories(uploadPath);
+		}
+		
+		try (InputStream inputStream = branchImage.getInputStream()){
+		Path filePath = uploadPath.resolve(fileName);
+		Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			throw new IOException("Could not save uploaded file:" + fileName);
+		}
 	}
 	
-	public void updateBranch(Branch branch) {
-		branchRepo.save(branch);
+	public void updateBranch(MultipartFile branchImage, Branch branch) throws IOException {
+		String fileName = StringUtils.cleanPath(branchImage.getOriginalFilename());
+		branch.setBranchImage(fileName);
+		Branch savedBranch = branchRepo.save(branch);
+		String uploadDir = "src/main/resources/branch-images/" + savedBranch.getId();
+		
+		if(branch.getBranchImage() != null) {
+		FileUtils.deleteDirectory(new File(uploadDir));
+		}
+		
+		Path uploadPath = Paths.get(uploadDir);
+		if (!Files.exists(uploadPath)) {
+			Files.createDirectories(uploadPath);
+		}
+		
+		try (InputStream inputStream = branchImage.getInputStream()){
+		Path filePath = uploadPath.resolve(fileName);
+		Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			throw new IOException("Could not save uploaded file:" + fileName);
+		}
 	}	
 
 	public Optional<Branch> findBranchById(Long branchId) {
@@ -49,7 +91,12 @@ public class BranchService {
 	}
 
 	@Transactional
-	public void deleteBranch(Branch branch) {
+	public void deleteBranch(Branch branch) throws IOException {
+		if(branch.getBranchImagePath() != null) {
+		String uploadDir = "src/main/resources/branch-images/" + branch.getId();
+		
+		FileUtils.deleteDirectory(new File(uploadDir));
+		}
 		branchRepo.delete(branch);
 	}	
 	

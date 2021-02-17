@@ -53,7 +53,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .and()
                 .logout()
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/logout/success")
             .and()
                 .sessionManagement()
                 .maximumSessions(-1)
@@ -82,6 +81,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final String[] BRANCH_OPERATOR_URLS = {
     		"/OperateQueue/**",
+            "/operate-queue/**"
     };
 
     private final String[] CLIENT_URLS = {

@@ -1,5 +1,12 @@
 package io.azuremicroservices.qme.qme.controllers;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+
 import javax.validation.Valid;
 import javax.websocket.server.PathParam;
 
@@ -7,12 +14,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
@@ -62,15 +72,18 @@ public class ManageBranchController {
 	}
 	
 	@PostMapping("/create")
-	public String createBranch(@ModelAttribute @Valid Branch branch, BindingResult bindingResult, RedirectAttributes redirAttr) {
+	public String createBranch(Model model, @ModelAttribute @Valid Branch branch, BindingResult bindingResult, RedirectAttributes redirAttr, @RequestParam("file") MultipartFile branchImage)
+	throws IOException{
+		
 		if (branchService.branchNameExistsForVendor(branch.getName(), branch.getVendor().getId())) {
 			bindingResult.rejectValue("name", "error.name", "Branch name already exists");
 		}
 		if (bindingResult.hasErrors()) {
 			return "manage/branch/create";
-		} 
+		}
 		
-		branchService.createBranch(branch);
+		branchService.createBranch(branchImage, branch);
+		
 		alertService.createAlert(AlertColour.GREEN, "Branch successfully created", redirAttr);
 		return "redirect:/manage/branch/list";
 	}
@@ -91,18 +104,18 @@ public class ManageBranchController {
 	}
 
 	@PostMapping("/update")
-	public String updateBranch(@ModelAttribute @Valid Branch branch, BindingResult bindingResult, @PathParam("branchId") Long branchId, RedirectAttributes redirAttr) {
+	public String updateBranch(@ModelAttribute Branch branch, BindingResult bindingResult, @PathParam("branchId") Long branchId, RedirectAttributes redirAttr, @RequestParam("file") MultipartFile branchImage) throws IOException {
 		if (bindingResult.hasErrors()) {
 			return "manage/branch/update";
 		} 
 
-		branchService.updateBranch(branch);
+		branchService.updateBranch(branchImage, branch);
 		alertService.createAlert(AlertColour.GREEN, "Branch successfully updated", redirAttr);
 		return "redirect:/manage/branch/list";
 	}
 	
 	@GetMapping("/delete/{branchId}")
-	public String deleteBranch(@PathVariable("branchId") Long branchId, Authentication authentication, RedirectAttributes redirAttr) {
+	public String deleteBranch(@PathVariable("branchId") Long branchId, Authentication authentication, RedirectAttributes redirAttr) throws IOException {
 		var branch = branchService.findBranchById(branchId);
 		
 		MyUserDetails user = (MyUserDetails) authentication.getPrincipal();

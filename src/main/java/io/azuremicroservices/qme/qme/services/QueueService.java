@@ -493,26 +493,32 @@ public class QueueService {
 	}
 	
 	public List<BranchQueueDto> generateBranchQueueDtos(Long userId, List<Queue> queues) {
-	List<BranchQueueDto> viewQueues = new ArrayList<>();
-	List<State> activeStates = new ArrayList<>();
-	activeStates.add(State.ACTIVE_QUEUE);
-	activeStates.add(State.ACTIVE_REQUEUE);
-				
-	List<QueuePosition> userQueues = queuePositionRepo.findAllByUser_Id(userId);
+		List<BranchQueueDto> viewQueues = new ArrayList<>();
+		List<State> activeStates = new ArrayList<>();
+		activeStates.add(State.ACTIVE_QUEUE);
+		activeStates.add(State.ACTIVE_REQUEUE);
 
-	for (Queue queue : queues) {
-		Integer inLine = queuePositionRepo.findAllByQueueAndStateIn(queue, activeStates).size();
-		Integer waitingTime = this.estimateQueueTime(queue.getId().toString());
-		boolean userInQueue = userQueues.stream()
-				.filter(queuePosition -> activeStates.contains(queuePosition.getState()))
-				.map(QueuePosition::getQueue)					
-				.collect(Collectors.toList())					
-				.contains(queue);
+		List<QueuePosition> userQueues = queuePositionRepo.findAllByUser_Id(userId);
 
-		viewQueues.add(new BranchQueueDto(queue, inLine, waitingTime, userInQueue));
+		for (Queue queue : queues) {
+			Integer inLine = queuePositionRepo.findAllByQueueAndStateIn(queue, activeStates).size();
+			Integer waitingTime = this.estimateQueueTime(queue.getId().toString());
+			boolean userInQueue = userQueues.stream()
+					.filter(queuePosition -> activeStates.contains(queuePosition.getState()))
+					.map(QueuePosition::getQueue)
+					.collect(Collectors.toList())
+					.contains(queue);
+
+			viewQueues.add(new BranchQueueDto(queue, inLine, waitingTime, userInQueue));
+		}
+
+		return viewQueues;
 	}
 
-	return viewQueues;
-}	
-	
+	public Long findQueueIdByQueuePositionId(String queuePositionId) {
+    	return queuePositionRepo.findById(Long.valueOf(queuePositionId))
+				.get()
+				.getQueue()
+				.getId();
+	}
 }

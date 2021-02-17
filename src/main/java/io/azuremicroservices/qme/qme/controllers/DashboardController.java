@@ -40,10 +40,8 @@ public class DashboardController {
 		List<Branch> branches = permissionService.getBranchPermissions(user.getId());
 		
 		List<Queue> queues = queueService.findAllQueuesInBranches(branches);
-		System.out.println(queues.size());
 		
 		List<QueuePosition> queuePositions = queuePositionService.findAllQueuePositionsInQueues(queues);
-		System.out.println(queuePositions.size());
 
 		Map<String, Integer> queueCountData = queuePositionService.generateQueueCountData(queuePositions);
 		Map<String, Long> estWaitingTimeData = queuePositionService.generateEstimatedWaitingTimeData(queuePositions);

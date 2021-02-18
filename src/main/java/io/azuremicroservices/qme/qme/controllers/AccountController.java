@@ -38,7 +38,7 @@ public class AccountController {
 	@GetMapping("/")
 	public String landingRedirector(Authentication authentication) {
 		if (authentication == null) {
-			return "redirect:/login";
+			return "public-landing-page";
 		} else {
 			return "redirect:/landing-page";
 		}

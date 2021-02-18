@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>qMe - Queue Management System</title>
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+    <style>
+        #container {
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body>
+<div class="m-4">
+    <div class="mx-auto text-center" id="container">
+        <h2 class="font-weight-bold"><img width="65" th:src="@{/images/logos/qMe_logo.png}"> qMe+<sup>+</sup></h2>
+        <div><img class="img-responsive mw-100" th:src="@{/images/logos/queue.png}"></div>
+        <h4 class="mb-4">Our queue management solution <span class="font-weight-bold">alleviates crowding</span> at your premises and enables <span class="font-weight-bold">resource optimisation</span> through queue analytics.</h4>
+        <hr>
+        <div class="row border border-primary">
+            <div class="col">
+                <h5 class="mt-2"><span class="font-weight-bold">Public Users: </span> Login to start queueing</h5>
+                <h5><span class="font-weight-bold">Vendors: </span> Login to perform administrative functions</h5>
+            </div>
+        </div>
+        <div class="row border border-primary border-top-0">
+            <div class="col h5 m-0 d-flex align-items-center">For Public Users & Vendors</div>
+            <div class="col">
+                <a th:href="@{/login}">
+                    <button type="button" class="btn btn-primary rounded h5">
+                        <span class="h5 font-weight-normal">Login</span>
+                    </button>
+                </a>
+            </div>
+        </div>
+        <div class="row border border-primary border-top-0">
+            <div class="col h5 m-0 d-flex align-items-center">For Public Users Only</div>
+            <div class="col">
+                <a th:href="@{/register}">
+                    <button type="button" class="btn btn-light-blue rounded">
+                        <span class="h5 font-weight-normal">Register</span>
+                    </button>
+                </a>
+            </div>
+        </div>
+        <hr>
+        <h4>Drop us an email to get in touch!</h4>
+        <h4>contact@qme.com.sg</h4>
+    </div>
+</div>
+</body>
+</html>

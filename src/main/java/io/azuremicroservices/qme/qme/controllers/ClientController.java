@@ -30,7 +30,6 @@ import io.azuremicroservices.qme.qme.services.AlertService;
 import io.azuremicroservices.qme.qme.services.AlertService.AlertColour;
 import io.azuremicroservices.qme.qme.services.BranchService;
 import io.azuremicroservices.qme.qme.services.NotificationService;
-import io.azuremicroservices.qme.qme.services.QueuePositionService;
 import io.azuremicroservices.qme.qme.services.QueueService;
 import io.azuremicroservices.qme.qme.services.SupportTicketService;
 
@@ -38,18 +37,16 @@ import io.azuremicroservices.qme.qme.services.SupportTicketService;
 public class ClientController {
 
     private final BranchService branchService;
-    private final QueueService queueService;
-    private final QueuePositionService queuePositionService;
+    private final QueueService queueService;    
     private final NotificationService notificationService;
     private final AlertService alertService;
     private final SupportTicketService supportTicketService;
 
     @Autowired
-    public ClientController(BranchService branchService, QueueService queueService, QueuePositionService queuePositionService, 
+    public ClientController(BranchService branchService, QueueService queueService,
     		NotificationService notificationService, SupportTicketService supportTicketService, AlertService alertService) {
         this.branchService = branchService;
-        this.queueService = queueService;
-        this.queuePositionService = queuePositionService;
+        this.queueService = queueService;        
         this.supportTicketService = supportTicketService;
         this.notificationService = notificationService;
         this.alertService = alertService;        

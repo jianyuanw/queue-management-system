@@ -60,7 +60,7 @@
     <tr >
         <td ><span th:text="${position.getQueueNumber()}">QueueNumber</span></td>
         <td ><span >postion</span></td>
-        <td ><span th:if="${position.getState().ordinal()==1}" text="Yes">Yes</span><span th:if="${position.getState().ordinal()!=1}" text="No">No</span></td>
+        <td ><span th:if="${position.getState().ordinal()==1}">Yes</span><span th:if="${position.getState().ordinal()!=1}">No</span></td>
         <td >
             <form method="get" th:action="@{/operate-queue/view-selected-queue/{qId}/{rId}(qId=${queue.getId()},rId=${position.getId()})}" >
                 <input type="submit" value="Reassign Position" />

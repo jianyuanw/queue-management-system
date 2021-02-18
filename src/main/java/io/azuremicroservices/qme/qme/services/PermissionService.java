@@ -1,6 +1,5 @@
 package io.azuremicroservices.qme.qme.services;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

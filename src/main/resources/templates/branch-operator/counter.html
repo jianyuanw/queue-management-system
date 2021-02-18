@@ -28,15 +28,19 @@
 		        <h5><span class="font-weight-bold">Current Queue Length: </span><span th:text="${queueLength}">Queue Length</span></h5>
 		        <h5><span class="font-weight-bold">Served By: </span><span th:text="|${counter.user.firstName} ${counter.user.lastName}|">Branch Operator Name</span></h5>
 		        <h5 class="mb-4"><span class="font-weight-bold">Currently serving: </span><span th:if="${counter.currentlyServingQueueNumber != null}" th:text="${counter.currentlyServingQueueNumber.queueNumber}">Queue Number</span></h5>
-		
-		        <form class="d-inline" th:action="@{/operate-queue/my-counter}" method="post">
-		        	<input type="hidden" name="command" value="next">
-		            <button type="submit" class="btn btn-success rounded">Call next number</button>
-		        </form>
-		        <form class="d-inline" th:if="${counter.currentlyServingQueueNumber != null}" th:action="@{/operate-queue/my-counter}" method="post">
-		        <input type="hidden" name="command" value="no-show">
-		            <button class="btn btn-danger rounded">No show</button>
-		        </form>
+		        <div class="row">
+					<a th:href="@{/operate-queue/no-show-list/{queueId}(queueId=${counter.queue.id})}"><button type="button"  class="btn btn-primary rounded">View No Show</button></a>
+				</div>
+				<div class="row">
+			        <form class="d-inline" th:action="@{/operate-queue/my-counter}" method="post">
+			        	<input type="hidden" name="command" value="next">
+			            <button type="submit" class="btn btn-success rounded">Call next number</button>
+			        </form>
+			        <form class="d-inline" th:if="${counter.currentlyServingQueueNumber != null}" th:action="@{/operate-queue/my-counter}" method="post">
+			        <input type="hidden" name="command" value="no-show">
+			            <button class="btn btn-danger rounded">No show</button>
+			        </form>
+		        </div>
 	        </div>
 	        <div class="col-6">
 				<table class="table table-bordered">

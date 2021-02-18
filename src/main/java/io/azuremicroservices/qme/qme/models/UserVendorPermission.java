@@ -8,6 +8,7 @@ import javax.persistence.ManyToOne;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString.Exclude;
 
 @Entity
 @NoArgsConstructor
@@ -19,9 +20,11 @@ public class UserVendorPermission {
     private Long id;
     
 	@ManyToOne
+	@Exclude
     private Vendor vendor;
     
 	@ManyToOne
+	@Exclude
     private User user;       
     
     public UserVendorPermission(User user, Vendor vendor) {

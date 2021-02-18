@@ -20,6 +20,7 @@ import javax.validation.constraints.Pattern;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString.Exclude;
 
 @Entity
 @NoArgsConstructor
@@ -53,24 +54,31 @@ public class User {
     private boolean blocked;
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    @Exclude
     private Counter counter;
     
     @OneToMany(mappedBy = "user")
+    @Exclude
     private List<SupportTicket> supportTickets;
     
     @OneToMany(mappedBy = "user")
+    @Exclude
     private List<Message> messages;    
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @Exclude
     private List<QueuePosition> queuePositions;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @Exclude
     private List<UserVendorPermission> userVendorPermissions = new ArrayList<>();    
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @Exclude
     private List<UserBranchPermission> userBranchPermissions = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @Exclude
     private List<UserQueuePermission> userQueuePermissions = new ArrayList<>();  
     
     public LinkedHashMap<String, Integer> getRolePerspectives() {

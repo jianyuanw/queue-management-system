@@ -8,6 +8,7 @@ import javax.persistence.ManyToOne;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString.Exclude;
 
 @Entity
 @NoArgsConstructor
@@ -18,9 +19,11 @@ public class UserBranchPermission {
     private Long id;
     
     @ManyToOne
+    @Exclude
     private Branch branch;
     
-    @ManyToOne      
+    @ManyToOne
+    @Exclude
     private User user;
     
     public UserBranchPermission(User user, Branch branch) {

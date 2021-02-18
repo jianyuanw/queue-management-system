@@ -12,6 +12,7 @@ import javax.validation.constraints.Pattern;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString.Exclude;
 
 @Entity
 @NoArgsConstructor
@@ -24,12 +25,15 @@ public class Counter {
 	private Long id;
 	
 	@ManyToOne
+	@Exclude
 	private Queue queue;
 	
 	@OneToOne
+	@Exclude
 	private User user;
 	
 	@OneToOne
+	@Exclude
 	private QueuePosition currentlyServingQueueNumber;
 
 	@NotEmpty(message = "Counter name must not be empty")

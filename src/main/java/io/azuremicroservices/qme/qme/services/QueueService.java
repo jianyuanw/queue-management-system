@@ -457,8 +457,8 @@ public class QueueService {
                 .stream()
                 .map(queuePosition ->
                         Duration.between(
-                                queuePosition.getQueueEndTime(),
-                                queuePosition.getQueueStartTime()))
+                                queuePosition.getQueueStartTime(),
+                                queuePosition.getQueueEndTime()))
                 .reduce((total, current) -> {
                     return total.plus(current);
                 })

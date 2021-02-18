@@ -211,7 +211,56 @@
 			</div>
 		</div>
 	</div>
-
+	
+	<div class="m-4">		
+		<div id="scorecards" class="row my-4">
+			<div id="customers" class="col text-center" th:with="difference=${scorecardList[0].customerCount - scorecardList[1].customerCount}">
+				<span>Total Customers</span>
+				<h1 class="font-weight-bold" th:text="${scorecardList[0].customerCount}"></h1>
+				<h4 th:inline="text">			
+					<i th:if="${difference > 0}" class="fas fa-caret-up text-success fa-lg"></i>
+					<i th:if="${difference < 0}" class="fas fa-caret-down text-danger fa-lg"></i>
+					<i th:if="${difference == 0}" class="fas fa-equals text-light fa-lg"></i>
+					[[${#numbers.formatDecimal((difference * 1.0) / scorecardList[1].customerCount * 100, 1, 2) + '%'}]]
+				</h4>
+				<h6 class="text-dark" th:text="${'vs ' + scorecardList[1].customerCount + ' (prev.)'}"></h6>
+				
+			</div>
+			<div id="noshow" class="col text-center" th:with="difference=${scorecardList[0].noShowCount - scorecardList[1].noShowCount}">
+				<span>Total No Shows</span>
+				<h1 class="font-weight-bold" th:text="${scorecardList[0].noShowCount}"></h1>
+				<h4 th:inline="text">			
+					<i th:if="${difference > 0}" class="fas fa-caret-up text-success fa-lg"></i>
+					<i th:if="${difference < 0}" class="fas fa-caret-down text-danger fa-lg"></i>
+					<i th:if="${difference == 0}" class="fas fa-equals text-light fa-lg"></i>
+					[[${#numbers.formatDecimal((difference * 1.0) / scorecardList[1].noShowCount * 100, 1, 2) + '%'}]]
+				</h4>
+				<h6 class="text-dark" th:text="${'vs ' + scorecardList[1].noShowCount + ' (prev.)'}"></h6>				
+			</div>
+			<div id="leftqueue" class="col text-center" th:with="difference=${scorecardList[0].leftQueueCount - scorecardList[1].leftQueueCount}">
+				<span>Total Left Queue</span>
+				<h1 class="font-weight-bold" th:text="${scorecardList[0].leftQueueCount}"></h1>
+				<h4 th:inline="text">			
+					<i th:if="${difference > 0}" class="fas fa-caret-up text-success fa-lg"></i>
+					<i th:if="${difference < 0}" class="fas fa-caret-down text-danger fa-lg"></i>
+					<i th:if="${difference == 0}" class="fas fa-equals text-light fa-lg"></i>
+					[[${#numbers.formatDecimal((difference * 1.0) / scorecardList[1].leftQueueCount * 100, 1, 2) + '%'}]]
+				</h4>
+				<h6 class="text-dark" th:text="${'vs ' + scorecardList[1].leftQueueCount + ' (prev.)'}"></h6>				
+			</div>
+			<div id="waitingtime" class="col text-center" th:with="difference=${scorecardList[0].maxWaitingTime - scorecardList[1].maxWaitingTime}">
+				<span>Max Waiting Time</span>
+				<h1 class="font-weight-bold" th:text="${scorecardList[0].maxWaitingTime / 60 + ' min'}"></h1>
+				<h4 th:inline="text">			
+					<i th:if="${difference > 0}" class="fas fa-caret-up text-success fa-lg"></i>
+					<i th:if="${difference < 0}" class="fas fa-caret-down text-danger fa-lg"></i>
+					<i th:if="${difference == 0}" class="fas fa-equals text-light fa-lg"></i>
+					[[${#numbers.formatDecimal((difference * 1.0) / scorecardList[1].maxWaitingTime * 100, 1, 2) + '%'}]]
+				</h4>
+				<h6 class="text-dark" th:text="${'vs ' + scorecardList[1].maxWaitingTime / 60 + ' min (prev.)'}"></h6>				
+			</div>									
+		</div>
+	</div>
 	 
 	<!--  <div th:each="forecastEWTDataMonthlys:${forecastEWTDataHourly}"><p th:text="${forecastEWTDataMonthlys}"></p></div>
 	<div th:each="forecastEWTDataMonthlys:${forecastEWTDataMonthly}"><p th:text="${forecastEWTDataMonthlys}"></p></div>-->

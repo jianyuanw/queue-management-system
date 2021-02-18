@@ -15,6 +15,7 @@ import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
 import io.azuremicroservices.qme.qme.models.Branch;
 import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.models.QueuePosition;
+import io.azuremicroservices.qme.qme.models.ScorecardDto;
 import io.azuremicroservices.qme.qme.services.PermissionService;
 import io.azuremicroservices.qme.qme.services.QueuePositionService;
 import io.azuremicroservices.qme.qme.services.QueueService;
@@ -71,6 +72,10 @@ public class DashboardController {
 		model.addAttribute("forecastQcDataHourly", forecastQcDataHourly);
 		model.addAttribute("forecastEWTDataHourly", forecastEWTDataHourly);
 
+		List<ScorecardDto> scorecardData = queuePositionService.generateScoreCardData(queuePositions);
+		
+		model.addAttribute("scorecardList", scorecardData);
+		
 		// Under consideration
 		/*
 		 * var forecastQcDataDaily = qps.stream() .filter(qp -> qp.getQueueStartTime()

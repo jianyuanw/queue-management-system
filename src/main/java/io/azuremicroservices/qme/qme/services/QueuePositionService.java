@@ -1,5 +1,7 @@
 package io.azuremicroservices.qme.qme.services;
 
+import java.text.DecimalFormat;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -21,6 +23,7 @@ import io.azuremicroservices.qme.qme.models.Counter;
 import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.models.QueuePosition;
 import io.azuremicroservices.qme.qme.models.QueuePosition.State;
+import io.azuremicroservices.qme.qme.models.ScorecardDto;
 import io.azuremicroservices.qme.qme.repositories.CounterRepository;
 import io.azuremicroservices.qme.qme.repositories.QueuePositionRepository;
 
@@ -161,7 +164,7 @@ public class QueuePositionService {
 		
 		for (QueuePosition qp : queuePositions) {
 			if (qp.getQueueEndTime() != null) {
-				long diff = ChronoUnit.MINUTES.between(qp.getQueueEndTime(), qp.getQueueStartTime());
+				long diff = ChronoUnit.MINUTES.between(qp.getQueueStartTime(), qp.getQueueEndTime());
 				estWaitingTimeData.put(
 						qp.getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'+0800'")),
 						diff);
@@ -210,7 +213,7 @@ public class QueuePositionService {
 						qp -> ((QueuePosition) qp).getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM"))
 								+ "-01'T'00:00:00'+0800'",
 						Collectors.averagingLong(
-								qp -> (ChronoUnit.MINUTES.between(qp.getQueueEndTime(), qp.getQueueStartTime())))));
+								qp -> (ChronoUnit.MINUTES.between(qp.getQueueStartTime(), qp.getQueueEndTime())))));
 		
 		for (int i = 1; i <= monthBoundary; i++) {
 			LocalDate checkMonth = currentDate.minusMonths(i);
@@ -254,7 +257,7 @@ public class QueuePositionService {
 						qp -> ((QueuePosition) qp).getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 								+ "'T'00:00:00'+0800'",
 						Collectors.averagingLong(
-								qp -> (ChronoUnit.MINUTES.between(qp.getQueueEndTime(), qp.getQueueStartTime())))));
+								qp -> (ChronoUnit.MINUTES.between(qp.getQueueStartTime(), qp.getQueueEndTime())))));
 		
 		for (int i = 1; i <= dayBoundary; i++) {
 			LocalDateTime checkDay = currentDate.minusDays(i);
@@ -273,7 +276,7 @@ public class QueuePositionService {
 		
 		Map<String, Long> forecastHourlyQueueCountData = queuePositions.stream()
 			.filter(qp -> qp.getQueueStartTime().isAfter(currentDate.atTime(currentDateTime.minusHours(hourBoundary).getHour(), 0, 0)) &&
-						qp.getQueueStartTime().isBefore(currentDate.atTime(currentDateTime.minusHours(1).getHour(), 59, 99)))
+						qp.getQueueStartTime().isBefore(currentDate.atTime(currentDateTime.minusHours(1).getHour(), 59, 59)))
 			.collect(Collectors.groupingBy(qp -> ((QueuePosition) qp).getQueueStartTime()
 					.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'''T'''HH")) + ":00:00'+0800'",
 							Collectors.counting()));
@@ -295,18 +298,17 @@ public class QueuePositionService {
 		
 		var forecastEWTDataHourly = queuePositions.stream()
 				.filter(qp -> qp.getQueueStartTime().isAfter(currentDate.atTime(currentDateTime.minusHours(50000).getHour(), 0, 0)) &&
-						qp.getQueueStartTime().isBefore(currentDate.atTime(currentDateTime.minusHours(1).getHour(), 59, 99)))
+						qp.getQueueStartTime().isBefore(currentDate.atTime(currentDateTime.minusHours(1).getHour(), 59, 59)))
 				.collect(Collectors.groupingBy(
 						qp -> ((QueuePosition) qp).getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'''T'''HH"))
 								+ ":00:00'+0800'",
 						Collectors.averagingLong(
-								qp -> (ChronoUnit.MINUTES.between(qp.getQueueEndTime(), qp.getQueueStartTime())))));
+								qp -> (ChronoUnit.MINUTES.between(qp.getQueueStartTime(), qp.getQueueEndTime())))));
 
 		for (int i = 1; i <= hourBoundary; i++) {
 			
 			LocalDateTime checkHour = currentDateTime.minusHours(i);
 			String compareHour = checkHour.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'''T'''HH")) + ":00:00'+0800'";
-			System.out.println("Comparehour " + compareHour);
 			if (!forecastEWTDataHourly.containsKey(compareHour)) {
 				forecastEWTDataHourly.put(compareHour, 0.0);
 			}
@@ -357,5 +359,67 @@ public class QueuePositionService {
 	
 	public List<QueuePosition> findAllQueuePositionsByBranchId(Long branchId) {
 		return queuePositionRepo.findAllByQueue_Branch_Id(branchId);
+	}
+
+	public List<ScorecardDto> generateScoreCardData(List<QueuePosition> queuePositions) {
+		final int FIXED_MONTH = 2;
+		
+		LocalDate currentDate = LocalDate.now();
+		List<String> months = new ArrayList<>();
+		List<ScorecardDto> scorecardList = new ArrayList<>();
+		
+		for (int i = FIXED_MONTH; i >= 1; i--) {
+			months.add(currentDate.minusMonths(i).format(DateTimeFormatter.ofPattern("MMM yyyy")));
+		}
+		
+		List<QueuePosition> timeFilteredPositions = queuePositions.stream()
+				.filter(qp -> qp.getQueueStartTime().isAfter(currentDate.minusMonths(FIXED_MONTH).with(TemporalAdjusters.firstDayOfMonth()).atStartOfDay()) &&
+						qp.getQueueStartTime().isBefore(currentDate.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth()).atTime(LocalTime.MAX)))
+				.collect(Collectors.toList());				
+		
+		Map<String, Long> totalQueues = timeFilteredPositions.stream()
+				.collect(Collectors.groupingBy(qp -> ((QueuePosition) qp).getQueueStartTime()
+						.format(DateTimeFormatter.ofPattern("MMM yyyy")),
+								Collectors.counting()
+						));
+				
+		
+		Map<String, Long> totalNoShows = timeFilteredPositions.stream()
+				.filter(qp -> qp.getState() == State.INACTIVE_NO_SHOW)
+				.collect(Collectors.groupingBy(qp -> ((QueuePosition) qp).getQueueStartTime()
+						.format(DateTimeFormatter.ofPattern("MMM yyyy")),
+								Collectors.counting()
+						));
+		
+		Map<String, Long> totalLeft = timeFilteredPositions.stream()
+				.filter(qp -> qp.getState() == State.INACTIVE_LEFT)
+				.collect(Collectors.groupingBy(qp -> ((QueuePosition) qp).getQueueStartTime()
+						.format(DateTimeFormatter.ofPattern("MMM yyyy")),
+								Collectors.counting()
+						));			
+		
+		Map<String, Long> maxWaitingTime = new HashMap<>();
+		
+		for (QueuePosition qp : timeFilteredPositions) {
+			String group = qp.getQueueStartTime().format(DateTimeFormatter.ofPattern("MMM yyyy"));
+			Long secondsDuration = Duration.between(qp.getQueueStartTime(), qp.getQueueEndTime()).getSeconds();
+			if (maxWaitingTime.containsKey(group) && maxWaitingTime.get(group) < secondsDuration) {
+				maxWaitingTime.put(group, secondsDuration);
+			} else if (!maxWaitingTime.containsKey(group)) {
+				maxWaitingTime.put(group, secondsDuration);
+			}
+		}
+		
+		for (String month : months) {
+			ScorecardDto scorecard = new ScorecardDto();
+			scorecard.setCustomerCount(totalQueues.containsKey(month) ? totalQueues.get(month) : 0l);
+			scorecard.setNoShowCount(totalNoShows.containsKey(month) ? totalNoShows.get(month) : 0L);
+			scorecard.setLeftQueueCount(totalLeft.containsKey(month) ? totalLeft.get(month) : 0L);
+			scorecard.setMaxWaitingTime(maxWaitingTime.containsKey(month) ? maxWaitingTime.get(month) : 0L);
+			scorecardList.add(scorecard);
+		}
+		
+		return scorecardList;
+		
 	}
 }

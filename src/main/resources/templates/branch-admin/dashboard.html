@@ -56,7 +56,7 @@
 									</ul>
 									<div class="tab-content" style="padding: 15px;">
 										<div class="tab-pane active" id="OneA">
-											<select onchange="updateQueueCountYear(this)">
+											<select class="my-2" onchange="updateQueueCountYear(this)">
 												<option th:each="year : ${intervalMap.get('yearInterval')}" 
 													th:value="${#temporals.format(year, 'yyyy-MM-dd''T''HH:mm:ss''+0800''')}"
 													th:text="${#temporals.format(year, 'yyyy')}"></option>
@@ -79,7 +79,7 @@
 									</ul>
 									<div class="tab-content" style="padding: 15px;">
 										<div class="tab-pane active" id="TwoA">
-											<select onchange="updateMonth(this)" th:with="months=${intervalMap.get('monthInterval')}">
+											<select class="my-2" onchange="updateMonth(this)" th:with="months=${intervalMap.get('monthInterval')}">
 												<option th:each="month : ${intervalMap.get('monthInterval')}" 
 													th:value="${#temporals.format(month, 'yyyy-MM-dd''T''HH:mm:ss''+0800''')}"
 													th:text="${#temporals.format(month, 'MMM yyyy')}"></option>											
@@ -102,7 +102,7 @@
 									</ul>
 									<div class="tab-content" style="padding: 15px;">
 										<div class="tab-pane active" id="ThreeA">
-											<select onchange="updateDate(this)">
+											<select class="my-2" onchange="updateDate(this)">
 												<option th:each="day : ${intervalMap.get('dayInterval')}" 
 													th:value="${#temporals.format(day, 'yyyy-MM-dd''T''HH:mm:ss''+0800''')}"
 													th:text="${#temporals.format(day, 'dd MMM yyyy')}"></option>
@@ -286,7 +286,7 @@
 		$(document).ready(function() {
 
 			google.charts.load('current', {
-				packages : [ 'corechart', 'bar' ]
+				packages : [ 'corechart', 'bar', 'line' ]
 			});
 			google.charts.setOnLoadCallback(function() {
 				drawActualMonthlyChart(new Date());
@@ -305,14 +305,14 @@
 				
 				let elements = document.getElementsByClassName('tab-pane');
 				let activeElements = ["One", "OneA", "TwoA", "ThreeA", "Four", "FourA", "FiveA", "SixA"]
-				
+				let inactiveElements = ["Two", "Three", "Five", "Six"];
 				for (let i = 0; i < elements.length; i++) {
 					
 					let element = elements[i];
 					if (!activeElements.includes(element.id)) {
 						element.classList.remove('active');
 					}
-				}				
+				}	
 			});
 	
 
@@ -386,11 +386,11 @@
 				'type' : 'number'
 			} ]);
 
+			
 			var options = {
 				title : 'Queue Stats',
 				hAxis : {
 					title : 'Month',
-
 				},
 				vAxis : {
 					title : 'Queue Count'
@@ -400,9 +400,9 @@
 					height : "80%"
 				}
 			};
-			var chart = new google.visualization.ColumnChart(document
-					.getElementById('monthly_actual_div'));
-			chart.draw(grouped_data, options);
+
+			var chart = new google.charts.Bar(document.getElementById('monthly_actual_div'));
+			chart.draw(grouped_data, google.charts.Bar.convertOptions(options));
 		}
 
 		function drawActualDailyChart(chosenDate) {
@@ -427,14 +427,6 @@
 								}
 							} ]));
 
-			let hAxisTicks = [];
-			let dateRange = view.getColumnRange(0);
-			const oneDay = (1000 * 60 * 60 * 24);
-			for (var i = dateRange.min.getTime(); i <= dateRange.max.getTime(); i = i
-					+ oneDay) {
-				hAxisTicks.push(new Date(i));
-			}
-
 			var grouped_data = google.visualization.data.group(view, [ {
 				'column' : 0,
 				'modifier' : function(val) {
@@ -453,7 +445,6 @@
 				hAxis : {
 					title : 'Day',
 					format : 'dd MMM',
-					ticks : hAxisTicks
 				},
 				vAxis : {
 					title : 'Queue Count'
@@ -463,9 +454,9 @@
 					height : "80%"
 				}
 			};
-			var chart = new google.visualization.ColumnChart(document
-					.getElementById('daily_actual_div'));
-			chart.draw(grouped_data, options);
+			
+			var chart = new google.charts.Bar(document.getElementById('daily_actual_div'));			
+			chart.draw(grouped_data, google.charts.Bar.convertOptions(options));	
 		}
 
 		function drawActualHourlyChart(chosenDate) {
@@ -503,13 +494,12 @@
 				'column' : 1,
 				'aggregation' : google.visualization.data.sum,
 				'type' : 'number'
-			} ]);
-
+			} ]);	
+			
 			var options = {
 				title : 'Queue Stats',
 				hAxis : {
 					title : 'Hour',
-
 				},
 				vAxis : {
 					title : 'Queue Count'
@@ -519,9 +509,9 @@
 					height : "80%"
 				}
 			};
-			var chart = new google.visualization.ColumnChart(document
-					.getElementById('hourly_actual_div'));
-			chart.draw(grouped_data, options);
+			
+			var chart = new google.charts.Bar(document.getElementById('hourly_actual_div'));
+			chart.draw(grouped_data, google.charts.Bar.convertOptions(options));
 		}
 
 		//Est Time Charts here
@@ -567,9 +557,8 @@
 					height : "80%"
 				}
 			};
-			var chart = new google.visualization.ColumnChart(document
-					.getElementById('estTime_monthly_actual_div'));
-			chart.draw(grouped_data, options);
+			var chart = new google.charts.Bar(document.getElementById('estTime_monthly_actual_div'));
+			chart.draw(grouped_data, google.charts.Bar.convertOptions(options));
 		}
 
 		function drawEstTimeActualDailyChart(chosenDate) {
@@ -594,13 +583,6 @@
 								}
 							} ]));
 
-			let hAxisTicks = [];
-			let dateRange = view.getColumnRange(0);
-			const oneDay = (1000 * 60 * 60 * 24);
-			for (var i = dateRange.min.getTime(); i <= dateRange.max.getTime(); i = i
-					+ oneDay) {
-				hAxisTicks.push(new Date(i));
-			}
 
 			var grouped_data = google.visualization.data.group(view, [ {
 				'column' : 0,
@@ -620,7 +602,6 @@
 				hAxis : {
 					title : 'Day',
 					format : 'dd MMM',
-					ticks : hAxisTicks
 
 				},
 				vAxis : {
@@ -631,9 +612,8 @@
 					height : "80%"
 				}
 			};
-			var chart = new google.visualization.ColumnChart(document
-					.getElementById('estTime_daily_actual_div'));
-			chart.draw(grouped_data, options);
+			var chart = new google.charts.Bar(document.getElementById('estTime_daily_actual_div'));
+			chart.draw(grouped_data, google.charts.Bar.convertOptions(options));
 		}
 
 		function drawEstTimeActualHourlyChart(chosenDate) {
@@ -687,9 +667,8 @@
 					height : "80%"
 				}
 			};
-			var chart = new google.visualization.ColumnChart(document
-					.getElementById('estTime_hourly_actual_div'));
-			chart.draw(grouped_data, options);
+			var chart = new google.charts.Bar(document.getElementById('estTime_hourly_actual_div'));
+			chart.draw(grouped_data, google.charts.Bar.convertOptions(options));
 		}
 
 		//Draw forecasting chart
@@ -747,9 +726,8 @@
 					height : "80%"
 				}
 			};
-			var chart = new google.visualization.ColumnChart(document
-					.getElementById('monthly_actual_forecast_div'));
-			chart.draw(final_data, options);
+			var chart = new google.charts.Bar(document.getElementById('monthly_actual_forecast_div'));
+			chart.draw(final_data, google.charts.Bar.convertOptions(options));
 		}
 
 		function drawEstTimeMonthlyForecastChart() {
@@ -808,9 +786,8 @@
 					height : "80%"
 				}
 			};
-			var chart = new google.visualization.ColumnChart(document
-					.getElementById('monthly_ewt_forecast_div'));
-			chart.draw(final_data, options);
+			var chart = new google.charts.Bar(document.getElementById('monthly_ewt_forecast_div'));
+			chart.draw(final_data, google.charts.Bar.convertOptions(options));
 		}
 
 		
@@ -870,9 +847,8 @@
 					height : "80%"
 				}
 			};
-			var chart = new google.visualization.ColumnChart(document
-					.getElementById('daily_actual_forecast_div'));
-			chart.draw(final_data, options);
+			var chart = new google.charts.Bar(document.getElementById('daily_actual_forecast_div'));
+			chart.draw(final_data, google.charts.Bar.convertOptions(options));
 		}
 		
 		function drawEstTimeDailyForecastChart() {
@@ -931,9 +907,8 @@
 					height : "80%"
 				}
 			};
-			var chart = new google.visualization.ColumnChart(document
-					.getElementById('daily_ewt_forecast_div'));
-			chart.draw(final_data, options);
+			var chart = new google.charts.Bar(document.getElementById('daily_ewt_forecast_div'));
+			chart.draw(final_data, google.charts.Bar.convertOptions(options));
 		}
 		 
 		function drawActualHourlyForecastChart() {
@@ -990,9 +965,8 @@
 					height : "80%"
 				}
 			};
-			var chart = new google.visualization.ColumnChart(document
-					.getElementById('hourly_actual_forecast_div'));
-			chart.draw(final_data, options);
+			var chart = new google.charts.Bar(document.getElementById('hourly_actual_forecast_div'));
+			chart.draw(final_data, google.charts.Bar.convertOptions(options));
 		}
 		
 		function drawEstTimeHourlyForecastChart() {
@@ -1050,9 +1024,8 @@
 					height : "80%"
 				}
 			};
-			var chart = new google.visualization.ColumnChart(document
-					.getElementById('hourly_ewt_forecast_div'));
-			chart.draw(final_data, options);
+			var chart = new google.charts.Bar(document.getElementById('hourly_ewt_forecast_div'));
+			chart.draw(final_data, google.charts.Bar.convertOptions(options));
 		}
 	</script>
 

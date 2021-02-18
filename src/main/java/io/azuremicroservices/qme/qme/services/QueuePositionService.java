@@ -6,10 +6,16 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.azuremicroservices.qme.qme.models.Counter;
 import io.azuremicroservices.qme.qme.models.Queue;
@@ -28,6 +34,33 @@ public class QueuePositionService {
         this.counterRepo = counterRepo;
     }
 
+    @Transactional
+    public boolean reassignPosition(Long counterId, Long queuePositionId, Long userId, Integer position) {
+    	var counter = counterRepo.findById(counterId);
+    	var queuePosition = queuePositionRepo.findById(queuePositionId);
+    	
+    	if (counter.isEmpty() || queuePosition.isEmpty() || 
+    			counter.get().getQueue() != queuePosition.get().getQueue() ||
+    			counter.get().getUser().getId() != userId) {
+    		return false;
+    	}
+    	
+    	QueuePosition qp = queuePosition.get();
+    	List<State> activeStates = QueuePosition.getQueuingStates();
+    	Integer newPriority = 0;
+    	
+    	QueuePosition targetPosition = queuePositionRepo.findTopByQueue_IdAndStateInAndPositionAndQueueStartTimeGreaterThanEqualOrderByPriorityDesc(qp.getQueue().getId(), activeStates, position, LocalDate.now().atStartOfDay());
+    	
+    	if (targetPosition != null) {
+    		newPriority = targetPosition.getPriority() + 1;
+    	}
+
+    	qp.setPosition(position);
+    	qp.setPriority(newPriority);
+    	queuePositionRepo.save(qp);
+    	return true;
+    }
+    
     public void updateReassignedIdPriority(Long reassignedId) {
         QueuePosition qp = queuePositionRepo.findById(reassignedId).get();
         Queue q = qp.getQueue();

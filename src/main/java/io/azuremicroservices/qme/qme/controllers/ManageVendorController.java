@@ -18,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import io.azuremicroservices.qme.qme.models.Vendor;
-import io.azuremicroservices.qme.qme.services.AccountService;
 import io.azuremicroservices.qme.qme.services.AlertService;
 import io.azuremicroservices.qme.qme.services.AlertService.AlertColour;
 import io.azuremicroservices.qme.qme.services.VendorService;
@@ -27,13 +26,11 @@ import io.azuremicroservices.qme.qme.services.VendorService;
 @RequestMapping("manage/vendor")
 public class ManageVendorController {
 	private final VendorService vendorService;
-	private final AccountService accountService;
 	private final AlertService alertService;
 	
 	@Autowired
-	public ManageVendorController(VendorService vendorService, AccountService accountService, AlertService alertService) {
+	public ManageVendorController(VendorService vendorService, AlertService alertService) {
 		this.vendorService = vendorService;
-		this.accountService = accountService;
 		this.alertService = alertService;
 	}
 	

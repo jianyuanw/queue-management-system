@@ -2,11 +2,10 @@ package io.azuremicroservices.qme.qme.repositories;
 
 import java.util.List;
 
-import io.azuremicroservices.qme.qme.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import io.azuremicroservices.qme.qme.models.Counter;
-import io.azuremicroservices.qme.qme.models.Queue;
+import io.azuremicroservices.qme.qme.models.User;
 
 public interface CounterRepository extends JpaRepository<Counter,Long> {
 	

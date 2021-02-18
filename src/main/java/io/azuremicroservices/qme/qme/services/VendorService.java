@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import io.azuremicroservices.qme.qme.models.Branch;
 import io.azuremicroservices.qme.qme.models.Vendor;
 import io.azuremicroservices.qme.qme.repositories.VendorRepository;
 

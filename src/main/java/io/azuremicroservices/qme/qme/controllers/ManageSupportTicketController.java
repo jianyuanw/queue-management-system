@@ -2,6 +2,7 @@ package io.azuremicroservices.qme.qme.controllers;
 
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,19 +13,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
 import io.azuremicroservices.qme.qme.models.SupportTicket;
-import io.azuremicroservices.qme.qme.models.User;
-import io.azuremicroservices.qme.qme.services.SupportTicketService;
+import io.azuremicroservices.qme.qme.services.AlertService;
 import io.azuremicroservices.qme.qme.services.AlertService.AlertColour;
+import io.azuremicroservices.qme.qme.services.SupportTicketService;
 
 @Controller
 @RequestMapping("/manage/support-ticket")
 public class ManageSupportTicketController {
 	private final SupportTicketService supportTicketService;
 	
-	public ManageSupportTicketController(SupportTicketService supportTicketService) {
+	private final AlertService alertService;
+	
+	@Autowired
+	public ManageSupportTicketController(SupportTicketService supportTicketService, AlertService alertService) {
 		this.supportTicketService = supportTicketService;
+		this.alertService = alertService;
 	}
 	
 	@GetMapping("/list")
@@ -54,13 +58,13 @@ public class ManageSupportTicketController {
 		var supportTicket = supportTicketService.findSupportTicket(supportTicketId);
 
 		if (supportTicket.isEmpty()) {
-			//alertService.createAlert(AlertColour.YELLOW, "App Admin Account not found", redirAttr);
+			alertService.createAlert(AlertColour.YELLOW, "Support ticket not found", redirAttr);
 			return "redirect:/manage/support-ticket/list";			
 		} else {
 			supportTicketService.deleteSupportTicket(supportTicket.get());
 		}
 		
-		//alertService.createAlert(AlertColour.GREEN, "App Admin Account successfully deleted", redirAttr);
+		alertService.createAlert(AlertColour.GREEN, "Support ticket successfully deleted", redirAttr);
 		return "redirect:/manage/support-ticket/list";
 	}
 	

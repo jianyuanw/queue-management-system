@@ -3,21 +3,21 @@ package io.azuremicroservices.qme.qme.configurations.security;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import io.azuremicroservices.qme.qme.models.Branch;
-import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.models.User;
 import io.azuremicroservices.qme.qme.models.User.Role;
-import io.azuremicroservices.qme.qme.models.Vendor;
 
 public class MyUserDetails implements UserDetails {
 
-    private User user;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5507119240147437442L;
+	private User user;
 
     public MyUserDetails(User user) {
         this.user = user;

@@ -34,7 +34,7 @@
 
 			<!-- Queue Count Chart here -->
 
-			<div class="col-6">
+			<div class="col">
 				<div class="col-md-12">
 					<div class="tabbable">
 						<ul class="nav nav-tabs" data-tabs="tabs">
@@ -61,10 +61,10 @@
 													th:value="${#temporals.format(year, 'yyyy-MM-dd''T''HH:mm:ss''+0800''')}"
 													th:text="${#temporals.format(year, 'yyyy')}"></option>
 											</select>
-											<div id="monthly_actual_div"></div>
+											<div id="monthly_actual_div" style="height:350px;width:100%"></div>
 										</div>
 										<div class="tab-pane" id="OneB">
-											<div id="monthly_actual_forecast_div"></div>
+											<div  id="monthly_actual_forecast_div"></div>
 										</div>
 									</div>
 								</div>
@@ -87,7 +87,7 @@
 											<div id="daily_actual_div"></div>
 										</div>
 										<div class="tab-pane" id="TwoB">
-											<div id="daily_actual_forecast_div"></div>
+											<div style="height:350px;width:100%" id="daily_actual_forecast_div"></div>
 										</div>
 									</div>
 								</div>
@@ -119,12 +119,14 @@
 					</div>
 				</div>
 			</div>
+		</div>
 
 
 
 			<!-- Estimated Waiting Time Chart here -->
 
-			<div class="col-6">
+		<div class="row">
+			<div class="col">
 				<div class="col-md-12">
 					<div class="tabbable">
 						<ul class="nav nav-tabs" data-tabs="tabs">

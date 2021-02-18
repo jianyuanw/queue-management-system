@@ -21,7 +21,7 @@
 	
 		<div class = "row">
 			<form class="text-center" method="get" th:action="@{/dashboard}">
-				<select  class="form-select form-control" onchange="this.form.submit()" name="branchId">
+				<select  class="form-select form-control my-2" onchange="this.form.submit()" name="branchId">
 					<option value="">Select A Branch</option>
 					<option th:value="-1">All Branches</option>
 					<option th:each="branch:${branches}" th:text="${branch.name}" th:value="${branch.id}"

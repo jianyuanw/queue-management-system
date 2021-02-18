@@ -42,11 +42,11 @@ public class DashboardController {
 		
 		List<Queue> queues = null;
 		
-		if (branchId != null) {
-			queueService.findAllQueuesByBranch_Id(branchId);
-			model.addAttribute("selectedBranch", branchId);
+		if (branchId == null || branchId == -1L) {
+			queues = queueService.findAllQueuesInBranches(branches);
 		} else {
-			queueService.findAllQueuesInBranches(branches);
+			queues = queueService.findAllQueuesByBranch_Id(branchId);
+			model.addAttribute("selectedBranch", branchId);			
 		}
 		
 		List<QueuePosition> queuePositions = queuePositionService.findAllQueuePositionsInQueues(queues);

@@ -11,6 +11,7 @@ import javax.persistence.Table;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString.Exclude;
 
 @Entity
 @NoArgsConstructor
@@ -28,6 +29,7 @@ public class Message {
 	private LocalDateTime timeOfMessage;
 	
 	@ManyToOne
+	@Exclude
 	private User user;
 	
 	private MessageState state;

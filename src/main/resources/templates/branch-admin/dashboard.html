@@ -282,6 +282,8 @@
 		var forecast_ewt_data_daily = /*[[${forecastEWTDataDaily}]]*/'noValue';
 		var forecast_qc_data_hourly = /*[[${forecastQcDataHourly}]]*/'noValue';
 		var forecast_ewt_data_hourly = /*[[${forecastEWTDataHourly}]]*/'noValue';
+		var loaded = false;
+		var loaded_graphs = 0;
 
 		$(document).ready(function() {
 
@@ -303,54 +305,60 @@
 				drawActualHourlyForecastChart();
 				drawEstTimeHourlyForecastChart();
 				
-				let elements = document.getElementsByClassName('tab-pane');
-				let activeElements = ["One", "OneA", "TwoA", "ThreeA", "Four", "FourA", "FiveA", "SixA"]
-				let inactiveElements = ["Two", "Three", "Five", "Six"];
-				for (let i = 0; i < elements.length; i++) {
-					
-					let element = elements[i];
-					if (!activeElements.includes(element.id)) {
-						element.classList.remove('active');
-					}
-				}	
+	
 			});
 	
 
 		});
 
 		//Load filter options
+		function checkLoad() {
+			loaded_graphs += 1;
+			if (loaded_graphs == 12) {
+				let elements = document.getElementsByClassName('tab-pane');
+				let activeElements = ["One", "OneA", "TwoA", "ThreeA", "Four", "FourA", "FiveA", "SixA"]
+				for (let i = 0; i < elements.length; i++) {					
+					let element = elements[i];
+					if (!activeElements.includes(element.id)) {
+						element.classList.remove('active');
+					}
+				}				
+				loaded = true;
+			}
+		}
+		
 		function updateQueueCountYear(element) {
-			if (document.readyState === 'complete') {
+			if (document.readyState === 'complete' && loaded) {
 				drawActualMonthlyChart(new Date(element.value));
 			}
 		}
 
 		function updateMonth(element) {
-			if (document.readyState === 'complete') {
+			if (document.readyState === 'complete' && loaded) {
 				drawActualDailyChart(new Date(element.value));
 			}
 		}
 
 		function updateDate(element) {
-			if (document.readyState === 'complete') {
+			if (document.readyState === 'complete' && loaded) {
 				drawActualHourlyChart(new Date(element.value));
 			}
 		}
 
 		function updateEstTimeYear(element) {
-			if (document.readyState === 'complete') {
+			if (document.readyState === 'complete' && loaded) {
 				drawEstTimeActualMonthlyChart(new Date(element.value));
 			}
 		}
 
 		function updateEstTimeMonth(element) {
-			if (document.readyState === 'complete') {
+			if (document.readyState === 'complete' && loaded) {
 				drawEstTimeActualDailyChart(new Date(element.value));
 			}
 		}
 
 		function updateEstTimeDate(element) {
-			if (document.readyState === 'complete') {
+			if (document.readyState === 'complete' && loaded) {
 				drawEstTimeActualHourlyChart(new Date(element.value));
 			}
 		}
@@ -402,6 +410,11 @@
 			};
 
 			var chart = new google.charts.Bar(document.getElementById('monthly_actual_div'));
+			
+			if (!loaded) {
+				google.visualization.events.addListener(chart, 'ready', checkLoad);
+			}
+			
 			chart.draw(grouped_data, google.charts.Bar.convertOptions(options));
 		}
 
@@ -455,7 +468,12 @@
 				}
 			};
 			
-			var chart = new google.charts.Bar(document.getElementById('daily_actual_div'));			
+			var chart = new google.charts.Bar(document.getElementById('daily_actual_div'));	
+			
+			if (!loaded) {
+				google.visualization.events.addListener(chart, 'ready', checkLoad);	
+			}			
+			
 			chart.draw(grouped_data, google.charts.Bar.convertOptions(options));	
 		}
 
@@ -511,6 +529,11 @@
 			};
 			
 			var chart = new google.charts.Bar(document.getElementById('hourly_actual_div'));
+			
+			if (!loaded) {
+				google.visualization.events.addListener(chart, 'ready', checkLoad);	
+			}
+			
 			chart.draw(grouped_data, google.charts.Bar.convertOptions(options));
 		}
 
@@ -558,6 +581,11 @@
 				}
 			};
 			var chart = new google.charts.Bar(document.getElementById('estTime_monthly_actual_div'));
+			
+			if (!loaded) {
+				google.visualization.events.addListener(chart, 'ready', checkLoad);	
+			}
+			
 			chart.draw(grouped_data, google.charts.Bar.convertOptions(options));
 		}
 
@@ -613,6 +641,11 @@
 				}
 			};
 			var chart = new google.charts.Bar(document.getElementById('estTime_daily_actual_div'));
+			
+			if (!loaded) {
+				google.visualization.events.addListener(chart, 'ready', checkLoad);	
+			}
+			
 			chart.draw(grouped_data, google.charts.Bar.convertOptions(options));
 		}
 
@@ -668,6 +701,11 @@
 				}
 			};
 			var chart = new google.charts.Bar(document.getElementById('estTime_hourly_actual_div'));
+			
+			if (!loaded) {
+				google.visualization.events.addListener(chart, 'ready', checkLoad);	
+			}
+			
 			chart.draw(grouped_data, google.charts.Bar.convertOptions(options));
 		}
 
@@ -727,6 +765,11 @@
 				}
 			};
 			var chart = new google.charts.Bar(document.getElementById('monthly_actual_forecast_div'));
+			
+			if (!loaded) {
+				google.visualization.events.addListener(chart, 'ready', checkLoad);	
+			}
+			
 			chart.draw(final_data, google.charts.Bar.convertOptions(options));
 		}
 
@@ -787,6 +830,11 @@
 				}
 			};
 			var chart = new google.charts.Bar(document.getElementById('monthly_ewt_forecast_div'));
+			
+			if (!loaded) {
+				google.visualization.events.addListener(chart, 'ready', checkLoad);	
+			}
+			
 			chart.draw(final_data, google.charts.Bar.convertOptions(options));
 		}
 
@@ -848,6 +896,11 @@
 				}
 			};
 			var chart = new google.charts.Bar(document.getElementById('daily_actual_forecast_div'));
+			
+			if (!loaded) {
+				google.visualization.events.addListener(chart, 'ready', checkLoad);	
+			}
+			
 			chart.draw(final_data, google.charts.Bar.convertOptions(options));
 		}
 		
@@ -908,6 +961,11 @@
 				}
 			};
 			var chart = new google.charts.Bar(document.getElementById('daily_ewt_forecast_div'));
+			
+			if (!loaded) {
+				google.visualization.events.addListener(chart, 'ready', checkLoad);	
+			}
+			
 			chart.draw(final_data, google.charts.Bar.convertOptions(options));
 		}
 		 
@@ -966,6 +1024,11 @@
 				}
 			};
 			var chart = new google.charts.Bar(document.getElementById('hourly_actual_forecast_div'));
+			
+			if (!loaded) {
+				google.visualization.events.addListener(chart, 'ready', checkLoad);	
+			}
+			
 			chart.draw(final_data, google.charts.Bar.convertOptions(options));
 		}
 		
@@ -1025,6 +1088,11 @@
 				}
 			};
 			var chart = new google.charts.Bar(document.getElementById('hourly_ewt_forecast_div'));
+			
+			if (!loaded) {
+				google.visualization.events.addListener(chart, 'ready', checkLoad);	
+			}
+			
 			chart.draw(final_data, google.charts.Bar.convertOptions(options));
 		}
 	</script>

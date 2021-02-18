@@ -75,25 +75,6 @@ public class DashboardController {
 		List<ScorecardDto> scorecardData = queuePositionService.generateScoreCardData(queuePositions);
 		
 		model.addAttribute("scorecardList", scorecardData);
-		
-		// Under consideration
-		/*
-		 * var forecastQcDataDaily = qps.stream() .filter(qp -> qp.getQueueStartTime()
-		 * != null) .filter(qp ->
-		 * qp.getQueueStartTime().isAfter(LocalDateTime.now().minusDays(10)))
-		 * .collect(Collectors.groupingBy(qp -> ((QueuePosition)
-		 * qp).getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) +
-		 * "'T'00:00:00'+0800'", Collectors.counting()));
-		 * model.addAttribute("forecastQcDataDaily", forecastQcDataDaily);
-		 * 
-		 * var forecastQcDataHourly = qps.stream() .filter(qp -> qp.getQueueStartTime()
-		 * != null) .filter(qp ->
-		 * qp.getQueueStartTime().isAfter(LocalDateTime.now().minusHours(10)))
-		 * .collect(Collectors.groupingBy(qp -> ((QueuePosition)
-		 * qp).getQueueStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH")
-		 * ) + ":00:00'+0800'", Collectors.counting()));
-		 * model.addAttribute("forecastQcDataHourly", forecastQcDataHourly);
-		 */
 
 		var intervalMap = queuePositionService.generateDateIntervals(2, 2, 2);
 		
@@ -101,41 +82,5 @@ public class DashboardController {
 		
 		return "branch-admin/dashboard";
 	}
-	
-	@PostMapping("/filter")
-	public String filterDashboardByBranch(Model model, Authentication authentication, @RequestParam String branchId) {
-		if(branchId == "-1") {
-			return "redirect:/dashboard";
-		}
-		
-		MyUserDetails user = (MyUserDetails) authentication.getPrincipal();
-		
-		List<Branch> branches = permissionService.getBranchPermissions(user.getId());
-		model.addAttribute("branches", branches);
-		
-		Long lBranchId = Long.parseLong(branchId);
-		List<QueuePosition> queuePositions = queuePositionService.findAllQueuePositionsByBranchId(lBranchId);
-		
-		Map<String, Integer> queueCountData = queuePositionService.generateQueueCountData(queuePositions);
-		Map<String, Long> estWaitingTimeData = queuePositionService.generateEstimatedWaitingTimeData(queuePositions);
 
-		model.addAttribute("queueCountData", queueCountData);
-		model.addAttribute("estWaitingTimeData", estWaitingTimeData);
-
-		// To add in services for actual
-		var forecastQcDataMonthly = queuePositionService.generateQueueCountForecast(queuePositions, 10);
-		var forecastEWTDataMonthly = queuePositionService.generateEWTCountForecast(queuePositions, 10);
-				
-		model.addAttribute("forecastQcDataMonthly", forecastQcDataMonthly);
-		model.addAttribute("forecastEWTDataMonthly", forecastEWTDataMonthly);
-		
-		var intervalMap = queuePositionService.generateDateIntervals(2, 2, 2);
-		
-		model.addAttribute("intervalMap", intervalMap);
-		
-		
-		return "branch-admin/dashboard";
-		
-	}
-	
 }

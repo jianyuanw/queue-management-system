@@ -10,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,8 +29,12 @@ public class Queue {
 	@ManyToOne
 	private Branch branch;
 
+	@NotEmpty(message = "Queue name must not be empty")
+	@Pattern(regexp = "[A-Za-z0-9 ]+", message = "Queue name must only contain alphanumeric characters and spaces")
 	private String name;
 
+	@NotEmpty(message = "Queue description must not be empty")
+	@Pattern(regexp = "[A-Za-z0-9 ]+", message = "Queue description must only contain alphanumeric characters and spaces")	
 	private String description;
 
 	private State state;

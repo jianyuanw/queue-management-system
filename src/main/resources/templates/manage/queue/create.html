@@ -44,7 +44,7 @@
 	        
 	        <div class="col form-group">
 	        	<label class="form-label" for="timePerClient">Time Per Client</label>
-	            <input type="text" id="timePerClient" class="form-control" th:field="*{timePerClient}" required>
+	            <input type="number" id="timePerClient" class="form-control" th:field="*{timePerClient}" min="0" max="300" required>
 	            <p class="text-danger text-left" th:if="${#fields.hasErrors('timePerClient')}" th:errors="*{timePerClient}"></p>
 	        </div>
 	        
@@ -53,7 +53,7 @@
 	    <div class="form-row mb-4">
 	        <div class="col form-group">
 	        	<label class="form-label" for="notificationDelay">Notification Delay</label>
-	            <input type="text" id="notificationDelay" class="form-control" th:field="*{notificationDelay}" required>
+	            <input type="number" id="notificationDelay" class="form-control" th:field="*{notificationDelay}" min="0" max="300" required>
 	            <p class="text-danger text-left" th:if="${#fields.hasErrors('notificationDelay')}" th:errors="*{notificationDelay}"></p>
 	        </div>
 	         

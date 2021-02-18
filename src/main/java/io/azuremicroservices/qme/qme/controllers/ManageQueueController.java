@@ -60,8 +60,10 @@ public class ManageQueueController {
 	}
 	
 	@PostMapping("/create")
-	public String createQueue(@ModelAttribute @Valid Queue queue, BindingResult bindingResult, RedirectAttributes redirAttr, String branchId) {
+	public String createQueue(Model model, @ModelAttribute @Valid Queue queue, BindingResult bindingResult, Authentication authentication, RedirectAttributes redirAttr, String branchId) {
 		if (bindingResult.hasErrors()) {
+			List<Branch> branches = permissionService.getBranchPermissions(((MyUserDetails) authentication.getPrincipal()).getId());
+			model.addAttribute("branches", branches);			
 			return "manage/queue/create";
 		} 
 		queue.setBranch(branchService.findBranchById(Long.parseLong(branchId)).get());

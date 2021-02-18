@@ -34,7 +34,7 @@
 
 			<!-- Queue Count Chart here -->
 
-			<div class="col-6">
+			<div class="col">
 				<div class="col-md-12">
 					<div class="tabbable">
 						<ul class="nav nav-tabs" data-tabs="tabs">
@@ -61,10 +61,10 @@
 													th:value="${#temporals.format(year, 'yyyy-MM-dd''T''HH:mm:ss''+0800''')}"
 													th:text="${#temporals.format(year, 'yyyy')}"></option>
 											</select>
-											<div id="monthly_actual_div"></div>
+											<div style="height:350px;width:100%" id="monthly_actual_div"></div>
 										</div>
 										<div class="tab-pane" id="OneB">
-											<div id="monthly_actual_forecast_div"></div>
+											<div style="height:350px;width:100%" id="monthly_actual_forecast_div"></div>
 										</div>
 									</div>
 								</div>
@@ -84,10 +84,10 @@
 													th:value="${#temporals.format(month, 'yyyy-MM-dd''T''HH:mm:ss''+0800''')}"
 													th:text="${#temporals.format(month, 'MMM yyyy')}"></option>											
 											</select>
-											<div id="daily_actual_div"></div>
+											<div style="height:350px;width:100%" id="daily_actual_div"></div>
 										</div>
 										<div class="tab-pane" id="TwoB">
-											<div id="daily_actual_forecast_div"></div>
+											<div style="height:350px;width:100%" id="daily_actual_forecast_div"></div>
 										</div>
 									</div>
 								</div>
@@ -107,10 +107,10 @@
 													th:value="${#temporals.format(day, 'yyyy-MM-dd''T''HH:mm:ss''+0800''')}"
 													th:text="${#temporals.format(day, 'dd MMM yyyy')}"></option>
 											</select>
-											<div id="hourly_actual_div"></div>
+											<div style="height:350px;width:100%" id="hourly_actual_div"></div>
 										</div>
 										<div class="tab-pane" id="ThreeB">
-											<div id="hourly_actual_forecast_div"></div>
+											<div style="height:350px;width:100%" id="hourly_actual_forecast_div"></div>
 										</div>
 									</div>
 								</div>
@@ -119,12 +119,13 @@
 					</div>
 				</div>
 			</div>
+		</div>
 
 
 
 			<!-- Estimated Waiting Time Chart here -->
-
-			<div class="col-6">
+		<div class="row">
+			<div class="col">
 				<div class="col-md-12">
 					<div class="tabbable">
 						<ul class="nav nav-tabs" data-tabs="tabs">
@@ -151,10 +152,10 @@
 													th:value="${#temporals.format(year, 'yyyy-MM-dd''T''HH:mm:ss''+0800''')}"
 													th:text="${#temporals.format(year, 'yyyy')}"></option>											
 											</select>
-											<div id="estTime_monthly_actual_div"></div>
+											<div style="height:350px;width:100%" id="estTime_monthly_actual_div"></div>
 										</div>
 										<div class="tab-pane active" id="FourB">
-											<div id="monthly_ewt_forecast_div"></div>
+											<div style="height:350px;width:100%" id="monthly_ewt_forecast_div"></div>
 										</div>
 									</div>
 								</div>
@@ -174,10 +175,10 @@
 													th:value="${#temporals.format(month, 'yyyy-MM-dd''T''HH:mm:ss''+0800''')}"
 													th:text="${#temporals.format(month, 'MMM yyyy')}"></option>												
 											</select>
-											<div id="estTime_daily_actual_div"></div>
+											<div style="height:350px;width:100%" id="estTime_daily_actual_div"></div>
 										</div>
 										<div class="tab-pane active" id="FiveB">
-											<div id="daily_ewt_forecast_div"></div>
+											<div style="height:350px;width:100%" id="daily_ewt_forecast_div"></div>
 										</div>
 									</div>
 								</div>
@@ -197,10 +198,10 @@
 													th:value="${#temporals.format(day, 'yyyy-MM-dd''T''HH:mm:ss''+0800''')}"
 													th:text="${#temporals.format(day, 'dd MMM yyyy')}"></option>											
 											</select>
-											<div id="estTime_hourly_actual_div"></div>
+											<div style="height:350px;width:100%" id="estTime_hourly_actual_div"></div>
 										</div>
 										<div class="tab-pane active" id="SixB">
-											<div id="hourly_ewt_forecast_div"></div>
+											<div style="height:350px;width:100%" id="hourly_ewt_forecast_div"></div>
 										</div>
 									</div>
 								</div>
@@ -395,8 +396,8 @@
 					title : 'Queue Count'
 				},
 				chartArea : {
-					width : "50%",
-					height : "70%"
+					width : "70%",
+					height : "80%"
 				}
 			};
 			var chart = new google.visualization.ColumnChart(document
@@ -458,8 +459,8 @@
 					title : 'Queue Count'
 				},
 				chartArea : {
-					width : "50%",
-					height : "70%"
+					width : "70%",
+					height : "80%"
 				}
 			};
 			var chart = new google.visualization.ColumnChart(document
@@ -514,8 +515,8 @@
 					title : 'Queue Count'
 				},
 				chartArea : {
-					width : "50%",
-					height : "70%"
+					width : "70%",
+					height : "80%"
 				}
 			};
 			var chart = new google.visualization.ColumnChart(document
@@ -562,8 +563,8 @@
 					title : 'Avg Est Time'
 				},
 				chartArea : {
-					width : "50%",
-					height : "70%"
+					width : "70%",
+					height : "80%"
 				}
 			};
 			var chart = new google.visualization.ColumnChart(document
@@ -626,8 +627,8 @@
 					title : 'Avg Est Time'
 				},
 				chartArea : {
-					width : "50%",
-					height : "70%"
+					width : "70%",
+					height : "80%"
 				}
 			};
 			var chart = new google.visualization.ColumnChart(document
@@ -682,8 +683,8 @@
 					title : 'Avg Est Time'
 				},
 				chartArea : {
-					width : "50%",
-					height : "70%"
+					width : "70%",
+					height : "80%"
 				}
 			};
 			var chart = new google.visualization.ColumnChart(document
@@ -742,8 +743,8 @@
 					title : 'Queue Count'
 				},
 				chartArea : {
-					width : "50%",
-					height : "70%"
+					width : "70%",
+					height : "80%"
 				}
 			};
 			var chart = new google.visualization.ColumnChart(document
@@ -803,8 +804,8 @@
 					title : 'Avg Est Time'
 				},
 				chartArea : {
-					width : "50%",
-					height : "70%"
+					width : "70%",
+					height : "80%"
 				}
 			};
 			var chart = new google.visualization.ColumnChart(document
@@ -865,8 +866,8 @@
 					title : 'Queue Count'
 				},
 				chartArea : {
-					width : "50%",
-					height : "70%"
+					width : "70%",
+					height : "80%"
 				}
 			};
 			var chart = new google.visualization.ColumnChart(document
@@ -926,8 +927,8 @@
 					title : 'Avg Est Time'
 				},
 				chartArea : {
-					width : "50%",
-					height : "70%"
+					width : "70%",
+					height : "80%"
 				}
 			};
 			var chart = new google.visualization.ColumnChart(document
@@ -985,8 +986,8 @@
 					title : 'Queue Count'
 				},
 				chartArea : {
-					width : "50%",
-					height : "70%"
+					width : "70%",
+					height : "80%"
 				}
 			};
 			var chart = new google.visualization.ColumnChart(document
@@ -1045,8 +1046,8 @@
 					title : 'Avg Est Time'
 				},
 				chartArea : {
-					width : "50%",
-					height : "70%"
+					width : "70%",
+					height : "80%"
 				}
 			};
 			var chart = new google.visualization.ColumnChart(document

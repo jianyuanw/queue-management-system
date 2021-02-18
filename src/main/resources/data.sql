@@ -709,9 +709,7 @@ VALUES
 
 INSERT INTO user_branch_permission (user_id, branch_id)
 VALUES
-    ("12", "1"),
-    ("12", "2"),
-    ("12", "3");
+    ("12", "1");
 
 INSERT INTO user_queue_permission (user_id, queue_id)
 VALUES

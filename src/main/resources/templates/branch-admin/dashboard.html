@@ -155,13 +155,13 @@
 											</select>
 											<div id="estTime_monthly_actual_div"></div>
 										</div>
-										<div class="tab-pane" id="FourB">
+										<div class="tab-pane active" id="FourB">
 											<div id="monthly_ewt_forecast_div"></div>
 										</div>
 									</div>
 								</div>
 							</div>
-							<div class="tab-pane" id="Five">
+							<div class="tab-pane active" id="Five">
 								<div class="tabbable">
 									<ul class="nav nav-tabs" data-tabs="tabs">
 										<li class="nav-item"><a class="nav-link active"
@@ -178,13 +178,13 @@
 											</select>
 											<div id="estTime_daily_actual_div"></div>
 										</div>
-										<div class="tab-pane" id="FiveB">
+										<div class="tab-pane active" id="FiveB">
 											<div id="daily_ewt_forecast_div"></div>
 										</div>
 									</div>
 								</div>
 							</div>
-							<div class="tab-pane" id="Six">
+							<div class="tab-pane active" id="Six">
 								<div class="tabbable">
 									<ul class="nav nav-tabs" data-tabs="tabs">
 										<li class="nav-item"><a class="nav-link active"
@@ -201,7 +201,7 @@
 											</select>
 											<div id="estTime_hourly_actual_div"></div>
 										</div>
-										<div class="tab-pane" id="SixB">
+										<div class="tab-pane active" id="SixB">
 											<div id="hourly_ewt_forecast_div"></div>
 										</div>
 									</div>
@@ -303,7 +303,20 @@
 				drawEstTimeDailyForecastChart();
 				drawActualHourlyForecastChart();
 				drawEstTimeHourlyForecastChart();
+				
+				let elements = document.getElementsByClassName('tab-pane');
+				let activeElements = ["One", "OneA", "TwoA", "ThreeA", "Four", "FourA", "FiveA", "SixA"]
+				
+				for (let i = 0; i < elements.length; i++) {
+					
+					let element = elements[i];
+					if (!activeElements.includes(element.id)) {
+						element.classList.remove('active');
+					}
+				}				
 			});
+	
+
 		});
 
 		//Load filter options

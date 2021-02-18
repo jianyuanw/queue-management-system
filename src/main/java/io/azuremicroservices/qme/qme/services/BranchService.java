@@ -56,25 +56,29 @@ public class BranchService {
 	}
 	
 	public void updateBranch(MultipartFile branchImage, Branch branch) throws IOException {
-		String fileName = StringUtils.cleanPath(branchImage.getOriginalFilename());
-		branch.setBranchImage(fileName);
-		Branch savedBranch = branchRepo.save(branch);
-		String uploadDir = "src/main/resources/static/images/branch-images/" + savedBranch.getId();
-		
-		if(branch.getBranchImage() != null) {
-		FileUtils.deleteDirectory(new File(uploadDir));
-		}
-		
-		Path uploadPath = Paths.get(uploadDir);
-		if (!Files.exists(uploadPath)) {
-			Files.createDirectories(uploadPath);
-		}
-		
-		try (InputStream inputStream = branchImage.getInputStream()){
-		Path filePath = uploadPath.resolve(fileName);
-		Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
-		} catch (IOException e) {
-			throw new IOException("Could not save uploaded file:" + fileName);
+		if (!branchImage.isEmpty()) {
+			String fileName = StringUtils.cleanPath(branchImage.getOriginalFilename());
+			branch.setBranchImage(fileName);
+			Branch savedBranch = branchRepo.save(branch);
+			String uploadDir = "src/main/resources/static/images/branch-images/" + savedBranch.getId();
+
+			if(branch.getBranchImage() != null) {
+				FileUtils.deleteDirectory(new File(uploadDir));
+			}
+
+			Path uploadPath = Paths.get(uploadDir);
+			if (!Files.exists(uploadPath)) {
+				Files.createDirectories(uploadPath);
+			}
+
+			try (InputStream inputStream = branchImage.getInputStream()){
+				Path filePath = uploadPath.resolve(fileName);
+				Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+			} catch (IOException e) {
+				throw new IOException("Could not save uploaded file:" + fileName);
+			}
+		} else {
+			branchRepo.save(branch);
 		}
 	}	
 
@@ -92,7 +96,7 @@ public class BranchService {
 
 	@Transactional
 	public void deleteBranch(Branch branch) throws IOException {
-		if(branch.getBranchImagePath() != null) {
+		if(!branch.getBranchImage().isBlank()) {
 		String uploadDir = "src/main/resources/static/images/branch-images/" + branch.getId();
 		
 		FileUtils.deleteDirectory(new File(uploadDir));

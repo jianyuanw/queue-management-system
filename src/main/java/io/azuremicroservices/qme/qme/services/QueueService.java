@@ -423,14 +423,11 @@ public class QueueService {
 		return false;
 	}
 
-	int lastPosition = queuePositionRepo.findAllByQueue_IdAndStateIn(queuePosition.getQueue().getId(), QueuePosition.getQueuingStates()).stream()
-			.mapToInt(QueuePosition::getPosition)
-			.max()
-			.getAsInt();
+	int position = obtainQueueNumber(queuePosition.getQueue().getId());
 
 	queuePosition.setState(State.ACTIVE_REQUEUE);
 	queuePosition.setStateChangeTime(LocalDateTime.now());
-	queuePosition.setPosition(lastPosition + 1);
+	queuePosition.setPosition(position);
 	queuePositionRepo.save(queuePosition);
 
 	return true;

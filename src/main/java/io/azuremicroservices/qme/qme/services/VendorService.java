@@ -61,30 +61,34 @@ public class VendorService {
 	}
 
 	public void updateVendor(MultipartFile vendorImage, Vendor vendor) throws IOException {
-		String fileName = StringUtils.cleanPath(vendorImage.getOriginalFilename());
-		vendor.setVendorImage(fileName);
-		Vendor savedVendor = vendorRepo.save(vendor);
-		String uploadDir = "src/main/resources/static/images/vendor-images/" + savedVendor.getId();
-		
-		if(vendor.getVendorImage() != null) {
-			FileUtils.deleteDirectory(new File(uploadDir));
+		if (!vendorImage.isEmpty()) {
+			String fileName = StringUtils.cleanPath(vendorImage.getOriginalFilename());
+			vendor.setVendorImage(fileName);
+			Vendor savedVendor = vendorRepo.save(vendor);
+			String uploadDir = "src/main/resources/static/images/vendor-images/" + savedVendor.getId();
+
+			if(vendor.getVendorImage() != null) {
+				FileUtils.deleteDirectory(new File(uploadDir));
 			}
-		
-		Path uploadPath = Paths.get(uploadDir);
-		if (!Files.exists(uploadPath)) {
-			Files.createDirectories(uploadPath);
-		}
-		
-		try (InputStream inputStream = vendorImage.getInputStream()){
-		Path filePath = uploadPath.resolve(fileName);
-		Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
-		} catch (IOException e) {
-			throw new IOException("Could not save uploaded file:" + fileName);
+
+			Path uploadPath = Paths.get(uploadDir);
+			if (!Files.exists(uploadPath)) {
+				Files.createDirectories(uploadPath);
+			}
+
+			try (InputStream inputStream = vendorImage.getInputStream()){
+				Path filePath = uploadPath.resolve(fileName);
+				Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+			} catch (IOException e) {
+				throw new IOException("Could not save uploaded file:" + fileName);
+			}
+		} else {
+			vendorRepo.save(vendor);
 		}
 	}
 
 	public void deleteVendor(Vendor vendor) throws IOException {
-		if(vendor.getVendorImagePath() != null) {
+		if(!vendor.getVendorImage().isBlank()) {
 			String uploadDir = "src/main/resources/static/images/vendor-images/" + vendor.getId();
 			
 			FileUtils.deleteDirectory(new File(uploadDir));

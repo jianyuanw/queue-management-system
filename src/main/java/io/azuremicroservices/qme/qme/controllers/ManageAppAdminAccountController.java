@@ -55,7 +55,7 @@ public class ManageAppAdminAccountController {
 		accountService.createUser(user, Role.APP_ADMIN);
 		alertService.createAlert(AlertColour.GREEN, "App Admin Account successfully created", redirAttr);
 		
-		return "redirect:/manage/user/list";
+		return "redirect:/manage/user-account/list";
 		
 	}
 	

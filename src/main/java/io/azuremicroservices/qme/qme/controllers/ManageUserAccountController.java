@@ -42,7 +42,7 @@ public class ManageUserAccountController {
 		
 		if (user.isEmpty()) {
 			alertService.createAlert(AlertColour.YELLOW, "User Account not found", redirAttr);
-			return "redirect:/manage/user/list";
+			return "redirect:/manage/user-account/list";
 		}
 		
 		model.addAttribute("user", user.get());

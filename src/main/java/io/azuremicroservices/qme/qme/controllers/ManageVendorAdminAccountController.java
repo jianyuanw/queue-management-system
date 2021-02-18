@@ -19,7 +19,6 @@ import io.azuremicroservices.qme.qme.models.Vendor;
 import io.azuremicroservices.qme.qme.services.AccountService;
 import io.azuremicroservices.qme.qme.services.AlertService;
 import io.azuremicroservices.qme.qme.services.AlertService.AlertColour;
-import io.azuremicroservices.qme.qme.services.PermissionService;
 import io.azuremicroservices.qme.qme.services.VendorService;
 
 @Controller
@@ -27,14 +26,12 @@ import io.azuremicroservices.qme.qme.services.VendorService;
 public class ManageVendorAdminAccountController {
 	private final AccountService accountService;
 	private final VendorService vendorService;
-	private final PermissionService permissionService;
 	private final AlertService alertService;
 	
 	@Autowired
-	public ManageVendorAdminAccountController(AccountService accountService, VendorService vendorService, PermissionService permissionService, AlertService alertService) {
+	public ManageVendorAdminAccountController(AccountService accountService, VendorService vendorService, AlertService alertService) {
 		this.accountService = accountService;
 		this.vendorService = vendorService;
-		this.permissionService = permissionService;
 		this.alertService = alertService;
 	}
 	

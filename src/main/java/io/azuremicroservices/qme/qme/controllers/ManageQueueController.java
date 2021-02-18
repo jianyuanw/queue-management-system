@@ -3,7 +3,6 @@ package io.azuremicroservices.qme.qme.controllers;
 import java.util.List;
 
 import javax.validation.Valid;
-import javax.websocket.server.PathParam;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;

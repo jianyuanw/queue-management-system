@@ -65,6 +65,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             "/manage/user-account/**",
             "/manage/vendor-admin-account/**",
             "/manage/app-admin-account/**",
+            "/manage/support-ticket/**",
     };
 
     private final String[] VENDOR_ADMIN_URLS = {
@@ -80,7 +81,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     };
 
     private final String[] BRANCH_OPERATOR_URLS = {
-    		"/OperateQueue/**",
             "/operate-queue/**"
     };
 
@@ -92,7 +92,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             "/leave-queue",
             "/rejoin-queue",
             "/my-queues",
-            "/support-ticket/**",
+            "/my-tickets",
+            "/create-ticket",
     };
 
     private final String[] PUBLIC_URLS = {

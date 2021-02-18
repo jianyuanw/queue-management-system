@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 
-import com.google.zxing.aztec.encoder.Encoder;
-
 import io.azuremicroservices.qme.qme.configurations.security.MyUserDetails;
 import io.azuremicroservices.qme.qme.models.Branch;
 import io.azuremicroservices.qme.qme.models.Queue;
@@ -27,39 +25,33 @@ import io.azuremicroservices.qme.qme.repositories.QueueRepository;
 import io.azuremicroservices.qme.qme.repositories.UserBranchPermissionRepository;
 import io.azuremicroservices.qme.qme.repositories.UserQueuePermissionRepository;
 import io.azuremicroservices.qme.qme.repositories.UserRepository;
-import io.azuremicroservices.qme.qme.repositories.UserVendorPermissionRepository;
 import io.azuremicroservices.qme.qme.repositories.VendorRepository;
 
 @Service
 public class AccountService {
 
     private final UserRepository userRepo;
-    private final PermissionService permissionService;
     private final PasswordEncoder passwordEncoder;
     
     private final VendorRepository vendorRepo;
     private final BranchRepository branchRepo;
     private final QueueRepository queueRepo;
     
-    private final UserVendorPermissionRepository uvpRepo;
     private final UserBranchPermissionRepository ubpRepo;
     private final UserQueuePermissionRepository uqpRepo;
     
     private final SessionRegistry sessionRegistry;
 
-    public AccountService(UserRepository userRepo, PermissionService permissionService, 
-    		PasswordEncoder passwordEncoder, UserVendorPermissionRepository uvpRepo, VendorRepository vendorRepo,
+    public AccountService(UserRepository userRepo, PasswordEncoder passwordEncoder, VendorRepository vendorRepo,
     		BranchRepository branchRepo, UserBranchPermissionRepository ubpRepo, QueueRepository queueRepo,
     		UserQueuePermissionRepository uqpRepo, SessionRegistry sessionRegistry) {
         this.userRepo = userRepo;
-        this.permissionService = permissionService;
         this.passwordEncoder = passwordEncoder;
         
         this.queueRepo = queueRepo;
         this.vendorRepo = vendorRepo;
         this.branchRepo = branchRepo;
         
-        this.uvpRepo = uvpRepo;
         this.ubpRepo = ubpRepo;
         this.uqpRepo = uqpRepo;
         
@@ -142,12 +134,6 @@ public class AccountService {
     @Transactional
     public void changePerspective(MyUserDetails currentDetails, Role perspective) {
         currentDetails.setPerspective(perspective);
-        // Uncomment to make perspective change persistent
-    	//User user = this.findUserByUsername(currentDetails.getUsername());
-    	//if (user.getRolePerspectives().containsKey(perspective.getDisplayValue())) {
-    	//	user.setPerspective(perspective);
-    	//}
-        // userRepo.save(user);
     }
 
 	public Optional<User> findUserById(Long userId) {

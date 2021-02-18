@@ -122,37 +122,6 @@ public class OperateQueueController {
     public ResponseEntity<byte[]> generateQrCode(@RequestParam("queueURL") String queueURL, Authentication authentication, RedirectAttributes redirAttr) {
 		return ResponseEntity.status(HttpStatus.OK).body(QRCodeGenerator.getQRCodeImage(queueURL, 800, 800));
     }
-    
-    @GetMapping("/current-counter")
-    public String initCurrentCounter(Model model, Authentication authentication, RedirectAttributes redirAttr) {
-    	MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
-    	var counter = queueService.findCounterByUserId(myUserDetails.getId());
-    	
-    	if (counter == null) {
-    		alertService.createAlert(AlertColour.YELLOW, "You are not signed into a counter", redirAttr);
-    		return "redirect:/operate-queue/view-queue";
-    	}
-    	
-    	List<QueuePositionDto> viewQueuePositions = queueService.generateViewQueuePositions(counter);
-    	model.addAttribute("counter", counter);
-    	model.addAttribute("viewQueuePositions", viewQueuePositions);
-    	
-    	return "branch-operator/current-counter";
-    }
-    
-    @PostMapping("/my-counter/reassign")
-    public String reorderClient(@RequestParam("queuePositionId") Long queuePositionId, @RequestParam("counterId") Long counterId, @RequestParam("position") Integer position, 
-    		Authentication authentication, RedirectAttributes redirAttr) {
-    	MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
-    	
-    	if (!queuePositionService.reassignPosition(counterId, queuePositionId, myUserDetails.getId(), position)) {
-    		alertService.createAlert(AlertColour.YELLOW, "Failed to reassign queue position", redirAttr);		
-    	} else {
-    		alertService.createAlert(AlertColour.GREEN, "Successfully reassigned queue position", redirAttr);
-    	}
-    	
-    	return "redirect:/operate-queue/my-counter";
-    }
 
     @GetMapping("/view-selected-queue/{queueId}")
     public String viewSelectedQueue(@PathVariable("queueId") Long queueId,Model model) {
@@ -161,7 +130,6 @@ public class OperateQueueController {
         Branch branch = queue.getBranch();
 
         List<QueuePosition> qps = queuePositionService.getActiveSortedQueuePositions(queueId);
-        // List<QueuePosition> qps = queuePositionService.getAllSortedQueuePositions(queueId);
 
         model.addAttribute("vendor",vendor);
         model.addAttribute("branch", branch);
@@ -170,22 +138,8 @@ public class OperateQueueController {
         return "branch-operator/view-selected-queue";
     }
 
-    @GetMapping("/view-selected-queue/{queueId}/{reassignedId}")
-    public String reassign(@PathVariable("queueId") Long queueId, @PathVariable("reassignedId")Long reassignedId) {
-
-        queuePositionService.updateReassignedIdPriority(reassignedId);
-        return "redirect:/operate-queue/view-selected-queue/"+queueId;
-    }
-
-    @GetMapping("/view-selected-queue/cancel-reassign/{queueId}/{reassignedId}")
-    public String cancelReassign(@PathVariable("queueId") Long queueId, @PathVariable("reassignedId")Long reassignedId) {
-
-        queuePositionService.setDefaultPriorityFor(reassignedId);
-        return "redirect:/operate-queue/view-selected-queue/"+queueId;
-    }
-
     @GetMapping("/no-show-list/{queueId}")
-    public String viewNoShowList(@PathVariable("queueId")Long queueId, Model model) {
+    public String viewNoShowList(@PathVariable("queueId") Long queueId, Model model) {
 
         Map<String, String> noShowQP = queuePositionService.findQueuePositionForNoShowListDisplaying(queueId);
         Queue queue = queueService.findQueue(queueId);
@@ -216,18 +170,20 @@ public class OperateQueueController {
         model.addAttribute("queueLength", viewQueuePositions.size());
         return "branch-operator/counter";
     }
-
-    @GetMapping("/my-counter/reassign/{rId}")
-    public String reassignInMyCounter(@PathVariable Long rId) {
-        queuePositionService.updateReassignedIdPriority(rId);
-        return "redirect:/operate-queue/my-counter";
-    }
-
-    @GetMapping("/my-counter/cancel-reassign/{rId}")
-    public String cancelReassignInMyCounter(@PathVariable Long rId) {
-        queuePositionService.setDefaultPriorityFor(rId);
-        return "redirect:/operate-queue/my-counter";
-    }
+       
+    @PostMapping("/my-counter/reassign")
+    public String reorderClient(@RequestParam("queuePositionId") Long queuePositionId, @RequestParam("counterId") Long counterId, @RequestParam("position") Integer position, 
+    		Authentication authentication, RedirectAttributes redirAttr) {
+    	MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+    	
+    	if (!queuePositionService.reassignPosition(counterId, queuePositionId, myUserDetails.getId(), position)) {
+    		alertService.createAlert(AlertColour.YELLOW, "Failed to reassign queue position", redirAttr);		
+    	} else {
+    		alertService.createAlert(AlertColour.GREEN, "Successfully reassigned queue position", redirAttr);
+    	}
+    	
+    	return "redirect:/operate-queue/my-counter";
+    }    
 
     @PostMapping("/my-counter")
     public String callNextNumber(@RequestParam("command") String command, Authentication authentication, RedirectAttributes redirAttr) {

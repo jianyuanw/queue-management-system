@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+	<meta charset="UTF-8">
+	<title>qMe - Dashboard</title>
+	<!--Load the AJAX API-->
+	<th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
+	<th:block th:replace="fragments/sourcebundle.html :: google-charts" />
+
+</head>
+<body>
+
+	<div th:replace="fragments/layout.html :: navbar"></div>
+	
+	<span th:text="${#temporals.format(today, 'yyyy-MM-dd ''T''')}"></span>
+	
+	<div class="container">
+	
+		<div class = "row">
+			<form class="text-center" method="get" th:action="@{/dashboard}">
+				<select  class="form-select form-control my-2" onchange="this.form.submit()" name="branchId">
+					<option value="">Select A Branch</option>
+					<option th:value="-1">All Branches</option>
+					<option th:each="branch:${branches}" th:text="${branch.name}" th:value="${branch.id}"
+						th:selected="${selectedBranch != null && branch.id == selectedBranch}">
+				</select>
+			</form>
+		</div>
+	
+		<div class="row">
+
+			<!-- Queue Count Chart here -->
+
+			<div class="col">
+				<div class="col-md-12">
+					<div class="tabbable">
+						<ul class="nav nav-tabs" data-tabs="tabs">
+							<li class="nav-item"><a class="nav-link active" href="#One"
+								data-toggle="tab">Monthly</a></li>
+							<li><a class="nav-link" href="#Two" data-toggle="tab">Daily</a>
+							</li>
+							<li><a class="nav-link" href="#Three" data-toggle="tab">Hourly</a>
+							</li>
+						</ul>
+						<div class="tab-content" style="padding: 15px;">
+							<div class="tab-pane active" id="One">
+								<div class="tabbable">
+									<ul class="nav nav-tabs" data-tabs="tabs">
+										<li class="nav-item"><a class="nav-link active"
+											href="#OneA" data-toggle="tab">Actual</a></li>
+										<li><a class="nav-link" href="#OneB" data-toggle="tab">Forecast</a>
+										</li>
+									</ul>
+									<div class="tab-content" style="padding: 15px;">
+										<div class="tab-pane active" id="OneA">
+											<select class="my-2" onchange="updateQueueCountYear(this)">
+												<option th:each="year : ${intervalMap.get('yearInterval')}" 
+													th:value="${#temporals.format(year, 'yyyy-MM-dd''T''HH:mm:ss''+0800''')}"
+													th:text="${#temporals.format(year, 'yyyy')}"></option>
+											</select>
+											<div style="height:350px;width:100%" id="monthly_actual_div"></div>
+										</div>
+										<div class="tab-pane active" id="OneB">
+											<div style="height:350px;width:100%" id="monthly_actual_forecast_div"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="tab-pane active" id="Two">
+								<div class="tabbable">
+									<ul class="nav nav-tabs" data-tabs="tabs">
+										<li class="nav-item"><a class="nav-link active"
+											href="#TwoA" data-toggle="tab">Actual</a></li>
+										<li><a class="nav-link" href="#TwoB" data-toggle="tab">Forecast</a>
+										</li>
+									</ul>
+									<div class="tab-content" style="padding: 15px;">
+										<div class="tab-pane active" id="TwoA">
+											<select class="my-2" onchange="updateMonth(this)" th:with="months=${intervalMap.get('monthInterval')}">
+												<option th:each="month : ${intervalMap.get('monthInterval')}" 
+													th:value="${#temporals.format(month, 'yyyy-MM-dd''T''HH:mm:ss''+0800''')}"
+													th:text="${#temporals.format(month, 'MMM yyyy')}"></option>											
+											</select>
+											<div style="height:350px;width:100%" id="daily_actual_div"></div>
+										</div>
+										<div class="tab-pane active" id="TwoB">
+											<div style="height:350px;width:100%" id="daily_actual_forecast_div"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="tab-pane active" id="Three">
+								<div class="tabbable">
+									<ul class="nav nav-tabs" data-tabs="tabs">
+										<li class="nav-item"><a class="nav-link active"
+											href="#ThreeA" data-toggle="tab">Actual</a></li>
+										<li><a class="nav-link" href="#ThreeB" data-toggle="tab">Forecast</a>
+										</li>
+									</ul>
+									<div class="tab-content" style="padding: 15px;">
+										<div class="tab-pane active" id="ThreeA">
+											<select class="my-2" onchange="updateDate(this)">
+												<option th:each="day : ${intervalMap.get('dayInterval')}" 
+													th:value="${#temporals.format(day, 'yyyy-MM-dd''T''HH:mm:ss''+0800''')}"
+													th:text="${#temporals.format(day, 'dd MMM yyyy')}"></option>
+											</select>
+											<div style="height:350px;width:100%" id="hourly_actual_div"></div>
+										</div>
+										<div class="tab-pane active" id="ThreeB">
+											<div style="height:350px;width:100%" id="hourly_actual_forecast_div"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
+			<!-- Estimated Waiting Time Chart here -->
+		<div class="row">
+			<div class="col">
+				<div class="col-md-12">
+					<div class="tabbable">
+						<ul class="nav nav-tabs" data-tabs="tabs">
+							<li class="nav-item"><a class="nav-link active" href="#Four"
+								data-toggle="tab">Monthly</a></li>
+							<li><a class="nav-link" href="#Five" data-toggle="tab">Daily</a>
+							</li>
+							<li><a class="nav-link" href="#Six" data-toggle="tab">Hourly</a>
+							</li>
+						</ul>
+						<div class="tab-content" style="padding: 15px;">
+							<div class="tab-pane active" id="Four">
+								<div class="tabbable">
+									<ul class="nav nav-tabs" data-tabs="tabs">
+										<li class="nav-item"><a class="nav-link active"
+											href="#FourA" data-toggle="tab">Actual</a></li>
+										<li><a class="nav-link" href="#FourB" data-toggle="tab">Forecast</a>
+										</li>
+									</ul>
+									<div class="tab-content" style="padding: 15px;">
+										<div class="tab-pane active" id="FourA">
+											<select onchange="updateEstTimeYear(this)">
+												<option th:each="year : ${intervalMap.get('yearInterval')}" 
+													th:value="${#temporals.format(year, 'yyyy-MM-dd''T''HH:mm:ss''+0800''')}"
+													th:text="${#temporals.format(year, 'yyyy')}"></option>											
+											</select>
+											<div style="height:350px;width:100%" id="estTime_monthly_actual_div"></div>
+										</div>
+										<div class="tab-pane active" id="FourB">
+											<div style="height:350px;width:100%" id="monthly_ewt_forecast_div"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="tab-pane active" id="Five">
+								<div class="tabbable">
+									<ul class="nav nav-tabs" data-tabs="tabs">
+										<li class="nav-item"><a class="nav-link active"
+											href="#FiveA" data-toggle="tab">Actual</a></li>
+										<li><a class="nav-link" href="#FiveB" data-toggle="tab">Forecast</a>
+										</li>
+									</ul>
+									<div class="tab-content" style="padding: 15px;">
+										<div class="tab-pane active" id="FiveA">
+											<select onchange="updateEstTimeMonth(this)">
+												<option th:each="month : ${intervalMap.get('monthInterval')}" 
+													th:value="${#temporals.format(month, 'yyyy-MM-dd''T''HH:mm:ss''+0800''')}"
+													th:text="${#temporals.format(month, 'MMM yyyy')}"></option>												
+											</select>
+											<div style="height:350px;width:100%" id="estTime_daily_actual_div"></div>
+										</div>
+										<div class="tab-pane active" id="FiveB">
+											<div style="height:350px;width:100%" id="daily_ewt_forecast_div"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="tab-pane active" id="Six">
+								<div class="tabbable">
+									<ul class="nav nav-tabs" data-tabs="tabs">
+										<li class="nav-item"><a class="nav-link active"
+											href="#SixA" data-toggle="tab">Actual</a></li>
+										<li><a class="nav-link" href="#SixB" data-toggle="tab">Forecast</a>
+										</li>
+									</ul>
+									<div class="tab-content" style="padding: 15px;">
+										<div class="tab-pane active" id="SixA">
+											<select onchange="updateEstTimeDate(this)">
+												<option th:each="day : ${intervalMap.get('dayInterval')}" 
+													th:value="${#temporals.format(day, 'yyyy-MM-dd''T''HH:mm:ss''+0800''')}"
+													th:text="${#temporals.format(day, 'dd MMM yyyy')}"></option>											
+											</select>
+											<div style="height:350px;width:100%" id="estTime_hourly_actual_div"></div>
+										</div>
+										<div class="tab-pane active" id="SixB">
+											<div style="height:350px;width:100%" id="hourly_ewt_forecast_div"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="m-4">		
+		<div id="scorecards" class="row my-4">
+			<div id="customers" class="col text-center" th:with="difference=${scorecardList[0].customerCount - scorecardList[1].customerCount}">
+				<span>Total Customers</span><br>
+				<small>last month</small>
+				<h1 class="font-weight-bold" th:text="${scorecardList[0].customerCount}"></h1>
+				<h4 th:inline="text">			
+					<i th:if="${difference > 0}" class="fas fa-caret-up text-success fa-lg"></i>
+					<i th:if="${difference < 0}" class="fas fa-caret-down text-danger fa-lg"></i>
+					<i th:if="${difference == 0}" class="fas fa-equals text-light fa-lg"></i>
+					[[${#numbers.formatDecimal((difference * 1.0) / scorecardList[1].customerCount * 100, 1, 2) + '%'}]]
+				</h4>
+				<small class="text-dark" th:text="${'vs ' + scorecardList[1].customerCount + ' (prev. month)'}"></small>
+				
+			</div>
+			<div id="noshow" class="col text-center" th:with="difference=${scorecardList[0].noShowCount - scorecardList[1].noShowCount}">
+				<span>Total No Shows</span><br>
+				<small>last month</small>
+				<h1 class="font-weight-bold" th:text="${scorecardList[0].noShowCount}"></h1>
+				<h4 th:inline="text">			
+					<i th:if="${difference > 0}" class="fas fa-caret-up text-success fa-lg"></i>
+					<i th:if="${difference < 0}" class="fas fa-caret-down text-danger fa-lg"></i>
+					<i th:if="${difference == 0}" class="fas fa-equals text-light fa-lg"></i>
+					[[${#numbers.formatDecimal((difference * 1.0) / scorecardList[1].noShowCount * 100, 1, 2) + '%'}]]
+				</h4>
+				<small class="text-dark" th:text="${'vs ' + scorecardList[1].noShowCount + ' (prev. month)'}"></small>				
+			</div>
+			<div id="leftqueue" class="col text-center" th:with="difference=${scorecardList[0].leftQueueCount - scorecardList[1].leftQueueCount}">
+				<span>Total Left Queue</span><br>
+				<small>last month</small>
+				<h1 class="font-weight-bold" th:text="${scorecardList[0].leftQueueCount}"></h1>
+				<h4 th:inline="text">			
+					<i th:if="${difference > 0}" class="fas fa-caret-up text-success fa-lg"></i>
+					<i th:if="${difference < 0}" class="fas fa-caret-down text-danger fa-lg"></i>
+					<i th:if="${difference == 0}" class="fas fa-equals text-light fa-lg"></i>
+					[[${#numbers.formatDecimal((difference * 1.0) / scorecardList[1].leftQueueCount * 100, 1, 2) + '%'}]]
+				</h4>
+				<small class="text-dark" th:text="${'vs ' + scorecardList[1].leftQueueCount + ' (prev. month)'}"></small>				
+			</div>
+			<div id="waitingtime" class="col text-center" th:with="difference=${scorecardList[0].maxWaitingTime - scorecardList[1].maxWaitingTime}">
+				<span>Max Waiting Time</span><br>
+				<small>last month</small>
+				<h1 class="font-weight-bold" th:text="${scorecardList[0].maxWaitingTime / 60 + ' min'}"></h1>
+				<h4 th:inline="text">			
+					<i th:if="${difference > 0}" class="fas fa-caret-up text-success fa-lg"></i>
+					<i th:if="${difference < 0}" class="fas fa-caret-down text-danger fa-lg"></i>
+					<i th:if="${difference == 0}" class="fas fa-equals text-light fa-lg"></i>
+					[[${#numbers.formatDecimal((difference * 1.0) / scorecardList[1].maxWaitingTime * 100, 1, 2) + '%'}]]
+				</h4>
+				<small class="text-dark" th:text="${'vs ' + scorecardList[1].maxWaitingTime / 60 + ' min (prev. month)'}"></small>				
+			</div>									
+		</div>
+	</div>
+	 
+	<!--  <div th:each="forecastEWTDataMonthlys:${forecastEWTDataHourly}"><p th:text="${forecastEWTDataMonthlys}"></p></div>
+	<div th:each="forecastEWTDataMonthlys:${forecastEWTDataMonthly}"><p th:text="${forecastEWTDataMonthlys}"></p></div>-->
+
+
+	<div th:replace="fragments/layout.html :: footer"></div>
+
+	<script th:inline="javascript">
+		var queueCount_data = /*[[${queueCountData}]]*/'noValue';
+		var est_data = /*[[${estWaitingTimeData}]]*/'noValue';
+		var forecast_qc_data_monthly = /*[[${forecastQcDataMonthly}]]*/'noValue';
+		var forecast_ewt_data_monthly = /*[[${forecastEWTDataMonthly}]]*/'noValue';
+		var forecast_qc_data_daily = /*[[${forecastQcDataDaily}]]*/'noValue';
+		var forecast_ewt_data_daily = /*[[${forecastEWTDataDaily}]]*/'noValue';
+		var forecast_qc_data_hourly = /*[[${forecastQcDataHourly}]]*/'noValue';
+		var forecast_ewt_data_hourly = /*[[${forecastEWTDataHourly}]]*/'noValue';
+		var loaded = false;
+		var loaded_graphs = 0;
+
+		$(document).ready(function() {
+
+			google.charts.load('current', {
+				packages : [ 'corechart', 'bar', 'line' ]
+			});
+			google.charts.setOnLoadCallback(function() {
+				drawActualMonthlyChart(new Date());
+				drawActualDailyChart(new Date());
+				drawActualHourlyChart(new Date());
+				drawEstTimeActualMonthlyChart(new Date());
+				drawEstTimeActualDailyChart(new Date());
+				drawEstTimeActualHourlyChart(new Date());
+				
+				drawActualMonthlyForecastChart();
+				drawEstTimeMonthlyForecastChart();
+				drawActualDailyForecastChart();
+				drawEstTimeDailyForecastChart();
+				drawActualHourlyForecastChart();
+				drawEstTimeHourlyForecastChart();
+				
+	
+			});
+	
+
+		});
+
+		//Load filter options
+		function checkLoad() {
+			loaded_graphs += 1;
+			if (loaded_graphs == 12) {
+				let elements = document.getElementsByClassName('tab-pane');
+				let activeElements = ["One", "OneA", "TwoA", "ThreeA", "Four", "FourA", "FiveA", "SixA"]
+				for (let i = 0; i < elements.length; i++) {					
+					let element = elements[i];
+					if (!activeElements.includes(element.id)) {
+						element.classList.remove('active');
+					}
+				}				
+				loaded = true;
+			}
+		}
+		
+		function updateQueueCountYear(element) {
+			if (document.readyState === 'complete' && loaded) {
+				drawActualMonthlyChart(new Date(element.value));
+			}
+		}
+
+		function updateMonth(element) {
+			if (document.readyState === 'complete' && loaded) {
+				drawActualDailyChart(new Date(element.value));
+			}
+		}
+
+		function updateDate(element) {
+			if (document.readyState === 'complete' && loaded) {
+				drawActualHourlyChart(new Date(element.value));
+			}
+		}
+
+		function updateEstTimeYear(element) {
+			if (document.readyState === 'complete' && loaded) {
+				drawEstTimeActualMonthlyChart(new Date(element.value));
+			}
+		}
+
+		function updateEstTimeMonth(element) {
+			if (document.readyState === 'complete' && loaded) {
+				drawEstTimeActualDailyChart(new Date(element.value));
+			}
+		}
+
+		function updateEstTimeDate(element) {
+			if (document.readyState === 'complete' && loaded) {
+				drawEstTimeActualHourlyChart(new Date(element.value));
+			}
+		}
+
+		//Draw Charts
+		function drawActualMonthlyChart(chosenDate) {
+			var data = new google.visualization.DataTable();
+
+			data.addColumn('datetime', 'Date');
+			data.addColumn('number', 'Customers');
+			Object.keys(queueCount_data).forEach(function(key) {
+				data.addRow([ new Date(key), queueCount_data[key] ]);
+			});
+
+			var view = new google.visualization.DataView(data)
+
+			view.setRows(data.getFilteredRows([ {
+				column : 0,
+				test : function(value) {
+					return (value.getFullYear() == chosenDate.getFullYear());
+				}
+			} ]));
+
+			var grouped_data = google.visualization.data.group(view, [ {
+				'column' : 0,
+				'modifier' : function(val) {
+					return new Date(val.getFullYear(), val.getMonth())
+				},
+				'type' : 'date'
+			} ], [ {
+				'column' : 1,
+				'aggregation' : google.visualization.data.sum,
+				'type' : 'number'
+			} ]);
+
+			
+			var options = {
+				title : 'Queue Stats',
+				hAxis : {
+					title : 'Month',
+				},
+				vAxis : {
+					title : 'Queue Count'
+				},
+				chartArea : {
+					width : "50%",
+					height : "80%"
+				}
+			};
+
+			var chart = new google.charts.Bar(document.getElementById('monthly_actual_div'));
+			
+			if (!loaded) {
+				google.visualization.events.addListener(chart, 'ready', checkLoad);
+			}
+			
+			chart.draw(grouped_data, google.charts.Bar.convertOptions(options));
+		}
+
+		function drawActualDailyChart(chosenDate) {
+			var data = new google.visualization.DataTable();
+
+			data.addColumn('datetime', 'Date');
+			data.addColumn('number', 'Customers');
+			Object.keys(queueCount_data).forEach(function(key) {
+				data.addRow([ new Date(key), queueCount_data[key] ]);
+			});
+
+			var view = new google.visualization.DataView(data)
+
+			view
+					.setRows(data
+							.getFilteredRows([ {
+								column : 0,
+								test : function(value) {
+									return (value.getFullYear() == chosenDate
+											.getFullYear() && value.getMonth() == chosenDate
+											.getMonth());
+								}
+							} ]));
+
+			var grouped_data = google.visualization.data.group(view, [ {
+				'column' : 0,
+				'modifier' : function(val) {
+					return new Date(val.getFullYear(), val.getMonth(), val
+							.getDate());
+				},
+				'type' : 'date'
+			} ], [ {
+				'column' : 1,
+				'aggregation' : google.visualization.data.sum,
+				'type' : 'number'
+			} ]);
+
+			var options = {
+				title : 'Queue Stats',
+				hAxis : {
+					title : 'Day',
+					format : 'dd MMM',
+				},
+				vAxis : {
+					title : 'Queue Count'
+				},
+				chartArea : {
+					width : "50%",
+					height : "80%"
+				}
+			};
+			
+			var chart = new google.charts.Bar(document.getElementById('daily_actual_div'));	
+			
+			if (!loaded) {
+				google.visualization.events.addListener(chart, 'ready', checkLoad);	
+			}			
+			
+			chart.draw(grouped_data, google.charts.Bar.convertOptions(options));	
+		}
+
+		function drawActualHourlyChart(chosenDate) {
+			var data = new google.visualization.DataTable();
+
+			data.addColumn('datetime', 'Date');
+			data.addColumn('number', 'Customers');
+			Object.keys(queueCount_data).forEach(function(key) {
+				data.addRow([ new Date(key), queueCount_data[key] ]);
+			});
+
+			var view = new google.visualization.DataView(data)
+
+			view
+					.setRows(data
+							.getFilteredRows([ {
+								column : 0,
+								test : function(value) {
+									return (value.getFullYear() == chosenDate
+											.getFullYear()
+											&& value.getMonth() == chosenDate
+													.getMonth() && value
+											.getDate() == chosenDate.getDate());
+								}
+							} ]));
+
+			var grouped_data = google.visualization.data.group(view, [ {
+				'column' : 0,
+				'modifier' : function(val) {
+					return new Date(val.getFullYear(), val.getMonth(), val
+							.getDate(), val.getHours());
+				},
+				'type' : 'datetime'
+			} ], [ {
+				'column' : 1,
+				'aggregation' : google.visualization.data.sum,
+				'type' : 'number'
+			} ]);	
+			
+			var options = {
+				title : 'Queue Stats',
+				hAxis : {
+					title : 'Hour',
+				},
+				vAxis : {
+					title : 'Queue Count'
+				},
+				chartArea : {
+					width : "50%",
+					height : "80%"
+				}
+			};
+			
+			var chart = new google.charts.Bar(document.getElementById('hourly_actual_div'));
+			
+			if (!loaded) {
+				google.visualization.events.addListener(chart, 'ready', checkLoad);	
+			}
+			
+			chart.draw(grouped_data, google.charts.Bar.convertOptions(options));
+		}
+
+		//Est Time Charts here
+		function drawEstTimeActualMonthlyChart(chosenDate) {
+			var data = new google.visualization.DataTable();
+
+			data.addColumn('datetime', 'Date');
+			data.addColumn('number', 'Average waiting minutes');
+			Object.keys(est_data).forEach(function(key) {
+				data.addRow([ new Date(key), est_data[key] ]);
+			});
+
+			var view = new google.visualization.DataView(data)
+
+			view.setRows(data.getFilteredRows([ {
+				column : 0,
+				test : function(value) {
+					return (value.getFullYear() == chosenDate.getFullYear());
+				}
+			} ]));
+
+			var grouped_data = google.visualization.data.group(view, [ {
+				'column' : 0,
+				'modifier' : google.visualization.data.month,
+				'type' : 'number'
+			} ], [ {
+				'column' : 1,
+				'aggregation' : google.visualization.data.avg,
+				'type' : 'number'
+			} ]);
+
+			var options = {
+				title : 'Estimated Wait Time',
+				hAxis : {
+					title : 'Month',
+
+				},
+				vAxis : {
+					title : 'Avg Est Time'
+				},
+				chartArea : {
+					width : "50%",
+					height : "80%"
+				}
+			};
+			var chart = new google.charts.Bar(document.getElementById('estTime_monthly_actual_div'));
+			
+			if (!loaded) {
+				google.visualization.events.addListener(chart, 'ready', checkLoad);	
+			}
+			
+			chart.draw(grouped_data, google.charts.Bar.convertOptions(options));
+		}
+
+		function drawEstTimeActualDailyChart(chosenDate) {
+			var data = new google.visualization.DataTable();
+
+			data.addColumn('datetime', 'Date');
+			data.addColumn('number', 'Average waiting minutes');
+			Object.keys(est_data).forEach(function(key) {
+				data.addRow([ new Date(key), est_data[key] ]);
+			});
+
+			var view = new google.visualization.DataView(data)
+
+			view
+					.setRows(data
+							.getFilteredRows([ {
+								column : 0,
+								test : function(value) {
+									return (value.getFullYear() == chosenDate
+											.getFullYear() && value.getMonth() == chosenDate
+											.getMonth());
+								}
+							} ]));
+
+
+			var grouped_data = google.visualization.data.group(view, [ {
+				'column' : 0,
+				'modifier' : function(val) {
+					return new Date(val.getFullYear(), val.getMonth(), val
+							.getDate())
+				},
+				'type' : 'date'
+			} ], [ {
+				'column' : 1,
+				'aggregation' : google.visualization.data.avg,
+				'type' : 'number'
+			} ]);
+
+			var options = {
+				title : 'Estimated Wait Time',
+				hAxis : {
+					title : 'Day',
+					format : 'dd MMM',
+
+				},
+				vAxis : {
+					title : 'Avg Est Time'
+				},
+				chartArea : {
+					width : "50%",
+					height : "80%"
+				}
+			};
+			var chart = new google.charts.Bar(document.getElementById('estTime_daily_actual_div'));
+			
+			if (!loaded) {
+				google.visualization.events.addListener(chart, 'ready', checkLoad);	
+			}
+			
+			chart.draw(grouped_data, google.charts.Bar.convertOptions(options));
+		}
+
+		function drawEstTimeActualHourlyChart(chosenDate) {
+			var data = new google.visualization.DataTable();
+
+			data.addColumn('datetime', 'Date');
+			data.addColumn('number', 'Average waiting minutes');
+			Object.keys(est_data).forEach(function(key) {
+				data.addRow([ new Date(key), est_data[key] ]);
+			});
+
+			var view = new google.visualization.DataView(data)
+
+			view
+					.setRows(data
+							.getFilteredRows([ {
+								column : 0,
+								test : function(value) {
+									return (value.getFullYear() == chosenDate
+											.getFullYear()
+											&& value.getMonth() == chosenDate
+													.getMonth() && value
+											.getDate() == chosenDate.getDate());
+								}
+							} ]));
+
+			var grouped_data = google.visualization.data.group(view, [ {
+				'column' : 0,
+				'modifier' : function(val) {
+					return new Date(val.getFullYear(), val.getMonth(), val
+							.getDate(), val.getHours());
+				},
+				'type' : 'datetime'
+			} ], [ {
+				'column' : 1,
+				'aggregation' : google.visualization.data.avg,
+				'type' : 'number'
+			} ]);
+
+			var options = {
+				title : 'Estimated Waiting Time',
+				hAxis : {
+					title : 'Hour',
+
+				},
+				vAxis : {
+					title : 'Avg Est Time'
+				},
+				chartArea : {
+					width : "50%",
+					height : "80%"
+				}
+			};
+			var chart = new google.charts.Bar(document.getElementById('estTime_hourly_actual_div'));
+			
+			if (!loaded) {
+				google.visualization.events.addListener(chart, 'ready', checkLoad);	
+			}
+			
+			chart.draw(grouped_data, google.charts.Bar.convertOptions(options));
+		}
+
+		//Draw forecasting chart
+		function drawActualMonthlyForecastChart() {
+			var data = new google.visualization.DataTable();
+
+			data.addColumn('datetime', 'Date');
+			data.addColumn('number', 'Customers');
+			Object.keys(forecast_qc_data_monthly).forEach(function(key) {
+				data.addRow([ new Date(key), forecast_qc_data_monthly[key] ]);
+			});
+
+			data.sort({
+				column : 0
+			});
+
+			var final_data = new google.visualization.DataTable();
+
+			final_data.addColumn('datetime', 'Date');
+			final_data.addColumn('number', 'Queues');
+
+			var slidingWindow = data.getNumberOfRows();
+
+			for (var i = 0; i < 3; i++) {
+				var avg = 0;
+				var total = 0;
+				for (var j = i; j < i + slidingWindow; j++) {
+					total += data.getValue(j, 1);
+				}
+				avg = total / slidingWindow;
+
+				data
+						.addRow([
+								new Date(new Date().setMonth(new Date()
+										.getMonth()
+										+ i)), avg ]);
+				final_data
+						.addRow([
+								new Date(new Date().setMonth(new Date()
+										.getMonth()
+										+ i)), avg ]);
+			}
+
+			var options = {
+				title : 'Forecast Queue Stats',
+				hAxis : {
+					title : 'Month',
+
+				},
+				vAxis : {
+					title : 'Queue Count'
+				},
+				chartArea : {
+					width : "50%",
+					height : "80%"
+				}
+			};
+			var chart = new google.charts.Bar(document.getElementById('monthly_actual_forecast_div'));
+			
+			if (!loaded) {
+				google.visualization.events.addListener(chart, 'ready', checkLoad);	
+			}
+			
+			chart.draw(final_data, google.charts.Bar.convertOptions(options));
+		}
+
+		function drawEstTimeMonthlyForecastChart() {
+			var data = new google.visualization.DataTable();
+
+			data.addColumn('datetime', 'Date');
+			data.addColumn('number', 'Queues');
+			Object.keys(forecast_ewt_data_monthly).forEach(function(key) {
+				data.addRow([ new Date(key), forecast_ewt_data_monthly[key] ]);
+			});
+
+			data.sort({
+				column : 0
+			});
+
+			var final_data = new google.visualization.DataTable();
+
+			final_data.addColumn('datetime', 'Date');
+			final_data.addColumn('number', 'Average waiting minutes');
+
+			var slidingWindow = data.getNumberOfRows();
+
+			for (var i = 0; i < 3; i++) {
+				var avg = 0;
+				var total = 0;
+				for (var j = i; j < i + slidingWindow; j++) {
+					total += data.getValue(j, 1);
+				}
+				avg = total / slidingWindow;
+
+				//Need to fix
+				data
+						.addRow([
+								new Date(new Date().setMonth(new Date()
+										.getMonth()
+										+ i)), avg ]);
+				final_data
+						.addRow([
+								new Date(new Date().setMonth(new Date()
+										.getMonth()
+										+ i)), avg ]);
+			}
+
+			var options = {
+				title : 'Forecast Estimated Wait Time',
+				hAxis : {
+					title : 'Month',
+					format : 'MMM, yy'
+
+				},
+				vAxis : {
+					title : 'Avg Est Time'
+				},
+				chartArea : {
+					width : "50%",
+					height : "80%"
+				}
+			};
+			var chart = new google.charts.Bar(document.getElementById('monthly_ewt_forecast_div'));
+			
+			if (!loaded) {
+				google.visualization.events.addListener(chart, 'ready', checkLoad);	
+			}
+			
+			chart.draw(final_data, google.charts.Bar.convertOptions(options));
+		}
+
+		
+		
+		function drawActualDailyForecastChart() {
+			var data = new google.visualization.DataTable();
+
+			data.addColumn('datetime', 'Date');
+			data.addColumn('number', 'Customers');
+			Object.keys(forecast_qc_data_daily).forEach(function(key) {
+				data.addRow([ new Date(key), forecast_qc_data_daily[key] ]);
+			});
+
+			data.sort({
+				column : 0
+			});
+
+			var final_data = new google.visualization.DataTable();
+
+			final_data.addColumn('datetime', 'Date');
+			final_data.addColumn('number', 'Queues');
+
+			var slidingWindow = data.getNumberOfRows();
+
+			for (var i = 0; i < 3; i++) {
+				var avg = 0;
+				var total = 0;
+				for (var j = i; j < i + slidingWindow; j++) {
+					total += data.getValue(j, 1);
+				}
+				avg = total / slidingWindow;
+
+				data
+						.addRow([
+								new Date(new Date().setDate(new Date()
+										.getDate()
+										+ i)), avg ]);
+				final_data
+						.addRow([
+								new Date(new Date().setDate(new Date()
+										.getDate()
+										+ i)), avg ]);
+			}
+
+			var options = {
+				title : 'Forecast Queue Stats',
+				hAxis : {
+					title : 'Day',
+					format: 'dd,MMM,yy'
+
+				},
+				vAxis : {
+					title : 'Queue Count'
+				},
+				chartArea : {
+					width : "50%",
+					height : "80%"
+				}
+			};
+			var chart = new google.charts.Bar(document.getElementById('daily_actual_forecast_div'));
+			
+			if (!loaded) {
+				google.visualization.events.addListener(chart, 'ready', checkLoad);	
+			}
+			
+			chart.draw(final_data, google.charts.Bar.convertOptions(options));
+		}
+		
+		function drawEstTimeDailyForecastChart() {
+			var data = new google.visualization.DataTable();
+
+			data.addColumn('datetime', 'Date');
+			data.addColumn('number', 'Queues');
+			Object.keys(forecast_ewt_data_daily).forEach(function(key) {
+				data.addRow([ new Date(key), forecast_ewt_data_daily[key] ]);
+			});
+
+			data.sort({
+				column : 0
+			});
+
+			var final_data = new google.visualization.DataTable();
+
+			final_data.addColumn('datetime', 'Date');
+			final_data.addColumn('number', 'Average waiting minutes');
+
+			var slidingWindow = data.getNumberOfRows();
+
+			for (var i = 0; i < 3; i++) {
+				var avg = 0;
+				var total = 0;
+				for (var j = i; j < i + slidingWindow; j++) {
+					total += data.getValue(j, 1);
+				}
+				avg = total / slidingWindow;
+
+				//Need to fix
+				data
+						.addRow([
+								new Date(new Date().setDate(new Date()
+										.getDate()
+										+ i)), avg ]);
+				final_data
+						.addRow([
+								new Date(new Date().setDate(new Date()
+										.getDate()
+										+ i)), avg ]);
+			}
+
+			var options = {
+				title : 'Forecast Estimated Wait Time',
+				hAxis : {
+					title : 'Day',
+					format : 'dd, MMM, yy'
+
+				},
+				vAxis : {
+					title : 'Avg Est Time'
+				},
+				chartArea : {
+					width : "50%",
+					height : "80%"
+				}
+			};
+			var chart = new google.charts.Bar(document.getElementById('daily_ewt_forecast_div'));
+			
+			if (!loaded) {
+				google.visualization.events.addListener(chart, 'ready', checkLoad);	
+			}
+			
+			chart.draw(final_data, google.charts.Bar.convertOptions(options));
+		}
+		 
+		function drawActualHourlyForecastChart() {
+			var data = new google.visualization.DataTable();
+
+			data.addColumn('datetime', 'Date');
+			data.addColumn('number', 'Customers');
+			Object.keys(forecast_qc_data_hourly).forEach(function(key) {
+				data.addRow([ new Date(key), forecast_qc_data_hourly[key] ]);
+			});
+
+			data.sort({
+				column : 0
+			});
+
+			var final_data = new google.visualization.DataTable();
+
+			final_data.addColumn('datetime', 'Date');
+			final_data.addColumn('number', 'Queues');
+
+			var slidingWindow = data.getNumberOfRows();
+
+			for (var i = 0; i < 3; i++) {
+				var avg = 0;
+				var total = 0;
+				for (var j = i; j < i + slidingWindow; j++) {
+					total += data.getValue(j, 1);
+				}
+				avg = total / slidingWindow;
+
+				data
+						.addRow([
+								new Date(new Date().setHours(new Date()
+										.getHours()
+										+ i)), avg ]);
+				final_data
+						.addRow([
+								new Date(new Date().setHours(new Date()
+										.getHours()
+										+ i)), avg ]);
+			}
+
+			var options = {
+				title : 'Forecast Queue Stats',
+				hAxis : {
+					title : 'Hour',
+
+				},
+				vAxis : {
+					title : 'Queue Count'
+				},
+				chartArea : {
+					width : "50%",
+					height : "80%"
+				}
+			};
+			var chart = new google.charts.Bar(document.getElementById('hourly_actual_forecast_div'));
+			
+			if (!loaded) {
+				google.visualization.events.addListener(chart, 'ready', checkLoad);	
+			}
+			
+			chart.draw(final_data, google.charts.Bar.convertOptions(options));
+		}
+		
+		function drawEstTimeHourlyForecastChart() {
+			var data = new google.visualization.DataTable();
+
+			data.addColumn('datetime', 'Date');
+			data.addColumn('number', 'Queues');
+			Object.keys(forecast_ewt_data_hourly).forEach(function(key) {
+				data.addRow([ new Date(key), forecast_ewt_data_hourly[key] ]);
+			});
+
+			data.sort({
+				column : 0
+			});
+
+			var final_data = new google.visualization.DataTable();
+
+			final_data.addColumn('datetime', 'Date');
+			final_data.addColumn('number', 'Average waiting minutes');
+
+			var slidingWindow = data.getNumberOfRows();
+
+			for (var i = 0; i < 3; i++) {
+				var avg = 0;
+				var total = 0;
+				for (var j = i; j < i + slidingWindow; j++) {
+					total += data.getValue(j, 1);
+				}
+				avg = total / slidingWindow;
+
+				//Need to fix
+				data
+						.addRow([
+								new Date(new Date().setHours(new Date()
+										.getHours()
+										+ i)), avg ]);
+				final_data
+						.addRow([
+								new Date(new Date().setHours(new Date()
+										.getHours()
+										+ i)), avg ]);
+			}
+
+			var options = {
+				title : 'Forecast Estimated Wait Time',
+				hAxis : {
+					title : 'Hour'
+
+				},
+				vAxis : {
+					title : 'Avg Est Time'
+				},
+				chartArea : {
+					width : "50%",
+					height : "80%"
+				}
+			};
+			var chart = new google.charts.Bar(document.getElementById('hourly_ewt_forecast_div'));
+			
+			if (!loaded) {
+				google.visualization.events.addListener(chart, 'ready', checkLoad);	
+			}
+			
+			chart.draw(final_data, google.charts.Bar.convertOptions(options));
+		}
+	</script>
+
+</body>
+</html>

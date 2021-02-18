@@ -7,6 +7,8 @@
     <title>qMe - Branch Operator</title>
     <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
     
+    <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap-table" />
+    
     <script type="text/javascript">
     	function submitForm(element) {
     		document.getElementById(element.getAttribute("data-form")).submit();
@@ -51,7 +53,7 @@
 						<th>Reassign Position</th>
 					</tr>
 					<tr class="table-light" th:each="qp : ${viewQueuePositions}">
-						<td><i class="fas fa-exclamation-circle fa-lg" th:if="${qp.queuePosition.state.displayValue == 'Active Requeue'}" title="Rejoined queue"></i><span class="mx-1" th:text="${qp.queuePosition.queueNumber}"></span></td>
+						<td><i class="fas fa-exclamation-circle fa-lg" th:if="${qp.queuePosition.state.displayValue == 'Active Requeue'}" data-toggle="tooltip" data-placement="top" title="Rejoined queue"></i><span class="mx-1" th:text="${qp.queuePosition.queueNumber}"></span></td>
 						<td th:text="${qp.position}">
 						<td th:text="${qp.durationInQueue}">
 						<td th:if="${qp.queuePosition.state.displayValue == 'Active Requeue' && qpStat.index != 0}">
@@ -87,7 +89,6 @@
 							</div>						
 							
 							<form method="post" th:action="@{operate-queue/my-counter}">
-
 								<input type="hidden" name="counterId" th:value="${counter.id}">
 							</form>
 						</td>

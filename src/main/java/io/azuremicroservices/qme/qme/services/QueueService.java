@@ -454,8 +454,8 @@ public class QueueService {
                 .stream()
                 .map(queuePosition ->
                         Duration.between(
-                                queuePosition.getQueueEndTime(),
-                                queuePosition.getQueueStartTime()))
+                                queuePosition.getQueueStartTime(),
+                                queuePosition.getQueueEndTime()))
                 .reduce((total, current) -> {
                     return total.plus(current);
                 })
@@ -519,6 +519,11 @@ public class QueueService {
 		return viewQueues;
 	}
 
+
+	public List<Queue> findAllQueuesByBranch_Id(Long branchId) {
+		return queueRepo.findAllByBranch_Id(branchId);
+	}	
+	
 	public Long findQueueIdByQueuePositionId(String queuePositionId) {
     	return queuePositionRepo.findById(Long.valueOf(queuePositionId))
 				.get()

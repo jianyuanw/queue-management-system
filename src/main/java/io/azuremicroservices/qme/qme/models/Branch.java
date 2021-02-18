@@ -39,8 +39,8 @@ public class Branch {
 	@Pattern(regexp = "[A-Za-z0-9.# -]+", message = "Branch address must only contain alphanumeric characters, periods, hashtags, dashes and spaces")
 	private String address;
 
-	@NotEmpty(message = "Branch name must not be empty")
-	@Pattern(regexp = "[A-Za-z0-9 ]+", message = "Branch name must only contain alphanumeric characters, spaces and single quotes")
+	@NotEmpty(message = "Branch description must not be empty")
+	@Pattern(regexp = "[A-Za-z0-9 ]+", message = "Branch description must only contain alphanumeric characters and spaces")
 	private String description;
 
 	@NotNull(message = "Category must not be null")

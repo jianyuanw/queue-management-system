@@ -82,7 +82,7 @@ public class ManageBranchOperatorAccountController {
 			model.addAttribute("queueIdError", "At least one queue permission needs to be given");
 		}
 
-		if (bindingResult.hasErrors()) {
+		if (bindingResult.hasErrors() || model.containsAttribute("queueIdError") || model.containsAttribute("branchIdError")) {
 			MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
 			
 			List<Branch> branches = permissionService.getBranchPermissions(userDetails.getId());

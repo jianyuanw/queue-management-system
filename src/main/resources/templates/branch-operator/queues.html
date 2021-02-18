@@ -12,21 +12,7 @@
     
     <th:block th:replace="fragments/sourcebundle.html :: mdbootstrap-table" />
     
-    <style>
-    	.clickable {
-    		cursor: pointer;
-    	}
-    	
-    	.unclickable {
-    		cursor: none;
-    	}
-    </style>
-    
-    <script type="text/javascript">
-    	$(document).ready(function() {
-    		$('[data-toggle="tooltip"]').tooltip()
-    	});
-    	
+    <script type="text/javascript">    	
     	function submitForm(element) {
     		let form = document.getElementById(element.getAttribute("data-form"));
     		form.submit();
@@ -40,7 +26,7 @@
 
 		<h5 class="font-weight-bold mb-4" th:text="${'Vendor: ' + vendor.name}"></h5>
 
-		<table id="dataTable" class="table table-striped table-bordered">
+		<table id="dataTable" class="table table-striped">
 			<thead>
 				<tr class="row">
 					<th class="col">Queue Name</th>
@@ -56,13 +42,19 @@
 					<td class="col" th:text="${queue.key.state.getDisplayValue()}"></td>
 					<td class="col">
 						<th:block th:if="${queue.key.state.getDisplayValue() == 'Closed'}">
-							<a th:href="@{/operate-queue/update-queue-state/{qId}(qId=${queue.key.getId()})}"><i class="fas fa-door-open fa-lg" title="Open Queue"></i></a>
+							<a th:href="@{/operate-queue/update-queue-state/{qId}(qId=${queue.key.getId()})}">
+								<i class="fas fa-door-open fa-lg" data-toggle="tooltip" data-placement="top" title="Open Queue"></i>
+							</a>
 						</th:block>
 						<th:block th:if="${queue.key.state.getDisplayValue() == 'Open'}">
-							<a th:href="@{/operate-queue/update-queue-state/{qId}(qId=${queue.key.getId()})}"><i class="fas fa-door-closed fa-lg" title="Close Queue"></i></a>
+							<a th:href="@{/operate-queue/update-queue-state/{qId}(qId=${queue.key.getId()})}">
+								<i class="fas fa-door-closed fa-lg" data-toggle="tooltip" data-placement="top" title="Close Queue"></i>
+							</a>
 						</th:block>
 						<th:block th:if="${counter == null && counters != null && not #lists.isEmpty(counters.get(queue.key.id))}">
-							<i class="fas fa-sign-in-alt fa-lg clickable ml-2" data-toggle="modal" th:data-target="${'#signInCounter' + queue.key.id}" title="Sign In Counter"></i>
+							<span data-toggle="tooltip" data-placement="top" title="Sign In Counter">
+								<i class="fas fa-sign-in-alt fa-lg clickable ml-2" data-toggle="modal" th:data-target="${'#signInCounter' + queue.key.id}" title="Sign In Counter"></i>
+							</span>
 
 							<div th:unless="${#lists.isEmpty(counters.get(queue.key.id))}" class="modal fade" th:id="${'signInCounter' + queue.key.id}" tabindex="-1" role="dialog" aria-hidden="true">
 								<div class="modal-dialog" role="document">
@@ -95,7 +87,9 @@
 							</div>
 						</th:block>
 						<th:block th:if="${counter != null && counter.queue.id == queue.key.id}">
-							<i class="fas fa-sign-out-alt fa-lg clickable ml-2" data-toggle="modal" th:data-target="${'#signOutCounter' + queue.key.id}" title="Sign out of counter"></i>
+							<span data-toggle="tooltip" data-placement="top" title="Sign Out Counter">
+								<i class="fas fa-sign-out-alt fa-lg clickable ml-2" data-toggle="modal" th:data-target="${'#signOutCounter' + queue.key.id}"></i>
+							</span>
 
 							<div class="modal fade" th:id="${'signOutCounter' + queue.key.id}" tabindex="-1" role="dialog" aria-hidden="true">
 								<div class="modal-dialog" role="document">
@@ -119,14 +113,14 @@
 								</div>
 							</div>
 						</th:block>
-						<i class="fas fa-qrcode fa-lg clickable ml-2" title="Generate QR Code" onclick="submitForm(this)" data-form="qr-code-form"></i>
+						<i class="fas fa-qrcode fa-lg clickable ml-2" data-toggle="tooltip" data-placement="top" title="Generate QR Code" onclick="submitForm(this)" data-form="qr-code-form"></i>
 						<form id="qr-code-form" target="_blank" method="post" th:action="@{/operate-queue/qr-code}" class="d-inline">
 							<input type="hidden" id="queueURL" name="queueURL"
 								th:value="${#httpServletRequest.scheme} + '://' + ${#httpServletRequest.serverName} + ':' + ${#httpServletRequest.serverPort} +
 								@{/branch/{branchId}?joinQueue={queueId}(branchId=${queue.key.branch.id},queueId=${queue.key.id})}">
 						</form>
 						<a th:href="@{/operate-queue/queue-number-screen/{queueId}(queueId=${queue.key.id})}">
-							<i class="fas fa-tv fa-lg ml-2" title="Display Queue Numbers"></i>
+							<i class="fas fa-tv fa-lg ml-2" data-toggle="tooltip" data-placement="top" title="Display Queue Numbers"></i>
 						</a>
 					</td>
 				</tr>

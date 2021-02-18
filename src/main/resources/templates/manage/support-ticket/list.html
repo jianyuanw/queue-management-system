@@ -10,12 +10,6 @@
 	<th:block th:replace="fragments/sourcebundle.html :: mdbootstrap" />
 
 	<th:block th:replace="fragments/sourcebundle.html :: mdbootstrap-table" />
-	
-	<style>
-		.clickable {
-			cursor: pointer;
-		}
-	</style>
 
 </head>
 <body>
@@ -38,7 +32,7 @@
 					<td class="col" th:text="${ticket.title}"></td>
 					<td class="col" th:text="${ticket.ticketState.getDisplayValue()}"></td>
 					<td class="col">
-					<i class="fas fa-eye fa-lg clickable" title="View Support Ticket" data-toggle="modal" th:data-target="${'#viewTicket' + ticket.id}"></i>
+					<span data-toggle="tooltip" data-placement="top" title="View Support Ticket"><i class="fas fa-eye fa-lg clickable" data-toggle="modal" th:data-target="${'#viewTicket' + ticket.id}"></i></span>
 					<div class="modal fade" th:id="${'viewTicket' + ticket.id}" tabindex="-1" role="dialog" aria-hidden="true">
 						<div class="modal-dialog" role="document">
 							<div class="modal-content">
@@ -57,7 +51,7 @@
 						</div>
 					</div>
 					<a th:if="${ticket.ticketState.getDisplayValue() == 'Open'}" th:href="@{/manage/support-ticket/reply/__${ticket.id}__}">
-							<i class="fas fa-reply fa-lg" title="Reply"></i>
+							<i class="fas fa-reply fa-lg" data-toggle="tooltip" data-placement="top" title="Reply"></i>
 						</a>
 					</td>
 				</tr>

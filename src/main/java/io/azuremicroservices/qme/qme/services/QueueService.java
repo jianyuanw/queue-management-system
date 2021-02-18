@@ -254,6 +254,7 @@ public class QueueService {
         if (currentlyServing != null) {
             currentlyServing.setState(QueuePosition.State.INACTIVE_COMPLETE);
             currentlyServing.setStateChangeTime(LocalDateTime.now());
+            currentlyServing.setQueueEndTime(LocalDateTime.now());
             queuePositionRepo.save(currentlyServing);
         }
 

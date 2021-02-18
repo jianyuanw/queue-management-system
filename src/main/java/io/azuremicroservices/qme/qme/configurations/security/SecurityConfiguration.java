@@ -61,6 +61,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     private final String[] APP_ADMIN_URLS = {
+    		"/simulator/**",
             "/manage/vendor/**",
             "/manage/user-account/**",
             "/manage/vendor-admin-account/**",

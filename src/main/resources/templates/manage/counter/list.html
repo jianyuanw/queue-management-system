@@ -19,7 +19,7 @@
 
 		<h1 class="font-weight-bold">Counter List</h1>
 
-		<table id="dataTable" class="table table-striped table-bordered">
+		<table id="dataTable" class="table table-striped">
 			<thead>
 				<tr class="row">
 					<th class="col">Queue Name</th>
@@ -36,10 +36,12 @@
 					<td class="col" >
 
 						<a th:href="@{/manage/counter/update/__${counter.id}__}">
-							<i class="fas fa-edit fa-lg" title="Edit Counter"></i>
+							<i class="fas fa-edit fa-lg" data-toggle="tooltip" data-placement="top" title="Edit Counter"></i>
 						</a>
 
-						<a href="#"><i class="fas fa-trash-alt fa-lg ml-2" data-toggle="modal" th:data-target="${'#deleteConfirm' + counter.id}" title="Delete Counter"></i></a>
+						<span data-toggle="tooltip" data-placement="top" title="Delete Counter">
+							<i class="fas fa-trash-alt fa-lg ml-2" data-toggle="modal" th:data-target="${'#deleteConfirm' + counter.id}"></i>
+						</span>
 
 						<th:block th:insert="fragments/support-elements.html :: modalbox-red"
 							th:with="modalId=${'deleteConfirm' + counter.id},modalTitle=${'Confirm Deletion'},modalBody=${'Are you sure you want to delete ' + counter.name + '?'},

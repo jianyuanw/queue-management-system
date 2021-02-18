@@ -40,15 +40,17 @@
 					<td class="col">
 
 						<a th:href="@{/manage/user-account/update/__${account.id}__}">
-							<i class="fas fa-edit fa-lg" title="Edit Account"></i>
+							<i class="fas fa-edit fa-lg" data-toggle="tooltip" data-placement="top" title="Edit Account"></i>
 						</a>
 
 						<a th:href="@{/manage/user-account/block/__${account.id}__}">
-							<i th:if="${!account.blocked}" class="fas fa-user-times fa-lg ml-2" title="Block Account"></i>
-							<i th:if="${account.blocked}" class="fas fa-user-check fa-lg ml-2" title="Unblock Account"></i>
+							<i th:if="${!account.blocked}" class="fas fa-user-times fa-lg ml-2" data-toggle="tooltip" data-placement="top" title="Block Account"></i>
+							<i th:if="${account.blocked}" class="fas fa-user-check fa-lg ml-2" data-toggle="tooltip" data-placement="top" title="Unblock Account"></i>
 						</a>
 
-						<a href="#"><i class="fas fa-trash-alt fa-lg ml-2" data-toggle="modal" th:data-target="${'#deleteConfirm' + account.id}" title="Delete User Account"></i></a>
+						<span data-toggle="tooltip" data-placement="top" title="Delete User Account">
+							<i class="fas fa-trash-alt fa-lg ml-2 clickable" data-toggle="modal" th:data-target="${'#deleteConfirm' + account.id}"></i>
+						</span>							
 
 						<th:block th:insert="fragments/support-elements.html :: modalbox-red"
 							th:with="modalId=${'deleteConfirm' + account.id},modalTitle=${'Confirm Deletion'},modalBody=${'Are you sure you want to delete ' + account.username + '?'},

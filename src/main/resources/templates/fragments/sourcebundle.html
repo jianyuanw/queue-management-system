@@ -54,12 +54,21 @@
 		<!-- MDBootstrap Datatables  -->
 		<script type="text/javascript" th:src="@{/js/datatables.min.js}"></script>
 		
+		<style>
+			.clickable {
+				cursor: pointer;
+			}
+		</style>	
+		
 		<script type="text/javascript">
 			$(document).ready(function () {
 				$('#dataTable').DataTable();
 				$('.dataTables_length').addClass('bs-select');
+				$('[data-toggle="tooltip"]').tooltip();
 			});
-		</script>			
+		</script>
+		
+			
     </th:block>
     
     <th:block th:fragment="form-floating-labels">

@@ -56,7 +56,6 @@ public class DashboardController {
 
 		model.addAttribute("queueCountData", queueCountData);
 		model.addAttribute("estWaitingTimeData", estWaitingTimeData);
-
 		
 		var forecastQcDataMonthly = queuePositionService.generateQueueCountForecast(queuePositions, 10);
 		var forecastEWTDataMonthly = queuePositionService.generateEWTCountForecast(queuePositions, 10);

@@ -11,6 +11,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString.Exclude;
 
@@ -30,6 +31,7 @@ public class Counter {
 	
 	@OneToOne
 	@Exclude
+	@EqualsAndHashCode.Exclude
 	private User user;
 	
 	@OneToOne

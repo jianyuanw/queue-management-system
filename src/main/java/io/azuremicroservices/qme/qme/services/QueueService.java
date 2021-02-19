@@ -342,12 +342,21 @@ public class QueueService {
         QueuePosition queuePosition = new QueuePosition();
         Integer queueNumber = obtainQueueNumber(queueId);
         
+        String queueName = queue.get().getName();
+        String prefix;
+        
+        if (queueName.length() < 4) {
+        	prefix = queueName.substring(0, queueName.length());
+        } else {
+        	prefix = queueName.substring(0, 4);
+        }
+        
         // set all attributes including state
         queuePosition.setQueue(queue.get());
         queuePosition.setQueueStartTime(LocalDateTime.now());
         queuePosition.setQueueEndTime(null);
-        queuePosition.setUser(user.get());        
-        queuePosition.setQueueNumber(queue.get().getName().substring(0, 4) + String.valueOf(queueNumber));
+        queuePosition.setUser(user.get());
+        queuePosition.setQueueNumber(prefix + String.valueOf(queueNumber));
         queuePosition.setPosition(queueNumber);
         queuePosition.setPriority(0);
         queuePosition.setState(QueuePosition.State.ACTIVE_QUEUE);

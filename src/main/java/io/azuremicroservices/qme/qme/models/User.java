@@ -42,6 +42,7 @@ public class User {
     @NotEmpty(message = "Email must not be empty")    
     private String email;
 
+    @Pattern(regexp="^[0-9]*$", message = "Handphone number must be a number")
     private String handphoneNo;
 
     private String firstName;

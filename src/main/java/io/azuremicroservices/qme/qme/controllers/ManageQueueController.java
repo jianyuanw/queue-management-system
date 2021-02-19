@@ -65,7 +65,8 @@ public class ManageQueueController {
 			List<Branch> branches = permissionService.getBranchPermissions(((MyUserDetails) authentication.getPrincipal()).getId());
 			model.addAttribute("branches", branches);			
 			return "manage/queue/create";
-		} 
+		}
+		
 		queue.setBranch(branchService.findBranchById(Long.parseLong(branchId)).get());
 		queueService.createQueue(queue);
 		queueService.addQueueIdToQueueEmittersMap(queue.getId());

@@ -43,7 +43,7 @@
 	        </div>
 	        
 	        <div class="col form-group">
-	        	<label class="form-label" for="timePerClient">Time Per Client</label>
+	        	<label class="form-label" for="timePerClient">Time Per Client (min)</label>
 	            <input type="number" id="timePerClient" class="form-control" th:field="*{timePerClient}" min="0" max="300" required>
 	            <p class="text-danger text-left" th:if="${#fields.hasErrors('timePerClient')}" th:errors="*{timePerClient}"></p>
 	        </div>
@@ -52,20 +52,17 @@
 	    
 	    <div class="form-row mb-4">
 	        <div class="col form-group">
-	        	<label class="form-label" for="notificationDelay">Notification Delay</label>
+	        	<label class="form-label" for="notificationDelay">Notification Delay (min)</label>
 	            <input type="number" id="notificationDelay" class="form-control" th:field="*{notificationDelay}" min="0" max="300" required>
 	            <p class="text-danger text-left" th:if="${#fields.hasErrors('notificationDelay')}" th:errors="*{notificationDelay}"></p>
 	        </div>
-	         
-	         <div class="col form-group">
-	        	<label class="form-label" for="state">Queue State</label>
-	           <select class="form-select form-control" name="state" required>
-	        		<option th:each="state : ${T(io.azuremicroservices.qme.qme.models.Queue.State).values()}"
-	        			th:value="${state}" th:text="${state.getDisplayValue()}"></option>
-	        	</select>
-	        	<p class="text-danger text-left" th:if="${#fields.hasErrors('state')}" th:errors="*{state}"></p>            
-	        </div>
-	    </div>
+	        
+	        <div class="col form-group">
+	        	<label class="form-label" for="notifyAt">Notify At (position)</label>
+	            <input type="number" id="notifyAt" class="form-control" th:field="*{notificationPosition}" min="1" max="1000" required>
+	            <p class="text-danger text-left" th:if="${#fields.hasErrors('notificationPosition')}" th:errors="*{notificationPosition}"></p>
+	        </div>	        
+	    </div>    
 	    
 	    <button class="btn btn-info my-4 btn-block" type="submit">Submit</button>
 	

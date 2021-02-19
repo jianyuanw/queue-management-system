@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -45,7 +46,7 @@ public class QueueService {
     private final CounterRepository counterRepo;
     private final NotificationService notificationService;
 
-    private final Map<Long, List<SseEmitter>> queueEmittersMap;
+    private final Map<Long, List<SseEmitter>> queueEmittersMap = new HashMap<>();
     private final AsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
 
     public QueueService(UserRepository userRepo, QueuePositionRepository queuePositionRepo,
@@ -57,24 +58,14 @@ public class QueueService {
         this.counterRepo = counterRepo;
         this.notificationService = notificationService;
 
-        queueEmittersMap = queueRepo.findAll()
+        queueRepo.findAll()
                 .stream()
-                .collect(Collectors.toMap(Queue::getId, x -> new ArrayList<>()));
+                .forEach(x -> queueEmittersMap.put(x.getId(), new ArrayList<>()));                
     }
 
     public Queue findQueue(Long queueId) {
         return queueRepo.findById(queueId).get();
     }
-    
-
-    public void createNewQueue(Vendor vendor, Branch branch,String name, String description,
-    							Double timePerClient,Integer notificationPosition, 
-    							Double notificationDelay) {
-    	queueRepo.save(new Queue(vendor,branch,name,description,
-				Queue.State.CLOSED,timePerClient,
-				notificationPosition,notificationDelay));
-    	}
-    
     
     public void editQueue(Long id,String name, String description, Double timePerClient,
     		Integer notificationPosition,Double notificationDelay) {
@@ -171,7 +162,7 @@ public class QueueService {
 	}
 	
 	public void createQueue(Queue queue) {
-		queue.setNotificationPosition(0);
+		queue.setState(Queue.State.CLOSED);
 		queueRepo.save(queue);
 	}
 	
@@ -265,14 +256,6 @@ public class QueueService {
         }
 
         QueuePosition nextInQueue = queuePositionRepo.findTopByQueue_IdAndStateInOrderByPositionAscPriorityDesc(counter.getQueue().getId(), QueuePosition.getQueuingStates()); 
-        		
-//        		counter.getQueue()
-//                .getQueuePositions()
-//                .stream()
-//                .filter(x -> x.getState() == QueuePosition.State.ACTIVE_QUEUE ||
-//                        x.getState() == QueuePosition.State.ACTIVE_REQUEUE)
-//                .min(Comparator.comparingInt(QueuePosition::getPosition).then))
-//                .get();
 
         counter.setCurrentlyServingQueueNumber(nextInQueue);
         nextInQueue.setState(QueuePosition.State.INACTIVE_CALLED);
@@ -359,12 +342,21 @@ public class QueueService {
         QueuePosition queuePosition = new QueuePosition();
         Integer queueNumber = obtainQueueNumber(queueId);
         
+        String queueName = queue.get().getName();
+        String prefix;
+        
+        if (queueName.length() < 4) {
+        	prefix = queueName.substring(0, queueName.length());
+        } else {
+        	prefix = queueName.substring(0, 4);
+        }
+        
         // set all attributes including state
         queuePosition.setQueue(queue.get());
         queuePosition.setQueueStartTime(LocalDateTime.now());
         queuePosition.setQueueEndTime(null);
-        queuePosition.setUser(user.get());        
-        queuePosition.setQueueNumber(queue.get().getName().substring(0, 4) + String.valueOf(queueNumber));
+        queuePosition.setUser(user.get());
+        queuePosition.setQueueNumber(prefix + String.valueOf(queueNumber));
         queuePosition.setPosition(queueNumber);
         queuePosition.setPriority(0);
         queuePosition.setState(QueuePosition.State.ACTIVE_QUEUE);

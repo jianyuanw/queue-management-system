@@ -2,10 +2,12 @@ package io.azuremicroservices.qme.qme.repositories;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import io.azuremicroservices.qme.qme.models.Queue;
 import io.azuremicroservices.qme.qme.models.QueuePosition;
@@ -68,4 +70,7 @@ public interface QueuePositionRepository extends JpaRepository<QueuePosition, Lo
 	public QueuePosition findByUser_IdAndQueue_Id(Long userId, Long queueId);
 
 	public QueuePosition findByUser_IdAndQueue_IdAndQueueStartTimeGreaterThanEqual(Long userId, Long queueId, LocalDateTime datetime);
+
+	public List<QueuePosition> findByUser_IdQueue_IdAndStateIn(Long userId, Long queueId,
+			List<State> queuingStates);
 }

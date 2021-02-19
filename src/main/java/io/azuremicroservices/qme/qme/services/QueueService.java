@@ -379,10 +379,10 @@ public class QueueService {
                 .orElseThrow(() -> new RuntimeException("Invalid queue: " + queueId));
 
         queuePositionRepo
-                .findByUserIdQueueIdAndState(
+                .findByUser_IdQueue_IdAndStateIn(
                         Long.parseLong(userId),
                         Long.parseLong(queueIdstr),
-                        QueuePosition.State.ACTIVE_QUEUE)
+                        QueuePosition.getQueuingStates())
                 .forEach(queuePosition -> {
                     queuePosition.setState(QueuePosition.State.INACTIVE_LEFT);
                     queuePositionRepo.save(queuePosition);

@@ -164,6 +164,7 @@ public class QueueService {
 	public void createQueue(Queue queue) {
 		queue.setState(Queue.State.CLOSED);
 		queueRepo.save(queue);
+		queueEmittersMap.put(queue.getId(), new ArrayList<>());
 	}
 	
 	public Optional<Queue> findQueueById(Long id) {

@@ -27,9 +27,11 @@ import lombok.ToString.Exclude;
 @NoArgsConstructor
 @Data
 @Table
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @NotEmpty(message = "Username must not be empty")

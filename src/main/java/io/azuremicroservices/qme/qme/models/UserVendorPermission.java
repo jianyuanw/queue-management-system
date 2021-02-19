@@ -7,16 +7,19 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString.Exclude;
 
 @Entity
 @NoArgsConstructor
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class UserVendorPermission {
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@EqualsAndHashCode.Include
     private Long id;
     
 	@ManyToOne

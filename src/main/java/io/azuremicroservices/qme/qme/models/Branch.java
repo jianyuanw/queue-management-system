@@ -16,6 +16,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString.Exclude;
 
@@ -23,9 +24,11 @@ import lombok.ToString.Exclude;
 @NoArgsConstructor
 @Data
 @Table
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Branch {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@EqualsAndHashCode.Include
 	private Long id;
 
 	@ManyToOne

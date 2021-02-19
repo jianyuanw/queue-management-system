@@ -19,10 +19,12 @@ import lombok.ToString.Exclude;
 @NoArgsConstructor
 @Data
 @Table
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Counter {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@EqualsAndHashCode.Include
 	private Long id;
 	
 	@ManyToOne
@@ -31,7 +33,6 @@ public class Counter {
 	
 	@OneToOne
 	@Exclude
-	@EqualsAndHashCode.Exclude
 	private User user;
 	
 	@OneToOne

@@ -14,6 +14,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString.Exclude;
 
@@ -21,9 +22,11 @@ import lombok.ToString.Exclude;
 @NoArgsConstructor
 @Data
 @Table
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Queue {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@EqualsAndHashCode.Include
 	private Long id;
 
 	@ManyToOne

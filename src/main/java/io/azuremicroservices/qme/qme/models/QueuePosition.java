@@ -13,6 +13,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString.Exclude;
 
@@ -20,9 +21,11 @@ import lombok.ToString.Exclude;
 @NoArgsConstructor
 @Data
 @Table(name="queue_position")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class QueuePosition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @ManyToOne

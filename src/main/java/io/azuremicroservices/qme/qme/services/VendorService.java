@@ -47,17 +47,19 @@ public class VendorService {
 		Vendor savedVendor = vendorRepo.save(vendor);
 		String uploadDir = "src/main/resources/static/images/vendor-images/" + savedVendor.getId();
 		
-		Path uploadPath = Paths.get(uploadDir);
-		if (!Files.exists(uploadPath)) {
-			Files.createDirectories(uploadPath);
-		}
+		if(!vendorImage.isEmpty()) {
+			Path uploadPath = Paths.get(uploadDir);
+			if (!Files.exists(uploadPath)) {
+				Files.createDirectories(uploadPath);
+			}
 		
-		try (InputStream inputStream = vendorImage.getInputStream()){
-		Path filePath = uploadPath.resolve(fileName);
-		Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
-		} catch (IOException e) {
-			throw new IOException("Could not save uploaded file:" + fileName);
-		}	
+			try (InputStream inputStream = vendorImage.getInputStream()){
+				Path filePath = uploadPath.resolve(fileName);
+				Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+			} catch (IOException e) {
+				throw new IOException("Could not save uploaded file:" + fileName);
+			}
+		}
 	}
 
 	public void updateVendor(MultipartFile vendorImage, Vendor vendor) throws IOException {
@@ -75,10 +77,10 @@ public class VendorService {
 			if (!Files.exists(uploadPath)) {
 				Files.createDirectories(uploadPath);
 			}
-
+			
 			try (InputStream inputStream = vendorImage.getInputStream()){
-				Path filePath = uploadPath.resolve(fileName);
-				Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+			Path filePath = uploadPath.resolve(fileName);
+			Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
 			} catch (IOException e) {
 				throw new IOException("Could not save uploaded file:" + fileName);
 			}

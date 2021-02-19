@@ -46,7 +46,7 @@ public class QueueService {
     private final CounterRepository counterRepo;
     private final NotificationService notificationService;
 
-    private final Map<Long, List<SseEmitter>> queueEmittersMap = new HashMap<>();
+    private final Map<Long, List<SseEmitter>> queueEmittersMap;
     private final AsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
 
     public QueueService(UserRepository userRepo, QueuePositionRepository queuePositionRepo,
@@ -58,9 +58,9 @@ public class QueueService {
         this.counterRepo = counterRepo;
         this.notificationService = notificationService;
 
-        queueRepo.findAll()
-                .stream()
-                .forEach(x -> queueEmittersMap.put(x.getId(), new ArrayList<>()));                
+		queueEmittersMap = queueRepo.findAll()
+				.stream()
+				.collect(Collectors.toMap(Queue::getId, x -> new ArrayList<>()));
     }
 
     public Queue findQueue(Long queueId) {
@@ -523,5 +523,11 @@ public class QueueService {
 				.get()
 				.getQueue()
 				.getId();
+	}
+
+	public void addQueueIdToQueueEmittersMap(Long queueId) {
+    	if (queueEmittersMap.get(queueId) == null) {
+    		queueEmittersMap.put(queueId, new ArrayList<>());
+		}
 	}
 }

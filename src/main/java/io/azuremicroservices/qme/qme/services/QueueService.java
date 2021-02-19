@@ -531,4 +531,10 @@ public class QueueService {
 				.getQueue()
 				.getId();
 	}
+
+	public void addQueueIdToQueueEmittersMap(Long queueId) {
+    	if (queueEmittersMap.get(queueId) == null) {
+    		queueEmittersMap.put(queueId, new ArrayList<>());
+		}
+	}
 }

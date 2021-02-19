@@ -68,6 +68,7 @@ public class ManageQueueController {
 		} 
 		queue.setBranch(branchService.findBranchById(Long.parseLong(branchId)).get());
 		queueService.createQueue(queue);
+		queueService.addQueueIdToQueueEmittersMap(queue.getId());
 		alertService.createAlert(AlertColour.GREEN, "Queue successfully created", redirAttr);
 		return "redirect:/manage/queue/list";
 	}
